@@ -1,0 +1,38 @@
+# Ignore build outputs
+bin/
+obj/
+
+# Ignore NuGet packages
+*.nupkg
+packages/
+*.snupkg
+*.nuspec
+project.lock.json
+project.assets.json
+
+# Ignore Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore Rider files
+.idea/
+*.sln.iml
+
+# Ignore other IDE/editor files
+*.swp
+*.bak
+*.tmp
+*.log
+
+# Ignore test results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# Ignore Mac and Windows system files
+.DS_Store
+Thumbs.db

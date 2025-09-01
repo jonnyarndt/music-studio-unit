@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>music_studio_unit._4Series</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.133" />
+    <PackageReference Include="PepperDashCore" Version="2.15.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\app01-lib-coreTools\core-tools\core-tools.csproj" />
+  </ItemGroup>
+
+</Project>
