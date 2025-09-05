@@ -1,76 +1,34 @@
-{
-  "MSUUnits": [
-    {
-      "ProcessorMAC": "B8-2D-AA-12-34-56",
-      "Location": {
-        "Terminal": "A",
-        "Gate": "A1",
-        "Zone": "First Class"
-      },
-      "Capabilities": {
-        "HVAC": {
-          "Enabled": true,
-          "ZoneCount": 4,
-          "TemperatureRange": {
-            "Min": 65,
-            "Max": 78
-          }
-        },
-        "Music": {
-          "Enabled": true,
-          "MaxVolume": 80,
-          "EQSettings": "Balanced"
-        },
-        "Studio": {
-          "Enabled": true,
-          "CombinationLogic": "Priority",
-          "ConflictResolution": "FirstCome"
-        }
-      },
-      "AccessControl": {
-        "RequireLogin": true,
-        "AllowedRoles": ["Passenger", "FlightCrew", "Maintenance"],
-        "SessionTimeout": 300
-      }
-    },
-    {
-      "ProcessorMAC": "B8-2D-AA-78-90-AB",
-      "Location": {
-        "Terminal": "B",
-        "Gate": "B12",
-        "Zone": "Business Class"
-      },
-      "Capabilities": {
-        "HVAC": {
-          "Enabled": true,
-          "ZoneCount": 6,
-          "TemperatureRange": {
-            "Min": 68,
-            "Max": 75
-          }
-        },
-        "Music": {
-          "Enabled": true,
-          "MaxVolume": 75,
-          "EQSettings": "Bass Enhanced"
-        },
-        "Studio": {
-          "Enabled": true,
-          "CombinationLogic": "Override",
-          "ConflictResolution": "HighestPriority"
-        }
-      },
-      "AccessControl": {
-        "RequireLogin": false,
-        "AllowedRoles": ["Passenger"],
-        "SessionTimeout": 600
-      }
-    }
-  ],
-  "GlobalSettings": {
-    "ConfigVersion": "1.0",
-    "LastUpdated": "2024-01-15T10:30:00Z",
-    "UpdateInterval": 300,
-    "LogLevel": "Info"
+[
+  {
+    "MSU_UID": "4F4E494F4E52494E47532020",
+    "MSU_NAME": "Songster",
+    "MSU_MAC": "8A Fa 05 93 51 4E",
+    "X_COORD": 3,
+    "Y_COORD": -2,
+    "HVAC_ID": 12
+  },
+  {
+    "MSU_UID": "4F4E494F4E52494E47532021",
+    "MSU_NAME": "Harmony",
+    "MSU_MAC": "8A Fa 05 93 51 4F",
+    "X_COORD": 4,
+    "Y_COORD": -2,
+    "HVAC_ID": 13
+  },
+  {
+    "MSU_UID": "4F4E494F4E52494E47532022",
+    "MSU_NAME": "Melody",
+    "MSU_MAC": "8A Fa 05 93 51 50",
+    "X_COORD": 3,
+    "Y_COORD": -3,
+    "HVAC_ID": 14
+  },
+  {
+    "MSU_UID": "4F4E494F4E52494E47532023",
+    "MSU_NAME": "Rhythm",
+    "MSU_MAC": "8A Fa 05 93 51 51",
+    "X_COORD": 4,
+    "Y_COORD": -3,
+    "HVAC_ID": 15
   }
-}
+]

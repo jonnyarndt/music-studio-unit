@@ -17,6 +17,7 @@ namespace flexpod.Services
         
         // Core Services
         private ConfigurationManager _configManager;
+        private MSUIdentificationService _identificationService;
         private UserManager _userManager;
         private StudioManager _studioManager;
         
@@ -40,6 +41,7 @@ namespace flexpod.Services
         public bool IsInitialized => _isInitialized;
         public MSUConfiguration CurrentMSUConfig => _currentMSUConfig;
         public ConfigurationManager ConfigManager => _configManager;
+        public MSUIdentificationService IdentificationService => _identificationService;
         public UserManager UserManager => _userManager;
         public StudioManager StudioManager => _studioManager;
         public HVACController HVACController => _hvacController;
@@ -49,13 +51,27 @@ namespace flexpod.Services
         public event EventHandler<MSUInitializedEventArgs> MSUInitialized;
         public event EventHandler<MSUErrorEventArgs> MSUError;
 
-        public MSUController(string key)
+        public MSUController(string key, ConfigurationManager configManager)
         {
             _key = key;
             _systemStartTime = DateTime.Now;
+            _configManager = configManager;
             
             DeviceManager.AddDevice(key, this);
             Debug.Console(1, this, "MSU Controller created");
+        }
+
+        /// <summary>
+        /// Set the MSU identification service (called by SystemInitializationService)
+        /// </summary>
+        public void SetIdentificationService(MSUIdentificationService identificationService)
+        {
+            _identificationService = identificationService;
+            if (_identificationService?.IsIdentified == true)
+            {
+                _currentMSUConfig = _identificationService.IdentifiedMSU;
+                Debug.Console(1, this, "MSU identification data set: {0}", _currentMSUConfig.MSU_NAME);
+            }
         }
 
         /// <summary>

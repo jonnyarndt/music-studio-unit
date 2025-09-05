@@ -359,18 +359,37 @@ namespace flexpod.Configuration
                 
                 Debug.Console(2, this, "Parsing JSON content ({0} characters)", cleanedJson.Length);
                 
-                RemoteConfiguration config = JsonConvert.DeserializeObject<RemoteConfiguration>(cleanedJson);
-                
-                if (config?.MSUUnits != null)
+                // According to Client-Scope.md, the JSON file contains an array of MSU objects
+                // Try to parse as direct array first (Client-Scope.md format)
+                if (cleanedJson.StartsWith("["))
                 {
-                    Debug.Console(2, this, "Successfully parsed {0} MSU units from JSON", config.MSUUnits.Count);
+                    Debug.Console(2, this, "Parsing as array format (Client-Scope.md specification)");
+                    var msuList = JsonConvert.DeserializeObject<List<MSUConfiguration>>(cleanedJson);
+                    
+                    var config = new RemoteConfiguration();
+                    config.MSUUnits = msuList ?? new List<MSUConfiguration>();
+                    
+                    Debug.Console(2, this, "Successfully parsed {0} MSU units from JSON array", config.MSUUnits.Count);
+                    return config;
                 }
-                
-                return config;
+                else
+                {
+                    // Try to parse as object with msu_units property (fallback)
+                    Debug.Console(2, this, "Parsing as object format (fallback)");
+                    RemoteConfiguration config = JsonConvert.DeserializeObject<RemoteConfiguration>(cleanedJson);
+                    
+                    if (config?.MSUUnits != null)
+                    {
+                        Debug.Console(2, this, "Successfully parsed {0} MSU units from JSON object", config.MSUUnits.Count);
+                    }
+                    
+                    return config;
+                }
             }
             catch (JsonException jsonEx)
             {
                 Debug.Console(0, this, "JSON parsing error: {0}", jsonEx.Message);
+                Debug.Console(2, this, "JSON content causing error: {0}", jsonContent.Substring(0, Math.Min(200, jsonContent.Length)));
                 return null;
             }
             catch (Exception ex)

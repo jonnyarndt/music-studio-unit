@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Configuration>
-  <ProcessorMAC>B8-2D-AA-12-34-56</ProcessorMAC>
-  <Remote>
-    <IP>192.168.1.100</IP>
-    <Port>8080</Port>
-    <File>msu-config.json</File>
-  </Remote>
-  <HVAC>
-    <IP>192.168.1.50</IP>
-    <Port>10001</Port>
-    <Timeout>5000</Timeout>
-  </HVAC>
-  <Music>
-    <IP>192.168.1.60</IP>
-    <Port>10002</Port>
-    <Timeout>5000</Timeout>
-  </Music>
-  <Users>
-    <LibraryPath>\\crestron-host\USER\UserLibrary.simpl</LibraryPath>
-    <DefaultAccessLevel>Guest</DefaultAccessLevel>
-  </Users>
-</Configuration>
+<configuration>
+  <address>
+    <street>15 Volvo Drive</street>
+    <city>Rockleigh</city>
+  </address>
+  <remote>
+    <ip>172.22.0.50</ip>
+    <port>80</port>
+    <file>remoteconf.json</file>
+  </remote>
+  <hvac>
+    <ip>172.22.100.1</ip>
+    <port>62045</port>
+    <idle>21.5</idle>
+  </hvac>
+  <dms>
+    <ip>172.22.200.1</ip>
+    <port>62046</port>
+    <listen>62062</listen>
+  </dms>
+</configuration>

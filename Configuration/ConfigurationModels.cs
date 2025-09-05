@@ -11,6 +11,9 @@ namespace flexpod.Configuration
     [XmlRoot("configuration")]
     public class LocalConfiguration
     {
+        [XmlElement("processorMAC")]
+        public string ProcessorMAC { get; set; }
+
         [XmlElement("address")]
         public AddressInfo Address { get; set; }
 
@@ -83,11 +86,23 @@ namespace flexpod.Configuration
 
     /// <summary>
     /// Remote JSON Configuration Model for building configuration
+    /// Matches the exact format specified in Client-Scope.md
     /// </summary>
     public class RemoteConfiguration
     {
         [JsonProperty("msu_units")]
         public List<MSUConfiguration> MSUUnits { get; set; } = new List<MSUConfiguration>();
+
+        // Constructor to handle both array and object formats
+        public RemoteConfiguration()
+        {
+        }
+
+        // Handle direct array deserialization
+        public static List<MSUConfiguration> FromJsonArray(string json)
+        {
+            return JsonConvert.DeserializeObject<List<MSUConfiguration>>(json);
+        }
     }
 
     /// <summary>

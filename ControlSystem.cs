@@ -14,8 +14,8 @@ namespace flexpod
     public class ControlSystem : CrestronControlSystem
     {      
         private readonly uint _touchPanelOneIPID = 0x2a;
-        private ConfigurationManager _configManager;
-        private MSUController _msuController;
+        private SystemInitializationService _initializationService;
+        private TP01 _touchPanel;
 
         /// <summary>
         /// ControlSystem Constructor. Starting point for the SIMPL#Pro program.
@@ -105,56 +105,39 @@ namespace flexpod
                 Debug.Console(0, "INIT: Processor Hostname:       {0}", sysInfo.Adapter.Hostname);
                 Debug.Console(0, "*********************************************************\n");
                 
-                // Initialize MSU Controller and Configuration Management
-                Debug.Console(0, "INIT: Initializing MSU Controller and Configuration Management");
+                // Initialize touch panel first
+                Debug.Console(0, "INIT: Initializing Touch Panel Interface");
+                _touchPanel = new TP01("tp01", "TP01", panel, flightTelemetry);
                 
-                _configManager = new ConfigurationManager("ConfigManager");
-                if (_configManager != null)
+                // Initialize comprehensive MSU system using new initialization service
+                Debug.Console(0, "INIT: Starting Masters of Karaoke MSU System Initialization");
+                
+                _initializationService = new SystemInitializationService("SystemInit");
+                _initializationService.InitializationComplete += OnSystemInitializationComplete;
+                _initializationService.InitializationError += OnSystemInitializationError;
+                _initializationService.PhaseChanged += OnInitializationPhaseChanged;
+                
+                // Execute complete initialization sequence
+                if (_initializationService.Initialize())
                 {
-                    // Subscribe to configuration events
-                    _configManager.ConfigurationLoaded += OnConfigurationLoaded;
+                    Debug.Console(1, "INIT: MSU System initialization completed successfully");
                     
-                    // Load local XML configuration first
-                    if (_configManager.LoadLocalConfiguration())
+                    // Connect MSU controller to touch panel if available
+                    var msuController = _initializationService.MSUController;
+                    if (msuController != null)
                     {
-                        Debug.Console(1, "INIT: Local XML configuration loaded successfully");
-                        
-                        // Attempt to load remote JSON configuration
-                        if (_configManager.LoadRemoteConfiguration())
-                        {
-                            Debug.Console(1, "INIT: Remote JSON configuration loaded successfully");
-                        }
-                        else
-                        {
-                            Debug.Console(0, "INIT: Warning - Remote configuration failed, using local only");
-                        }
-                        
-                        // Initialize MSU Controller with loaded configuration
-                        _msuController = new MSUController("MSUController", _configManager);
-                        if (_msuController.Initialize())
-                        {
-                            Debug.Console(1, "INIT: MSU Controller initialized successfully");
-                            
-                            // Connect MSU controller to touch panel
-                            tp01.SetMSUController(_msuController);
-                        }
-                        else
-                        {
-                            Debug.Console(0, "INIT: Error - MSU Controller initialization failed");
-                        }
-                    }
-                    else
-                    {
-                        Debug.Console(0, "INIT: Error - Local configuration failed to load");
+                        _touchPanel.SetMSUController(msuController);
+                        Debug.Console(1, "INIT: Touch panel connected to MSU controller");
                     }
                 }
                 else
                 {
-                    Debug.Console(0, "INIT: Error - Configuration Manager initialization failed");
+                    Debug.Console(0, "INIT: MSU System initialization failed - see errors above");
                 }
                 
-                // Read nvram config text file
-                // Connecto the HTTPS server, pull XML data, parse XML data
+                // Add console command for configuration reload
+                CrestronConsole.AddNewConsoleCommand(ReloadConfiguration, "reloadConfig", 
+                    "Reload MSU configuration files", ConsoleAccessLevelEnum.AccessOperator);
                 
                 Debug.Console(0, "******************* InitializeSystem() Complete **********************");
 
@@ -203,6 +186,64 @@ namespace flexpod
             {
                 Debug.Console(1, "Remote Config - Found {0} MSU units configured", 
                     args.RemoteConfig.MSUUnits?.Count ?? 0);
+            }
+        }
+
+        /// <summary>
+        /// Event handler for system initialization completion
+        /// </summary>
+        private void OnSystemInitializationComplete(object sender, InitializationCompleteEventArgs args)
+        {
+            Debug.Console(1, "System initialization completed in {0:F1} seconds", args.InitializationTime.TotalSeconds);
+            
+            if (args.IdentifiedMSU != null)
+            {
+                Debug.Console(1, "This MSU is identified as: {0} at coordinates ({1},{2})", 
+                    args.IdentifiedMSU.MSU_NAME, args.IdentifiedMSU.X_COORD, args.IdentifiedMSU.Y_COORD);
+            }
+            else
+            {
+                Debug.Console(1, "This MSU is running in standalone mode");
+            }
+        }
+
+        /// <summary>
+        /// Event handler for system initialization errors
+        /// </summary>
+        private void OnSystemInitializationError(object sender, InitializationErrorEventArgs args)
+        {
+            Debug.Console(0, "System initialization error: {0}", args.ErrorMessage);
+            ErrorLog.Error("MSU System Initialization Error: {0}", args.ErrorMessage);
+        }
+
+        /// <summary>
+        /// Event handler for initialization phase changes
+        /// </summary>
+        private void OnInitializationPhaseChanged(object sender, InitializationPhaseEventArgs args)
+        {
+            Debug.Console(2, "Initialization phase changed to: {0}", args.Phase);
+        }
+
+        /// <summary>
+        /// Console command to reload configuration
+        /// </summary>
+        private void ReloadConfiguration(string message)
+        {
+            if (_initializationService != null)
+            {
+                Debug.Console(1, "Reloading configuration as requested from console");
+                if (_initializationService.ReloadConfiguration())
+                {
+                    Debug.Console(1, "Configuration reload completed");
+                }
+                else
+                {
+                    Debug.Console(0, "Configuration reload failed");
+                }
+            }
+            else
+            {
+                Debug.Console(0, "Cannot reload configuration - initialization service not available");
             }
         }
 
