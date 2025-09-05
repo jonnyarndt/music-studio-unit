@@ -19,10 +19,13 @@ namespace flexpod
         private readonly uint _touchPanelOneIPID = 0x2a;
         private SystemInitializationService _initializationService;
         private TP01 _touchPanel;
+        private MSUTouchPanel _msuTouchPanel;
+        private MSUController _msuController;
         private EnhancedHVACController _hvacController;
         private HVACTemperatureUI _hvacTemperatureUI;
         private EnhancedMusicSystemController _musicController;
         private MusicBrowseUI _musicBrowseUI;
+        private LoyaltyID _userDatabase;
 
         /// <summary>
         /// ControlSystem Constructor. Starting point for the SIMPL#Pro program.
@@ -116,6 +119,10 @@ namespace flexpod
                 Debug.Console(0, "INIT: Initializing Touch Panel Interface");
                 _touchPanel = new TP01("tp01", "TP01", panel, flightTelemetry);
                 
+                // Initialize User Database
+                Debug.Console(0, "INIT: Initializing User Database");
+                InitializeUserDatabase();
+                
                 // Initialize HVAC controller
                 Debug.Console(0, "INIT: Initializing HVAC Temperature Controller");
                 InitializeHVACController(panel);
@@ -137,12 +144,18 @@ namespace flexpod
                 {
                     Debug.Console(1, "INIT: MSU System initialization completed successfully");
                     
-                    // Connect MSU controller to touch panel if available
-                    var msuController = _initializationService.MSUController;
-                    if (msuController != null)
+                    // Get MSU controller
+                    _msuController = _initializationService.MSUController;
+                    
+                    // Initialize MSU TouchPanel with all components
+                    Debug.Console(0, "INIT: Initializing MSU TouchPanel with integrated screens");
+                    InitializeMSUTouchPanel(panel);
+                    
+                    // Connect MSU controller to original touch panel if available
+                    if (_msuController != null && _touchPanel != null)
                     {
-                        _touchPanel.SetMSUController(msuController);
-                        Debug.Console(1, "INIT: Touch panel connected to MSU controller");
+                        _touchPanel.SetMSUController(_msuController);
+                        Debug.Console(1, "INIT: Original touch panel connected to MSU controller");
                     }
                 }
                 else
@@ -153,6 +166,12 @@ namespace flexpod
                 // Add console command for configuration reload
                 CrestronConsole.AddNewConsoleCommand(ReloadConfiguration, "reloadConfig", 
                     "Reload MSU configuration files", ConsoleAccessLevelEnum.AccessOperator);
+                
+                // Add console commands for MSU TouchPanel
+                CrestronConsole.AddNewConsoleCommand(SetMSUPage, "msupage", 
+                    "Set MSU TouchPanel page (Settings, User, Music, Temperature, Combine)", ConsoleAccessLevelEnum.AccessOperator);
+                CrestronConsole.AddNewConsoleCommand(ShowMSUStatus, "msustatus", 
+                    "Show MSU TouchPanel status", ConsoleAccessLevelEnum.AccessOperator);
                 
                 Debug.Console(0, "******************* InitializeSystem() Complete **********************");
 
@@ -574,6 +593,105 @@ namespace flexpod
             catch (Exception ex)
             {
                 CrestronConsole.PrintLine("Error stopping track: {0}", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Initialize User Database per Client-Scope.md Appendix A
+        /// </summary>
+        private void InitializeUserDatabase()
+        {
+            try
+            {
+                Debug.Console(1, "Initializing User Database for loyalty identification...");
+                
+                // Create user database instance (LoyaltyID class from existing code)
+                _userDatabase = new LoyaltyID("UserDatabase");
+                
+                Debug.Console(1, "User Database initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, "Error initializing User Database: {0}", ex.Message);
+                ErrorLog.Error("User Database Initialization Error: {0}", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Initialize MSU TouchPanel with all integrated screen handlers
+        /// </summary>
+        private void InitializeMSUTouchPanel(BasicTriList panel)
+        {
+            try
+            {
+                Debug.Console(1, "Initializing MSU TouchPanel with integrated screens...");
+                
+                if (_msuController == null)
+                {
+                    Debug.Console(0, "Cannot initialize MSU TouchPanel - MSU Controller not available");
+                    return;
+                }
+
+                if (_hvacController == null)
+                {
+                    Debug.Console(0, "Cannot initialize MSU TouchPanel - HVAC Controller not available");
+                    return;
+                }
+
+                if (_musicController == null)
+                {
+                    Debug.Console(0, "Cannot initialize MSU TouchPanel - Music Controller not available");
+                    return;
+                }
+
+                if (_userDatabase == null)
+                {
+                    Debug.Console(0, "Cannot initialize MSU TouchPanel - User Database not available");
+                    return;
+                }
+
+                // Create MSU TouchPanel with all components
+                _msuTouchPanel = new MSUTouchPanel("msuTouchPanel", "MSU TouchPanel", panel,
+                    _msuController, _initializationService, _hvacController, _musicController, _userDatabase);
+
+                Debug.Console(1, "MSU TouchPanel initialized successfully with all screen handlers");
+                Debug.Console(1, "Available screens: Settings, User, Music, Temperature, Combine");
+                Debug.Console(1, "Default screen: Settings (per Client-Scope.md requirement)");
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, "Error initializing MSU TouchPanel: {0}", ex.Message);
+                ErrorLog.Error("MSU TouchPanel Initialization Error: {0}", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Console command to set MSU TouchPanel page
+        /// </summary>
+        private void SetMSUPage(string message)
+        {
+            if (_msuTouchPanel != null)
+            {
+                _msuTouchPanel.SetMSUPage(message);
+            }
+            else
+            {
+                CrestronConsole.PrintLine("MSU TouchPanel not initialized");
+            }
+        }
+
+        /// <summary>
+        /// Console command to show MSU TouchPanel status
+        /// </summary>
+        private void ShowMSUStatus(string message)
+        {
+            if (_msuTouchPanel != null)
+            {
+                _msuTouchPanel.ShowMSUStatus();
+            }
+            else
+            {
+                CrestronConsole.PrintLine("MSU TouchPanel not initialized");
             }
         }
 
