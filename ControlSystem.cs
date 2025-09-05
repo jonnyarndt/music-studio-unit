@@ -8,6 +8,9 @@ using Crestron.SimplSharpPro.DeviceSupport;         	// For Generic Device Suppo
 using Crestron.SimplSharpPro.UI;
 using flexpod.Services;
 using flexpod.Controllers;
+using flexpod.Devices;
+using flexpod.Configuration;
+using flexpod.UserInterface;
 
 namespace flexpod
 {
@@ -16,6 +19,8 @@ namespace flexpod
         private readonly uint _touchPanelOneIPID = 0x2a;
         private SystemInitializationService _initializationService;
         private TP01 _touchPanel;
+        private EnhancedHVACController _hvacController;
+        private HVACTemperatureUI _hvacTemperatureUI;
 
         /// <summary>
         /// ControlSystem Constructor. Starting point for the SIMPL#Pro program.
@@ -108,6 +113,10 @@ namespace flexpod
                 // Initialize touch panel first
                 Debug.Console(0, "INIT: Initializing Touch Panel Interface");
                 _touchPanel = new TP01("tp01", "TP01", panel, flightTelemetry);
+                
+                // Initialize HVAC controller
+                Debug.Console(0, "INIT: Initializing HVAC Temperature Controller");
+                InitializeHVACController(panel);
                 
                 // Initialize comprehensive MSU system using new initialization service
                 Debug.Console(0, "INIT: Starting Masters of Karaoke MSU System Initialization");
@@ -244,6 +253,152 @@ namespace flexpod
             else
             {
                 Debug.Console(0, "Cannot reload configuration - initialization service not available");
+            }
+        }
+
+        /// <summary>
+        /// Initialize HVAC temperature controller per Client-Scope.md specifications
+        /// </summary>
+        private void InitializeHVACController(BasicTriList panel)
+        {
+            try
+            {
+                Debug.Console(1, "Initializing HVAC temperature controller...");
+
+                // Create HVAC configuration
+                var hvacConfig = new HVACInfo
+                {
+                    IP = "10.0.0.100", // TODO: Read from configuration file
+                    Port = 4001, // Default port per Client-Scope.md
+                    IdleSetpoint = 21.0f,
+                    ZoneIds = new System.Collections.Generic.List<byte> { 1, 2, 3 }, // TODO: Configure per studio zones
+                    DebugMode = true
+                };
+
+                // Create HVAC controller
+                _hvacController = new EnhancedHVACController("MainHVAC", hvacConfig);
+
+                // Create temperature presets
+                var presets = new System.Collections.Generic.List<TemperaturePreset>
+                {
+                    new TemperaturePreset { Name = "Cool Recording", Temperature = 18.0f, Description = "Cool for intense recording sessions" },
+                    new TemperaturePreset { Name = "Comfortable", Temperature = 21.0f, Description = "Standard comfortable temperature" },
+                    new TemperaturePreset { Name = "Warm Vocals", Temperature = 24.0f, Description = "Warmer for vocal sessions" },
+                    new TemperaturePreset { Name = "Idle", Temperature = 19.0f, Description = "Energy saving when not in use" }
+                };
+
+                // Create UI interface for touch panel
+                _hvacTemperatureUI = new HVACTemperatureUI(_hvacController, panel, presets);
+
+                // Initialize HVAC controller
+                if (_hvacController.Initialize())
+                {
+                    Debug.Console(1, "HVAC controller initialized successfully");
+                    
+                    // Add console commands for HVAC control
+                    CrestronConsole.AddNewConsoleCommand(PrintHVACStatus, "hvacstatus", 
+                        "Print current HVAC status", ConsoleAccessLevelEnum.AccessOperator);
+                    CrestronConsole.AddNewConsoleCommand(SetHVACTemp, "hvactemp", 
+                        "Set HVAC temperature (e.g., hvactemp 21.5)", ConsoleAccessLevelEnum.AccessOperator);
+                }
+                else
+                {
+                    Debug.Console(0, "HVAC controller initialization failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, "Error initializing HVAC controller: {0}", ex.Message);
+                ErrorLog.Error("HVAC Initialization Error: {0}", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Console command to print HVAC status
+        /// </summary>
+        private void PrintHVACStatus(string message)
+        {
+            if (_hvacController != null)
+            {
+                var status = _hvacController.GetCurrentStatus();
+                CrestronConsole.PrintLine("HVAC Status:");
+                CrestronConsole.PrintLine("  Connected: {0}", status.IsConnected);
+                CrestronConsole.PrintLine("  Current Setpoint: {0:F1}°C", status.CurrentSetpoint);
+                CrestronConsole.PrintLine("  External Temperature: {0:F1}°C", status.ExternalTemperature);
+                CrestronConsole.PrintLine("  Status Flags:");
+                CrestronConsole.PrintLine("    Over Temperature: {0}", status.OverTemp ? "YES" : "NO");
+                CrestronConsole.PrintLine("    Pressure Fault: {0}", status.PressureFault ? "YES" : "NO");
+                CrestronConsole.PrintLine("    Voltage Fault: {0}", status.VoltageFault ? "YES" : "NO");
+                CrestronConsole.PrintLine("    Airflow Blocked: {0}", status.AirflowBlocked ? "YES" : "NO");
+                
+                if (status.ZoneSetpoints.Count > 0)
+                {
+                    CrestronConsole.PrintLine("  Zone Setpoints:");
+                    foreach (var zone in status.ZoneSetpoints)
+                    {
+                        CrestronConsole.PrintLine("    Zone {0}: {1:F1}°C", zone.Key, zone.Value);
+                    }
+                }
+            }
+            else
+            {
+                CrestronConsole.PrintLine("HVAC controller not initialized");
+            }
+        }
+
+        /// <summary>
+        /// Console command to set HVAC temperature
+        /// </summary>
+        private void SetHVACTemp(string message)
+        {
+            if (_hvacController == null)
+            {
+                CrestronConsole.PrintLine("HVAC controller not initialized");
+                return;
+            }
+
+            try
+            {
+                string[] parts = message.Split(' ');
+                if (parts.Length < 2)
+                {
+                    CrestronConsole.PrintLine("Usage: hvactemp <temperature> [zone_id]");
+                    CrestronConsole.PrintLine("Example: hvactemp 21.5");
+                    CrestronConsole.PrintLine("Example: hvactemp 23.0 1");
+                    return;
+                }
+
+                float temperature = float.Parse(parts[1]);
+                
+                if (parts.Length >= 3)
+                {
+                    // Set specific zone
+                    byte zoneId = byte.Parse(parts[2]);
+                    if (_hvacController.SetZoneTemperature(zoneId, temperature))
+                    {
+                        CrestronConsole.PrintLine("Temperature set to {0:F1}°C for zone {1}", temperature, zoneId);
+                    }
+                    else
+                    {
+                        CrestronConsole.PrintLine("Failed to set temperature for zone {0}", zoneId);
+                    }
+                }
+                else
+                {
+                    // Set all zones (default zone 1)
+                    if (_hvacController.SetZoneTemperature(1, temperature))
+                    {
+                        CrestronConsole.PrintLine("Temperature set to {0:F1}°C", temperature);
+                    }
+                    else
+                    {
+                        CrestronConsole.PrintLine("Failed to set temperature");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                CrestronConsole.PrintLine("Error setting temperature: {0}", ex.Message);
             }
         }
 
