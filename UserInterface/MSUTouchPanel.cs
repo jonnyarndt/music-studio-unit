@@ -31,7 +31,9 @@ namespace flexpod.UserInterface
         private SettingsScreenUI _settingsScreen;
         private UserLoginScreenUI _userLoginScreen;
         private TemperatureScreenUI _temperatureScreen;
-        private MusicBrowseUI _musicBrowseScreen;
+        private MusicScreenUI _musicScreen;
+        private CombineScreenUI _combineScreen;
+        private StudioCombinationManager _combinationManager;
 
         // State tracking
         private MSUTouchPanelJoins.Pages _currentPage = MSUTouchPanelJoins.Pages.Settings;
@@ -61,7 +63,7 @@ namespace flexpod.UserInterface
         public MSUTouchPanel(string keyId, string friendlyId, BasicTriListWithSmartObject panel,
                            MSUController msuController, SystemInitializationService initService,
                            EnhancedHVACController hvacController, EnhancedMusicSystemController musicController,
-                           LoyaltyID userDatabase) 
+                           LoyaltyID userDatabase, StudioCombinationManager combinationManager) 
             : base(keyId, friendlyId, panel)
         {
             _msuController = msuController ?? throw new ArgumentNullException(nameof(msuController));
@@ -69,6 +71,7 @@ namespace flexpod.UserInterface
             _hvacController = hvacController ?? throw new ArgumentNullException(nameof(hvacController));
             _musicController = musicController ?? throw new ArgumentNullException(nameof(musicController));
             _userDatabase = userDatabase ?? throw new ArgumentNullException(nameof(userDatabase));
+            _combinationManager = combinationManager ?? throw new ArgumentNullException(nameof(combinationManager));
 
             Debug.Console(1, this, "Initializing MSU TouchPanel");
 
@@ -154,11 +157,15 @@ namespace flexpod.UserInterface
                 _temperatureScreen.TemperatureChanged += OnTemperatureChanged;
                 _temperatureScreen.TemperatureFault += OnTemperatureFault;
 
-                // Music Browse Screen (using existing implementation)
-                _musicBrowseScreen = new MusicBrowseUI(_musicController, Panel);
-                _musicController.TrackStarted += OnMusicTrackStarted;
-                _musicController.TrackStopped += OnMusicTrackStopped;
-                _musicController.TimeUpdate += OnMusicTimeUpdate;
+                // Enhanced Music Screen
+                _musicScreen = new MusicScreenUI(Panel, _musicController);
+                _musicScreen.PlaybackStateChanged += OnMusicPlaybackStateChanged;
+                _musicScreen.NavigateBackRequested += OnMusicNavigateBackRequested;
+
+                // Combine Screen
+                _combineScreen = new CombineScreenUI(Panel, _combinationManager);
+                _combineScreen.CombinationChanged += OnCombinationChanged;
+                _combineScreen.NavigateBackRequested += OnCombineNavigateBackRequested;
 
                 Debug.Console(1, this, "Screen handlers initialized successfully");
             }
@@ -200,31 +207,40 @@ namespace flexpod.UserInterface
 
         private void OnPageChanged(MSUTouchPanelJoins.Pages page)
         {
-            switch (page)
+            try
             {
-                case MSUTouchPanelJoins.Pages.Settings:
-                    _settingsScreen?.UpdateSettingsDisplay();
-                    break;
-                case MSUTouchPanelJoins.Pages.User:
-                    // User screen is always up to date
-                    break;
-                case MSUTouchPanelJoins.Pages.Temperature:
-                    // Temperature screen updates automatically via HVAC events
-                    break;
-                case MSUTouchPanelJoins.Pages.Music:
-                    // Only allow browsing when playback is stopped per Client-Scope.md
-                    if (_isMusicPlaying)
-                    {
-                        _musicBrowseScreen?.ShowNowPlayingView();
-                    }
-                    else
-                    {
-                        _musicBrowseScreen?.ShowArtistListView();
-                    }
-                    break;
-                case MSUTouchPanelJoins.Pages.Combine:
-                    // TODO: Implement combination screen
-                    break;
+                // Hide all screens first
+                _settingsScreen?.Hide();
+                _userLoginScreen?.Hide();
+                _temperatureScreen?.Hide();
+                _musicScreen?.Hide();
+                _combineScreen?.Hide();
+
+                // Show and initialize the requested screen
+                switch (page)
+                {
+                    case MSUTouchPanelJoins.Pages.Settings:
+                        _settingsScreen?.Show();
+                        break;
+                    case MSUTouchPanelJoins.Pages.User:
+                        _userLoginScreen?.Show();
+                        break;
+                    case MSUTouchPanelJoins.Pages.Temperature:
+                        _temperatureScreen?.Show();
+                        break;
+                    case MSUTouchPanelJoins.Pages.Music:
+                        _musicScreen?.Show();
+                        break;
+                    case MSUTouchPanelJoins.Pages.Combine:
+                        _combineScreen?.Show();
+                        break;
+                }
+
+                Debug.Console(2, this, "Page changed to: {0}", page);
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, this, "Error changing page to {0}: {1}", page, ex.Message);
             }
         }
         #endregion
@@ -310,30 +326,37 @@ namespace flexpod.UserInterface
             Debug.Console(0, this, "Temperature fault: {0}", args.FaultMessage);
         }
 
-        private void OnMusicTrackStarted(object sender, TrackStartedEventArgs args)
+        private void OnMusicPlaybackStateChanged(object sender, MusicPlaybackStateEventArgs args)
         {
-            _isMusicPlaying = true;
-            _currentTrackInfo = $"{args.ArtistName}|{args.TrackName}";
+            _isMusicPlaying = args.IsPlaying;
+            _currentTrackInfo = args.IsPlaying ? $"{args.ArtistName}|{args.TrackName}" : string.Empty;
             UpdateMusicInfo();
-            Debug.Console(1, this, "Music track started: {0} - {1}", args.ArtistName, args.TrackName);
+            
+            Debug.Console(1, this, "Music playback state changed - Playing: {0}, Track: {1}", 
+                args.IsPlaying, args.TrackName ?? "None");
         }
 
-        private void OnMusicTrackStopped(object sender, TrackStoppedEventArgs args)
+        private void OnMusicNavigateBackRequested(object sender, EventArgs args)
         {
-            _isMusicPlaying = false;
-            _currentTrackInfo = string.Empty;
-            UpdateMusicInfo();
-            Debug.Console(1, this, "Music track stopped");
+            // Navigate back to appropriate main menu or previous screen
+            NavigateToPage(MSUTouchPanelJoins.Pages.Settings);
+            Debug.Console(1, this, "Music screen requested navigation back");
         }
 
-        private void OnMusicTimeUpdate(object sender, TimeUpdateEventArgs args)
+        private void OnCombinationChanged(object sender, StudioCombinationChangedEventArgs args)
         {
-            if (_isMusicPlaying)
-            {
-                // Display remaining time as static value per Client-Scope.md
-                string timeText = $"{args.RemainingMinutes}:{args.RemainingSeconds:D2}";
-                Panel.StringInput[(uint)MSUTouchPanelJoins.MenuBar.NowPlayingTimeText].StringValue = timeText;
-            }
+            Debug.Console(1, this, "Studio combination changed - Type: {0}, Units: {1}", 
+                args.CombinationType, args.CombinedMSUs?.Count ?? 0);
+
+            // Update menu bar or other UI elements based on combination state
+            UpdateMenuBar();
+        }
+
+        private void OnCombineNavigateBackRequested(object sender, EventArgs args)
+        {
+            // Navigate back to appropriate main menu or previous screen
+            NavigateToPage(MSUTouchPanelJoins.Pages.Settings);
+            Debug.Console(1, this, "Combine screen requested navigation back");
         }
 
         #endregion
@@ -402,25 +425,15 @@ namespace flexpod.UserInterface
                 _settingsScreen?.Dispose();
                 _userLoginScreen?.Dispose();
                 _temperatureScreen?.Dispose();
-                _musicBrowseScreen?.Dispose();
+                _musicScreen?.Dispose();
+                _combineScreen?.Dispose();
 
-                // Unsubscribe from events
-                if (_musicController != null)
-                {
-                    _musicController.TrackStarted -= OnMusicTrackStarted;
-                    _musicController.TrackStopped -= OnMusicTrackStopped;
-                    _musicController.TimeUpdate -= OnMusicTimeUpdate;
-                }
-
+                _disposed = true;
                 Debug.Console(1, this, "MSU TouchPanel disposed successfully");
             }
             catch (Exception ex)
             {
                 Debug.Console(0, this, "Error disposing MSU TouchPanel: {0}", ex.Message);
-            }
-            finally
-            {
-                _disposed = true;
             }
         }
         #endregion
