@@ -1,0 +1,39 @@
+{
+  "msu_units": [
+    {
+      "mac_address": "4F4E494F4E52494E47532020",
+      "grid_x": 0,
+      "grid_y": 0,
+      "description": "Test MSU 1 - Songster",
+      "hvac_zone": 1
+    },
+    {
+      "mac_address": "4F4E494F4E52494E47532021",
+      "grid_x": 1,
+      "grid_y": 0,
+      "description": "Test MSU 2 - Harmony Hall",
+      "hvac_zone": 2
+    },
+    {
+      "mac_address": "4F4E494F4E52494E47532022",
+      "grid_x": 0,
+      "grid_y": 1,
+      "description": "Test MSU 3 - Melody Manor",
+      "hvac_zone": 3
+    },
+    {
+      "mac_address": "4F4E494F4E52494E47532023",
+      "grid_x": -1,
+      "grid_y": 0,
+      "description": "Test MSU 4 - Rhythm Room",
+      "hvac_zone": 4
+    },
+    {
+      "mac_address": "4F4E494F4E52494E47532024",
+      "grid_x": 0,
+      "grid_y": -1,
+      "description": "Test MSU 5 - Beat Box",
+      "hvac_zone": 5
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <processorMAC>4F4E494F4E52494E47532020</processorMAC>
+    <address>
+        <street>15 Volvo Drive</street>
+        <city>Rockleigh</city>
+    </address>
+    <remote>
+        <ip>172.22.0.50</ip>
+        <port>80</port>
+        <file>remoteconf.json</file>
+    </remote>
+    <hvac>
+        <ip>127.0.0.1</ip>
+        <port>1234</port>
+        <idle>21.5</idle>
+    </hvac>
+    <dms>
+        <ip>127.0.0.1</ip>
+        <port>1235</port>
+        <listen>1236</listen>
+    </dms>
+</configuration>
