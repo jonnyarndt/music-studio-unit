@@ -21,6 +21,8 @@ namespace flexpod
         private TP01 _touchPanel;
         private EnhancedHVACController _hvacController;
         private HVACTemperatureUI _hvacTemperatureUI;
+        private EnhancedMusicSystemController _musicController;
+        private MusicBrowseUI _musicBrowseUI;
 
         /// <summary>
         /// ControlSystem Constructor. Starting point for the SIMPL#Pro program.
@@ -117,6 +119,10 @@ namespace flexpod
                 // Initialize HVAC controller
                 Debug.Console(0, "INIT: Initializing HVAC Temperature Controller");
                 InitializeHVACController(panel);
+                
+                // Initialize Music System controller
+                Debug.Console(0, "INIT: Initializing Music System Controller");
+                InitializeMusicController(panel);
                 
                 // Initialize comprehensive MSU system using new initialization service
                 Debug.Console(0, "INIT: Starting Masters of Karaoke MSU System Initialization");
@@ -399,6 +405,175 @@ namespace flexpod
             catch (Exception ex)
             {
                 CrestronConsole.PrintLine("Error setting temperature: {0}", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Initialize Music System controller per Client-Scope.md Appendix C
+        /// </summary>
+        private void InitializeMusicController(BasicTriList panel)
+        {
+            try
+            {
+                Debug.Console(1, "Initializing Music System controller...");
+
+                // Get MSU UID from MAC address (as specified in Client-Scope.md)
+                var sysInfo = new SystemInformationMethods();
+                sysInfo.GetEthernetInfo();
+                string macAddress = sysInfo.Adapter.MacAddress.Replace(":", "").Replace("-", "").ToUpper();
+                string msuUID = macAddress; // Use MAC as MSU UID per spec
+
+                // Create DMS configuration
+                var dmsConfig = new DMSInfo
+                {
+                    IP = "10.0.0.200", // TODO: Read from configuration file
+                    Port = 4010, // TODO: Read from configuration file
+                    ListenPort = 4011, // TODO: Read from configuration file
+                    DebugMode = true,
+                    AutoReconnect = true
+                };
+
+                // Create music controller
+                _musicController = new EnhancedMusicSystemController("MainMusic", dmsConfig, msuUID);
+
+                // Create UI interface for touch panel
+                _musicBrowseUI = new MusicBrowseUI(_musicController, panel);
+
+                // Initialize music controller
+                if (_musicController.Initialize())
+                {
+                    Debug.Console(1, "Music System controller initialized successfully");
+                    Debug.Console(1, "MSU UID: {0}", msuUID);
+                    
+                    // Add console commands for music control
+                    CrestronConsole.AddNewConsoleCommand(PrintMusicStatus, "musicstatus", 
+                        "Print current music system status", ConsoleAccessLevelEnum.AccessOperator);
+                    CrestronConsole.AddNewConsoleCommand(RefreshMusicCatalog, "musicrefresh", 
+                        "Refresh music catalog from DMS", ConsoleAccessLevelEnum.AccessOperator);
+                    CrestronConsole.AddNewConsoleCommand(PlayTrackCommand, "playtrack", 
+                        "Play track by ID (e.g., playtrack 1001)", ConsoleAccessLevelEnum.AccessOperator);
+                    CrestronConsole.AddNewConsoleCommand(StopTrackCommand, "stoptrack", 
+                        "Stop current track playback", ConsoleAccessLevelEnum.AccessOperator);
+                }
+                else
+                {
+                    Debug.Console(0, "Music System controller initialization failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, "Error initializing Music System controller: {0}", ex.Message);
+                ErrorLog.Error("Music System Initialization Error: {0}", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Console command to print music system status
+        /// </summary>
+        private void PrintMusicStatus(string message)
+        {
+            if (_musicController != null)
+            {
+                var status = _musicController.GetPlaybackStatus();
+                CrestronConsole.PrintLine("Music System Status:");
+                CrestronConsole.PrintLine("  Connected: {0}", status.IsConnected);
+                CrestronConsole.PrintLine("  Total Artists: {0}", _musicController.TotalArtistCount);
+                CrestronConsole.PrintLine("  Loaded Artists: {0}", _musicController.ArtistCount);
+                CrestronConsole.PrintLine("  Currently Playing: {0}", status.IsPlaying ? "YES" : "NO");
+                
+                if (status.IsPlaying)
+                {
+                    CrestronConsole.PrintLine("  Current Track: {0} by {1}", status.CurrentTrackName, status.CurrentArtistName);
+                    CrestronConsole.PrintLine("  Remaining Time: {0}", status.FormattedRemainingTime);
+                }
+            }
+            else
+            {
+                CrestronConsole.PrintLine("Music System controller not initialized");
+            }
+        }
+
+        /// <summary>
+        /// Console command to refresh music catalog
+        /// </summary>
+        private void RefreshMusicCatalog(string message)
+        {
+            if (_musicController != null)
+            {
+                CrestronConsole.PrintLine("Refreshing music catalog from DMS...");
+                _musicController.LoadMusicCatalog();
+            }
+            else
+            {
+                CrestronConsole.PrintLine("Music System controller not initialized");
+            }
+        }
+
+        /// <summary>
+        /// Console command to play track
+        /// </summary>
+        private void PlayTrackCommand(string message)
+        {
+            if (_musicController == null)
+            {
+                CrestronConsole.PrintLine("Music System controller not initialized");
+                return;
+            }
+
+            try
+            {
+                string[] parts = message.Split(' ');
+                if (parts.Length < 2)
+                {
+                    CrestronConsole.PrintLine("Usage: playtrack <track_id>");
+                    CrestronConsole.PrintLine("Example: playtrack 1001");
+                    return;
+                }
+
+                int trackId = int.Parse(parts[1]);
+                
+                // For console command, we'll use placeholder names
+                // In real usage, the UI would provide the actual track and artist names
+                if (_musicController.PlayTrack(trackId, "Track " + trackId, "Unknown Artist"))
+                {
+                    CrestronConsole.PrintLine("Started playback of track {0}", trackId);
+                }
+                else
+                {
+                    CrestronConsole.PrintLine("Failed to start playback of track {0}", trackId);
+                }
+            }
+            catch (Exception ex)
+            {
+                CrestronConsole.PrintLine("Error playing track: {0}", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Console command to stop track
+        /// </summary>
+        private void StopTrackCommand(string message)
+        {
+            if (_musicController == null)
+            {
+                CrestronConsole.PrintLine("Music System controller not initialized");
+                return;
+            }
+
+            try
+            {
+                if (_musicController.StopTrack())
+                {
+                    CrestronConsole.PrintLine("Track playback stopped");
+                }
+                else
+                {
+                    CrestronConsole.PrintLine("Failed to stop track playback");
+                }
+            }
+            catch (Exception ex)
+            {
+                CrestronConsole.PrintLine("Error stopping track: {0}", ex.Message);
             }
         }
 
