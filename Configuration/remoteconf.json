@@ -1,0 +1,44 @@
+{
+  "msu_units": [
+    {
+      "MSU_UID": "4F4E494F4E52494E47532020",
+      "MSU_NAME": "Songster",
+      "MSU_MAC": "8A:FA:05:93:51:4E",
+      "X_COORD": 3,
+      "Y_COORD": -2,
+      "HVAC_ID": 12
+    },
+    {
+      "MSU_UID": "4F4E494F4E52494E47532021",
+      "MSU_NAME": "Harmony Hall",
+      "MSU_MAC": "8A:FA:05:93:51:4F",
+      "X_COORD": 4,
+      "Y_COORD": -2,
+      "HVAC_ID": 13
+    },
+    {
+      "MSU_UID": "4F4E494F4E52494E47532022",
+      "MSU_NAME": "Melody Manor",
+      "MSU_MAC": "8A:FA:05:93:51:50",
+      "X_COORD": 3,
+      "Y_COORD": -1,
+      "HVAC_ID": 14
+    },
+    {
+      "MSU_UID": "4F4E494F4E52494E47532023",
+      "MSU_NAME": "Rhythm Room",
+      "MSU_MAC": "8A:FA:05:93:51:51",
+      "X_COORD": 2,
+      "Y_COORD": -2,
+      "HVAC_ID": 15
+    },
+    {
+      "MSU_UID": "4F4E494F4E52494E47532024",
+      "MSU_NAME": "Beat Box",
+      "MSU_MAC": "8A:FA:05:93:51:52",
+      "X_COORD": 1,
+      "Y_COORD": -1,
+      "HVAC_ID": 16
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <address>
+        <street>15 Volvo Drive</street>
+        <city>Rockleigh</city>
+    </address>
+    <remote>
+        <ip>172.22.0.50</ip>
+        <port>80</port>
+        <file>remoteconf.json</file>
+    </remote>
+    <hvac>
+        <ip>172.22.100.1</ip>
+        <port>62045</port>
+        <idle>21.5</idle>
+    </hvac>
+    <dms>
+        <ip>172.22.200.1</ip>
+        <port>62046</port>
+        <listen>62062</listen>
+    </dms>
+</configuration>

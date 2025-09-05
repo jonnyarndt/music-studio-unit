@@ -1,0 +1,76 @@
+{
+  "MSUUnits": [
+    {
+      "ProcessorMAC": "B8-2D-AA-12-34-56",
+      "Location": {
+        "Terminal": "A",
+        "Gate": "A1",
+        "Zone": "First Class"
+      },
+      "Capabilities": {
+        "HVAC": {
+          "Enabled": true,
+          "ZoneCount": 4,
+          "TemperatureRange": {
+            "Min": 65,
+            "Max": 78
+          }
+        },
+        "Music": {
+          "Enabled": true,
+          "MaxVolume": 80,
+          "EQSettings": "Balanced"
+        },
+        "Studio": {
+          "Enabled": true,
+          "CombinationLogic": "Priority",
+          "ConflictResolution": "FirstCome"
+        }
+      },
+      "AccessControl": {
+        "RequireLogin": true,
+        "AllowedRoles": ["Passenger", "FlightCrew", "Maintenance"],
+        "SessionTimeout": 300
+      }
+    },
+    {
+      "ProcessorMAC": "B8-2D-AA-78-90-AB",
+      "Location": {
+        "Terminal": "B",
+        "Gate": "B12",
+        "Zone": "Business Class"
+      },
+      "Capabilities": {
+        "HVAC": {
+          "Enabled": true,
+          "ZoneCount": 6,
+          "TemperatureRange": {
+            "Min": 68,
+            "Max": 75
+          }
+        },
+        "Music": {
+          "Enabled": true,
+          "MaxVolume": 75,
+          "EQSettings": "Bass Enhanced"
+        },
+        "Studio": {
+          "Enabled": true,
+          "CombinationLogic": "Override",
+          "ConflictResolution": "HighestPriority"
+        }
+      },
+      "AccessControl": {
+        "RequireLogin": false,
+        "AllowedRoles": ["Passenger"],
+        "SessionTimeout": 600
+      }
+    }
+  ],
+  "GlobalSettings": {
+    "ConfigVersion": "1.0",
+    "LastUpdated": "2024-01-15T10:30:00Z",
+    "UpdateInterval": 300,
+    "LogLevel": "Info"
+  }
+}

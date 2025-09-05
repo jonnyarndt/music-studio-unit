@@ -8,6 +8,7 @@ using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharp.CrestronIO;
 using Crestron.SimplSharpPro.DeviceSupport;
+using flexpod.Controllers;
 
 namespace flexpod
 {
@@ -35,6 +36,7 @@ namespace flexpod
         internal SmartObjectNumeric PinKeypad;
         internal SmartObjectDynamicList TelemetryList, PassengersList, MediaItemsList;
         internal FlightTelemetry FlightTelemetryInfo { get; }
+        private MSUController _msuController;
         #endregion
 
         #region Global Constants
@@ -151,6 +153,112 @@ namespace flexpod
             catch (Exception e)
             {
                 Debug.Console(2, this, "Error in TP01 Constructor: {0}", e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Set the MSU Controller for this touch panel
+        /// </summary>
+        /// <param name="msuController">MSU Controller instance</param>
+        internal void SetMSUController(MSUController msuController)
+        {
+            try
+            {
+                _msuController = msuController;
+                Debug.Console(1, this, "MSU Controller connected to touch panel");
+                
+                if (_msuController != null)
+                {
+                    // Subscribe to MSU events for UI updates
+                    _msuController.StatusChanged += OnMSUStatusChanged;
+                    _msuController.ConfigurationChanged += OnMSUConfigurationChanged;
+                    
+                    // Update initial UI state based on MSU status
+                    UpdateMSUStatusDisplay();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, this, "Error setting MSU Controller: {0}", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Event handler for MSU status changes
+        /// </summary>
+        private void OnMSUStatusChanged(object sender, MSUStatusEventArgs args)
+        {
+            try
+            {
+                Debug.Console(1, this, "MSU Status changed: {0}", args.Status);
+                UpdateMSUStatusDisplay();
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, this, "Error handling MSU status change: {0}", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Event handler for MSU configuration changes
+        /// </summary>
+        private void OnMSUConfigurationChanged(object sender, MSUConfigEventArgs args)
+        {
+            try
+            {
+                Debug.Console(1, this, "MSU Configuration changed");
+                UpdateMSUConfigurationDisplay();
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, this, "Error handling MSU configuration change: {0}", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Update the UI to reflect current MSU status
+        /// </summary>
+        private void UpdateMSUStatusDisplay()
+        {
+            try
+            {
+                if (_msuController == null || Panel == null) return;
+
+                // Update status indicators on the touch panel
+                // This would map to specific joins in your SGD file
+                var status = _msuController.GetCurrentStatus();
+                
+                // Example: Update HVAC status
+                Panel.BooleanInput[5001].BoolValue = status.HVACConnected;
+                Panel.StringInput[5001].StringValue = status.HVACStatus;
+                
+                // Example: Update Music status
+                Panel.BooleanInput[5002].BoolValue = status.MusicConnected;
+                Panel.StringInput[5002].StringValue = status.MusicStatus;
+                
+                Debug.Console(2, this, "MSU status display updated");
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, this, "Error updating MSU status display: {0}", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Update the UI to reflect current MSU configuration
+        /// </summary>
+        private void UpdateMSUConfigurationDisplay()
+        {
+            try
+            {
+                if (_msuController == null || Panel == null) return;
+
+                // Update configuration information on the touch panel
+                Debug.Console(2, this, "MSU configuration display updated");
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, this, "Error updating MSU configuration display: {0}", ex.Message);
             }
         }
 

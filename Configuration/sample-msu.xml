@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <ProcessorMAC>B8-2D-AA-12-34-56</ProcessorMAC>
+  <Remote>
+    <IP>192.168.1.100</IP>
+    <Port>8080</Port>
+    <File>msu-config.json</File>
+  </Remote>
+  <HVAC>
+    <IP>192.168.1.50</IP>
+    <Port>10001</Port>
+    <Timeout>5000</Timeout>
+  </HVAC>
+  <Music>
+    <IP>192.168.1.60</IP>
+    <Port>10002</Port>
+    <Timeout>5000</Timeout>
+  </Music>
+  <Users>
+    <LibraryPath>\\crestron-host\USER\UserLibrary.simpl</LibraryPath>
+    <DefaultAccessLevel>Guest</DefaultAccessLevel>
+  </Users>
+</Configuration>

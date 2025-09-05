@@ -6,12 +6,16 @@ using core_tools;
 using Crestron.SimplSharpPro.Diagnostics;		    	// For System Monitor Access
 using Crestron.SimplSharpPro.DeviceSupport;         	// For Generic Device Support
 using Crestron.SimplSharpPro.UI;
+using flexpod.Services;
+using flexpod.Controllers;
 
 namespace flexpod
 {
     public class ControlSystem : CrestronControlSystem
     {      
         private readonly uint _touchPanelOneIPID = 0x2a;
+        private ConfigurationManager _configManager;
+        private MSUController _msuController;
 
         /// <summary>
         /// ControlSystem Constructor. Starting point for the SIMPL#Pro program.
@@ -101,6 +105,54 @@ namespace flexpod
                 Debug.Console(0, "INIT: Processor Hostname:       {0}", sysInfo.Adapter.Hostname);
                 Debug.Console(0, "*********************************************************\n");
                 
+                // Initialize MSU Controller and Configuration Management
+                Debug.Console(0, "INIT: Initializing MSU Controller and Configuration Management");
+                
+                _configManager = new ConfigurationManager("ConfigManager");
+                if (_configManager != null)
+                {
+                    // Subscribe to configuration events
+                    _configManager.ConfigurationLoaded += OnConfigurationLoaded;
+                    
+                    // Load local XML configuration first
+                    if (_configManager.LoadLocalConfiguration())
+                    {
+                        Debug.Console(1, "INIT: Local XML configuration loaded successfully");
+                        
+                        // Attempt to load remote JSON configuration
+                        if (_configManager.LoadRemoteConfiguration())
+                        {
+                            Debug.Console(1, "INIT: Remote JSON configuration loaded successfully");
+                        }
+                        else
+                        {
+                            Debug.Console(0, "INIT: Warning - Remote configuration failed, using local only");
+                        }
+                        
+                        // Initialize MSU Controller with loaded configuration
+                        _msuController = new MSUController("MSUController", _configManager);
+                        if (_msuController.Initialize())
+                        {
+                            Debug.Console(1, "INIT: MSU Controller initialized successfully");
+                            
+                            // Connect MSU controller to touch panel
+                            tp01.SetMSUController(_msuController);
+                        }
+                        else
+                        {
+                            Debug.Console(0, "INIT: Error - MSU Controller initialization failed");
+                        }
+                    }
+                    else
+                    {
+                        Debug.Console(0, "INIT: Error - Local configuration failed to load");
+                    }
+                }
+                else
+                {
+                    Debug.Console(0, "INIT: Error - Configuration Manager initialization failed");
+                }
+                
                 // Read nvram config text file
                 // Connecto the HTTPS server, pull XML data, parse XML data
                 
@@ -132,6 +184,27 @@ namespace flexpod
         /// </summary>
         /// <param name="message"></param>
         private void PrintDevMon(string message) { DeviceManager.PrintDevices(); }
+
+        /// <summary>
+        /// Event handler for configuration loaded events
+        /// </summary>
+        private void OnConfigurationLoaded(object sender, ConfigurationLoadedEventArgs args)
+        {
+            Debug.Console(1, "Configuration loaded - Local and Remote configurations available");
+            
+            if (args.LocalConfig != null)
+            {
+                Debug.Console(1, "Local Config - Processor MAC: {0}", args.LocalConfig.ProcessorMAC);
+                Debug.Console(1, "Local Config - Remote Server: {0}:{1}", 
+                    args.LocalConfig.Remote.IP, args.LocalConfig.Remote.Port);
+            }
+            
+            if (args.RemoteConfig != null)
+            {
+                Debug.Console(1, "Remote Config - Found {0} MSU units configured", 
+                    args.RemoteConfig.MSUUnits?.Count ?? 0);
+            }
+        }
 
         /// <summary>
         /// Event Handler for Ethernet events: Link Up and Link Down. 
