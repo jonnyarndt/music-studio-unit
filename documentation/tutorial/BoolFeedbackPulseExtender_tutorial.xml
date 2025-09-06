@@ -1,0 +1,25 @@
+// XML Documentation for BoolFeedbackPulseExtender
+// Documentation Type: Tutorial
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// A class that wraps a BoolFeedback with logic that extends it's true state for
+	/// a time period after the value goes false.
+	///
+/// </summary>
+/// <example>
+/// Basic usage of BoolFeedbackPulseExtender:
+/// <code>
+/// var instance = new BoolFeedbackPulseExtender();
+/// // Configure and use the instance
+/// </code>
+/// </example>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Tutorial documentation focuses on learning and getting started with step-by-step guidance
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

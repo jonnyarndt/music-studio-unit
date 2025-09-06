@@ -1,0 +1,21 @@
+// XML Documentation for TcpCoreClient
+// Documentation Type: Explanation
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// Enhanced TCP client with proper data receive handling for music system
+    ///
+/// </summary>
+/// <remarks>
+/// <para>Architecture: TcpCoreClient is designed to handle specific responsibilities within the MSU system.</para>
+/// <para>Contracts: Implements IDisposable for consistent behavior.</para>
+/// </remarks>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Explanation documentation focuses on understanding concepts, design decisions, and architecture
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

@@ -1,0 +1,21 @@
+// XML Documentation for MSUTouchPanelJoins
+// Documentation Type: Explanation
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// MSU-specific touch panel join definitions
+    /// Extends the base TouchPanelJoins for Music Studio Unit screens
+    ///
+/// </summary>
+/// <remarks>
+/// <para>Architecture: MSUTouchPanelJoins is designed to handle specific responsibilities within the MSU system.</para>
+/// </remarks>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Explanation documentation focuses on understanding concepts, design decisions, and architecture
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

@@ -1,0 +1,21 @@
+// XML Documentation for RemoteMSUStateChangedEventArgs
+// Documentation Type: Explanation
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// Combination request types
+    ///
+/// </summary>
+/// <remarks>
+/// <para>Architecture: RemoteMSUStateChangedEventArgs is designed to handle specific responsibilities within the MSU system.</para>
+/// <para>Inheritance: Extends EventArgs to provide specialized functionality.</para>
+/// </remarks>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Explanation documentation focuses on understanding concepts, design decisions, and architecture
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

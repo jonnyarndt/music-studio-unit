@@ -1,0 +1,24 @@
+// XML Documentation for JsonConfigurationLoadedEventArgs
+// Documentation Type: Tutorial
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// Event arguments for JSON configuration loaded
+    ///
+/// </summary>
+/// <example>
+/// Basic usage of JsonConfigurationLoadedEventArgs:
+/// <code>
+/// var instance = new JsonConfigurationLoadedEventArgs();
+/// // Configure and use the instance
+/// </code>
+/// </example>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Tutorial documentation focuses on learning and getting started with step-by-step guidance
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

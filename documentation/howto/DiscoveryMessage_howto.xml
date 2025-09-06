@@ -1,0 +1,17 @@
+// XML Documentation for DiscoveryMessage
+// Documentation Type: Howto
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// Heartbeat message
+    ///
+/// </summary>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Howto documentation focuses on solving specific problems and accomplishing tasks
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

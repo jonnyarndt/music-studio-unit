@@ -1,0 +1,17 @@
+// XML Documentation for HVACErrorEventArgs
+// Documentation Type: Reference
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// Event arguments for setpoint changes
+    ///
+/// </summary>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Reference documentation focuses on providing complete technical information and specifications
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

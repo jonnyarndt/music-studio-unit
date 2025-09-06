@@ -1,0 +1,26 @@
+// XML Documentation for TemperatureScreenUI
+// Documentation Type: Tutorial
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// Enhanced Temperature Control Screen UI Handler for MSU
+    /// Extends HVAC Temperature UI with MSU-specific functionality per Client-Scope.md
+    /// Handles combination mode synchronization and nonvolatile setpoint storage
+    ///
+/// </summary>
+/// <example>
+/// Basic usage of TemperatureScreenUI:
+/// <code>
+/// var instance = new TemperatureScreenUI();
+/// // Configure and use the instance
+/// </code>
+/// </example>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Tutorial documentation focuses on learning and getting started with step-by-step guidance
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

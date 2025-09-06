@@ -1,0 +1,25 @@
+// XML Documentation for XmlConfigParser
+// Documentation Type: Tutorial
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// XML Configuration Parser for MSU local configuration files
+    /// Extends existing core_tools file operations for robust XML parsing
+    ///
+/// </summary>
+/// <example>
+/// Basic usage of XmlConfigParser:
+/// <code>
+/// var instance = new XmlConfigParser();
+/// // Configure and use the instance
+/// </code>
+/// </example>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Tutorial documentation focuses on learning and getting started with step-by-step guidance
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

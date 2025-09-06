@@ -1,0 +1,69 @@
+// XML Documentation for HVACDisconnectedEventArgs
+// Documentation Type: Explanation
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// Event arguments for HVAC errors
+    ///
+/// </summary>
+/// <remarks>
+/// <para>Architecture: HVACDisconnectedEventArgs is designed to handle specific responsibilities within the MSU system.</para>
+/// <para>Inheritance: Extends EventArgs to provide specialized functionality.</para>
+/// </remarks>
+
+// Member Documentation:
+// Property: CurrentSetpoint
+/// <summary>
+/// Understanding the purpose and design rationale of the CurrentSetpoint property.
+/// </summary>
+/// <value>A float value representing the currentsetpoint.</value>
+/// <remarks>This property supports get and set operations.</remarks>
+
+// Property: ExternalTemperature
+/// <summary>
+/// Understanding the purpose and design rationale of the ExternalTemperature property.
+/// </summary>
+/// <value>A float value representing the externaltemperature.</value>
+/// <remarks>This property supports get and set operations.</remarks>
+
+// Property: OverTemp
+/// <summary>
+/// Understanding the purpose and design rationale of the OverTemp property.
+/// </summary>
+/// <value>A bool value representing the overtemp.</value>
+/// <remarks>This property supports get and set operations.</remarks>
+
+// Property: PressureFault
+/// <summary>
+/// Understanding the purpose and design rationale of the PressureFault property.
+/// </summary>
+/// <value>A bool value representing the pressurefault.</value>
+/// <remarks>This property supports get and set operations.</remarks>
+
+// Property: VoltageFault
+/// <summary>
+/// Understanding the purpose and design rationale of the VoltageFault property.
+/// </summary>
+/// <value>A bool value representing the voltagefault.</value>
+/// <remarks>This property supports get and set operations.</remarks>
+
+// Property: AirflowBlocked
+/// <summary>
+/// Understanding the purpose and design rationale of the AirflowBlocked property.
+/// </summary>
+/// <value>A bool value representing the airflowblocked.</value>
+/// <remarks>This property supports get and set operations.</remarks>
+
+// Property: IsConnected
+/// <summary>
+/// Understanding the purpose and design rationale of the IsConnected property.
+/// </summary>
+/// <value>A bool value representing the isconnected.</value>
+/// <remarks>This property supports get and set operations.</remarks>
+
+
+// Usage Guidelines:
+// - Explanation documentation focuses on understanding concepts, design decisions, and architecture
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

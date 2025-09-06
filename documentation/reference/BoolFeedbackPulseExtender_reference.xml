@@ -1,0 +1,18 @@
+// XML Documentation for BoolFeedbackPulseExtender
+// Documentation Type: Reference
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// A class that wraps a BoolFeedback with logic that extends it's true state for
+	/// a time period after the value goes false.
+	///
+/// </summary>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Reference documentation focuses on providing complete technical information and specifications
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

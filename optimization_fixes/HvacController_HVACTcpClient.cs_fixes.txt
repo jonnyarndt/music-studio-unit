@@ -1,0 +1,8 @@
+// Optimization fixes for HvacController\HVACTcpClient.cs
+// Apply these changes to improve performance
+
+// Line 63: Disposable resource without using statement
+// Current: _client = new TcpClient();
+// Fix: Use using statement or implement proper disposal pattern
+// Rationale: Unmanaged resources should be properly disposed
+

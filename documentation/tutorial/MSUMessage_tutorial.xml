@@ -1,0 +1,24 @@
+// XML Documentation for MSUMessage
+// Documentation Type: Tutorial
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// Message types for inter-MSU communication
+    ///
+/// </summary>
+/// <example>
+/// Basic usage of MSUMessage:
+/// <code>
+/// var instance = new MSUMessage();
+/// // Configure and use the instance
+/// </code>
+/// </example>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Tutorial documentation focuses on learning and getting started with step-by-step guidance
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

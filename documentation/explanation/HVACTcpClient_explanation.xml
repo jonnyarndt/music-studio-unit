@@ -1,0 +1,22 @@
+// XML Documentation for HVACTcpClient
+// Documentation Type: Explanation
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// Specialized TCP client for HVAC binary protocol communication
+    /// Extends basic TCP functionality with binary data handling
+    ///
+/// </summary>
+/// <remarks>
+/// <para>Architecture: HVACTcpClient is designed to handle specific responsibilities within the MSU system.</para>
+/// <para>Contracts: Implements IDisposable for consistent behavior.</para>
+/// </remarks>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Explanation documentation focuses on understanding concepts, design decisions, and architecture
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

@@ -1,0 +1,1567 @@
+MSU System Error Handling Enhancement Report
+======================================================================
+Analysis Date: 2025-09-05 08:08:17
+
+SUMMARY
+------------------------------
+Total Error Handling Issues: 203
+High Priority: 12
+Medium Priority: 191
+Low Priority: 0
+Files with Issues: 33
+
+ISSUES BY CATEGORY
+------------------------------
+generic_exception: 184
+file_operations: 8
+threading: 4
+missing_error_handling: 3
+serialization: 3
+network_operations: 1
+
+ERROR HANDLING BEST PRACTICES
+----------------------------------------
+1. Catch Specific Exceptions:
+   - Use specific exception types instead of generic Exception
+   - Handle each exception type appropriately
+
+2. Always Log Exceptions:
+   - Include exception details, stack trace, and context
+   - Use structured logging for better analysis
+
+3. Implement Recovery Strategies:
+   - Retry with exponential backoff for transient failures
+   - Provide fallback mechanisms and default values
+   - Implement circuit breaker pattern for external dependencies
+
+4. Resource Management:
+   - Use using statements for disposable resources
+   - Implement proper cleanup in finally blocks
+
+5. Async Error Handling:
+   - Use async Task instead of async void
+   - Handle AggregateException properly
+   - Use cancellation tokens for long-running operations
+
+DETAILED FINDINGS
+------------------------------
+
+File: Configuration\ConfigurationManager.cs
+-------------------------------------------
+
+1. Line 220 - High Priority
+   Category: file_operations
+   Issue: File operation without adequate error handling
+   Code: if (File.Exists(configPath))
+   Enhancement: Handle FileNotFoundException, UnauthorizedAccessException, IOException
+   Recovery Strategy: Check file existence, validate permissions, provide alternative file paths
+
+2. Line 225 - High Priority
+   Category: file_operations
+   Issue: File operation without adequate error handling
+   Code: if (File.Exists(configPath))
+   Enhancement: Handle FileNotFoundException, UnauthorizedAccessException, IOException
+   Recovery Strategy: Check file existence, validate permissions, provide alternative file paths
+
+3. Line 213 - High Priority
+   Category: missing_error_handling
+   Issue: Method GetConfigFilePath performs risky operations without error handling
+   Code: Method: GetConfigFilePath
+   Enhancement: Add comprehensive try-catch blocks with specific exception handling
+   Recovery Strategy: Implement error logging, user notification, and graceful degradation strategies
+
+4. Line 80 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 143 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 188 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: Configuration\ConfigurationModels.cs
+------------------------------------------
+
+1. Line 104 - Medium Priority
+   Category: serialization
+   Issue: Serialization operation without adequate error handling
+   Code: return JsonConvert.DeserializeObject<List<MSUConfiguration>>(json);
+   Enhancement: Handle JsonException, XmlException, version mismatches
+   Recovery Strategy: Validate data before serialization, use schema versioning, provide default values
+
+File: Configuration\HttpConfigClient.cs
+---------------------------------------
+
+1. Line 111 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 245 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 261 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 328 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 345 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 367 - Medium Priority
+   Category: serialization
+   Issue: Serialization operation without adequate error handling
+   Code: var msuList = JsonConvert.DeserializeObject<List<MSUConfiguration>>(cleanedJson);
+   Enhancement: Handle JsonException, XmlException, version mismatches
+   Recovery Strategy: Validate data before serialization, use schema versioning, provide default values
+
+7. Line 379 - Medium Priority
+   Category: serialization
+   Issue: Serialization operation without adequate error handling
+   Code: RemoteConfiguration config = JsonConvert.DeserializeObject<RemoteConfiguration>(cleanedJson);
+   Enhancement: Handle JsonException, XmlException, version mismatches
+   Recovery Strategy: Validate data before serialization, use schema versioning, provide default values
+
+8. Line 395 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: Configuration\XmlConfigParser.cs
+--------------------------------------
+
+1. Line 50 - High Priority
+   Category: file_operations
+   Issue: File operation without adequate error handling
+   Code: if (!File.Exists(configPath))
+   Enhancement: Handle FileNotFoundException, UnauthorizedAccessException, IOException
+   Recovery Strategy: Check file existence, validate permissions, provide alternative file paths
+
+2. Line 220 - High Priority
+   Category: file_operations
+   Issue: File operation without adequate error handling
+   Code: using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+   Enhancement: Handle FileNotFoundException, UnauthorizedAccessException, IOException
+   Recovery Strategy: Check file existence, validate permissions, provide alternative file paths
+
+3. Line 221 - High Priority
+   Category: file_operations
+   Issue: File operation without adequate error handling
+   Code: using (StreamReader sr = new StreamReader(fs))
+   Enhancement: Handle FileNotFoundException, UnauthorizedAccessException, IOException
+   Recovery Strategy: Check file existence, validate permissions, provide alternative file paths
+
+4. Line 94 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 228 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 281 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: ControlSystem.cs
+----------------------
+
+1. Line 47 - Medium Priority
+   Category: threading
+   Issue: Threading operation without adequate error handling
+   Code: Thread.MaxNumberOfUserThreads = 400;
+   Enhancement: Handle ThreadAbortException, TaskCanceledException, AggregateException
+   Recovery Strategy: Use cancellation tokens, handle aggregate exceptions, implement proper cleanup
+
+2. Line 56 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception e)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 180 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception e)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 334 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 424 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 482 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+7. Line 565 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+8. Line 593 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+9. Line 613 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+10. Line 661 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: HvacController\EnhancedHVACController.cs
+----------------------------------------------
+
+1. Line 434 - High Priority
+   Category: file_operations
+   Issue: File operation without adequate error handling
+   Code: if (File.Exists(_setpointFilePath))
+   Enhancement: Handle FileNotFoundException, UnauthorizedAccessException, IOException
+   Recovery Strategy: Check file existence, validate permissions, provide alternative file paths
+
+2. Line 436 - High Priority
+   Category: file_operations
+   Issue: File operation without adequate error handling
+   Code: string[] lines = File.ReadAllLines(_setpointFilePath);
+   Enhancement: Handle FileNotFoundException, UnauthorizedAccessException, IOException
+   Recovery Strategy: Check file existence, validate permissions, provide alternative file paths
+
+3. Line 477 - High Priority
+   Category: file_operations
+   Issue: File operation without adequate error handling
+   Code: File.WriteAllLines(_setpointFilePath, lines.ToArray());
+   Enhancement: Handle FileNotFoundException, UnauthorizedAccessException, IOException
+   Recovery Strategy: Check file existence, validate permissions, provide alternative file paths
+
+4. Line 109 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 180 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 269 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+7. Line 321 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+8. Line 400 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+9. Line 458 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+10. Line 480 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: HvacController\HVACController.cs
+--------------------------------------
+
+1. Line 103 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 150 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 255 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: HvacController\HVACTcpClient.cs
+-------------------------------------
+
+1. Line 75 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 121 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 143 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 189 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 221 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: HvacController\HVACTemperatureUI.cs
+-----------------------------------------
+
+1. Line 126 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 157 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 182 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 229 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 264 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: HvacController\README.cs
+------------------------------
+
+1. Line 37 - High Priority
+   Category: network_operations
+   Issue: Network operation without adequate error handling
+   Code: * - HVACTcpClient.cs: Specialized TCP client for binary communication
+   Enhancement: Wrap in try-catch, handle timeouts, connection failures
+   Recovery Strategy: Retry with exponential backoff, fallback to cached data, notify user of connectivity issues
+
+File: HvacController\hvacControllerMain.cs
+------------------------------------------
+
+1. Line 81 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 149 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: Lighting\Lighting.cs
+--------------------------
+
+1. Line 161 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 196 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: MusicSystemController\EnhancedMusicSystemController.cs
+------------------------------------------------------------
+
+1. Line 127 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 177 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 209 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 248 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 285 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 344 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+7. Line 387 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+8. Line 424 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+9. Line 493 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+10. Line 561 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+11. Line 624 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+12. Line 648 - Medium Priority
+   Category: threading
+   Issue: Threading operation without adequate error handling
+   Code: Thread.Sleep(10);
+   Enhancement: Handle ThreadAbortException, TaskCanceledException, AggregateException
+   Recovery Strategy: Use cancellation tokens, handle aggregate exceptions, implement proper cleanup
+
+13. Line 653 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+14. Line 676 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+15. Line 739 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: MusicSystemController\MusicBrowseUI.cs
+--------------------------------------------
+
+1. Line 170 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 210 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 250 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 273 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 324 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 372 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+7. Line 401 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: MusicSystemController\MusicSystemController.cs
+----------------------------------------------------
+
+1. Line 123 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 156 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 210 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 267 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 313 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 357 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+7. Line 382 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+8. Line 419 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+9. Line 460 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: MusicSystemController\MusicSystemControllerMain.cs
+--------------------------------------------------------
+
+1. Line 108 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 181 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 260 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 302 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: MusicSystemController\StudioCombinationManager.cs
+-------------------------------------------------------
+
+1. Line 126 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 177 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: MusicSystemController\TcpCoreClient.cs
+--------------------------------------------
+
+1. Line 80 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 125 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 146 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 191 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 223 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: MusicSystemController\UserDatabaseIntegration.cs
+------------------------------------------------------
+
+1. Line 120 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: Services\InterMSUCommunicationService.cs
+----------------------------------------------
+
+1. Line 156 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 182 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 229 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 256 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 303 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 323 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+7. Line 345 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+8. Line 383 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+9. Line 405 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+10. Line 451 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+11. Line 473 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+12. Line 507 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+13. Line 540 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+14. Line 783 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+15. Line 806 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+16. Line 826 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+17. Line 944 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: Services\MSUController.cs
+-------------------------------
+
+1. Line 147 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 171 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: Services\MSUIdentificationService.cs
+------------------------------------------
+
+1. Line 63 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 125 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 158 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: Services\SystemInitializationService.cs
+---------------------------------------------
+
+1. Line 99 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 159 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 222 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 259 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 308 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 372 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+7. Line 425 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: Services\UserManager.cs
+-----------------------------
+
+1. Line 79 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 165 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: UserInterface\CombineScreenUI.cs
+--------------------------------------
+
+1. Line 114 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 165 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 189 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 242 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 280 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 318 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+7. Line 356 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+8. Line 397 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+9. Line 493 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+10. Line 547 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+11. Line 652 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: UserInterface\KeypadEmulator.cs
+-------------------------------------
+
+1. Line 64 - High Priority
+   Category: missing_error_handling
+   Issue: Method Enter performs risky operations without error handling
+   Code: Method: Enter
+   Enhancement: Add comprehensive try-catch blocks with specific exception handling
+   Recovery Strategy: Implement error logging, user notification, and graceful degradation strategies
+
+2. Line 68 - Medium Priority
+   Category: threading
+   Issue: Threading operation without adequate error handling
+   Code: System.Threading.Thread.Sleep(1000);
+   Enhancement: Handle ThreadAbortException, TaskCanceledException, AggregateException
+   Recovery Strategy: Use cancellation tokens, handle aggregate exceptions, implement proper cleanup
+
+File: UserInterface\MSUTouchPanel.cs
+------------------------------------
+
+1. Line 172 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 202 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 241 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 263 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 396 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 434 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: UserInterface\MusicScreenUI.cs
+------------------------------------
+
+1. Line 122 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 179 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 207 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 296 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 333 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 368 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+7. Line 401 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+8. Line 524 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+9. Line 545 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+10. Line 650 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+11. Line 689 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+12. Line 748 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+13. Line 917 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: UserInterface\SettingsScreenUI.cs
+---------------------------------------
+
+1. Line 106 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 130 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 162 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 195 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 225 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 257 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+7. Line 313 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: UserInterface\TP01.cs
+---------------------------
+
+1. Line 153 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception e)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 180 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 196 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 212 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 241 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 259 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+7. Line 493 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception e)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+8. Line 538 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception e)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: UserInterface\TemperatureScreenUI.cs
+------------------------------------------
+
+1. Line 143 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 174 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 199 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 254 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 305 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 332 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+7. Line 374 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+8. Line 397 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+9. Line 433 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+10. Line 609 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: UserInterface\TouchPanelBase.cs
+-------------------------------------
+
+1. Line 51 - High Priority
+   Category: missing_error_handling
+   Issue: Method SetPage performs risky operations without error handling
+   Code: Method: SetPage
+   Enhancement: Add comprehensive try-catch blocks with specific exception handling
+   Recovery Strategy: Implement error logging, user notification, and graceful degradation strategies
+
+2. Line 56 - Medium Priority
+   Category: threading
+   Issue: Threading operation without adequate error handling
+   Code: Thread.Sleep(100);
+   Enhancement: Handle ThreadAbortException, TaskCanceledException, AggregateException
+   Recovery Strategy: Use cancellation tokens, handle aggregate exceptions, implement proper cleanup
+
+3. Line 169 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception e)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 198 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception e)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+File: UserInterface\UserLoginScreenUI.cs
+----------------------------------------
+
+1. Line 141 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+2. Line 182 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+3. Line 216 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+4. Line 239 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+5. Line 257 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+6. Line 323 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+7. Line 371 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+8. Line 417 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature
+
+9. Line 449 - Medium Priority
+   Category: generic_exception
+   Issue: Catching generic Exception instead of specific exceptions
+   Code: catch (Exception ex)
+   Enhancement: Catch specific exception types (ArgumentException, InvalidOperationException, etc.)
+   Recovery Strategy: Handle each exception type appropriately based on its nature

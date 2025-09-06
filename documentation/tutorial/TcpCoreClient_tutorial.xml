@@ -1,0 +1,24 @@
+// XML Documentation for TcpCoreClient
+// Documentation Type: Tutorial
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// Enhanced TCP client with proper data receive handling for music system
+    ///
+/// </summary>
+/// <example>
+/// Basic usage of TcpCoreClient:
+/// <code>
+/// var instance = new TcpCoreClient();
+/// // Configure and use the instance
+/// </code>
+/// </example>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Tutorial documentation focuses on learning and getting started with step-by-step guidance
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

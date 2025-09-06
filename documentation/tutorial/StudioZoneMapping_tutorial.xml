@@ -1,0 +1,24 @@
+// XML Documentation for StudioZoneMapping
+// Documentation Type: Tutorial
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// Reconnect delay in milliseconds
+        ///
+/// </summary>
+/// <example>
+/// Basic usage of StudioZoneMapping:
+/// <code>
+/// var instance = new StudioZoneMapping();
+/// // Configure and use the instance
+/// </code>
+/// </example>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Tutorial documentation focuses on learning and getting started with step-by-step guidance
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

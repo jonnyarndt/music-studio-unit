@@ -1,0 +1,18 @@
+// XML Documentation for XmlConfigParser
+// Documentation Type: Reference
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// XML Configuration Parser for MSU local configuration files
+    /// Extends existing core_tools file operations for robust XML parsing
+    ///
+/// </summary>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Reference documentation focuses on providing complete technical information and specifications
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

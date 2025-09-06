@@ -1,0 +1,8 @@
+// Optimization fixes for Configuration\ConfigurationModels.cs
+// Apply these changes to improve performance
+
+// Line 102: Static collection that may cause memory leaks
+// Current: public static List<MSUConfiguration> FromJsonArray(string json)
+// Fix: Use instance collections or implement proper cleanup
+// Rationale: Static collections persist for application lifetime
+

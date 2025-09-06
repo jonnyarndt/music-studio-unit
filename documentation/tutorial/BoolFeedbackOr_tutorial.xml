@@ -1,0 +1,23 @@
+// XML Documentation for BoolFeedbackOr
+// Documentation Type: Tutorial
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// Step-by-step guide for getting started with BoolFeedbackOr. This tutorial will walk you through the basic usage and common scenarios.
+/// </summary>
+/// <example>
+/// Basic usage of BoolFeedbackOr:
+/// <code>
+/// var instance = new BoolFeedbackOr();
+/// // Configure and use the instance
+/// </code>
+/// </example>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Tutorial documentation focuses on learning and getting started with step-by-step guidance
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes

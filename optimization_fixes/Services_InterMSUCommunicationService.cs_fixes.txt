@@ -1,0 +1,8 @@
+// Optimization fixes for Services\InterMSUCommunicationService.cs
+// Apply these changes to improve performance
+
+// Line 393: Disposable resource without using statement
+// Current: var client = new TcpClient(msuConfig.IPAddress, _communicationPort, EthernetAdapterType.EthernetUnknownAdapter);
+// Fix: Use using statement or implement proper disposal pattern
+// Rationale: Unmanaged resources should be properly disposed
+

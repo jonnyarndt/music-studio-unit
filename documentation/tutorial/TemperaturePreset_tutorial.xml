@@ -1,0 +1,24 @@
+// XML Documentation for TemperaturePreset
+// Documentation Type: Tutorial
+// Generated: 2025-09-05 08:11:23
+
+// Class Documentation:
+/// <summary>
+/// /// Default setpoint for this studio
+        ///
+/// </summary>
+/// <example>
+/// Basic usage of TemperaturePreset:
+/// <code>
+/// var instance = new TemperaturePreset();
+/// // Configure and use the instance
+/// </code>
+/// </example>
+
+// Member Documentation:
+
+
+// Usage Guidelines:
+// - Tutorial documentation focuses on learning and getting started with step-by-step guidance
+// - Follow the Diataxis documentation framework principles
+// - Update documentation when implementation changes
