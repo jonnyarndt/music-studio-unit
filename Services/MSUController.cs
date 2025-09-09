@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using Crestron.SimplSharp;
 using core_tools;
-using flexpod.Configuration;
-using flexpod.Services;
-using flexpod.Devices;
+using musicStudioUnit.Configuration;
+using musicStudioUnit.Services;
+using musicStudioUnit.Devices;
+using musicStudioUnit.HvacController;
+using musicStudioUnit.MusicSystemController;
 
-namespace flexpod.Services
+namespace musicStudioUnit.Services
 {
     /// <summary>
     /// Main MSU Controller that coordinates all system components
@@ -22,8 +24,8 @@ namespace flexpod.Services
         private StudioManager _studioManager;
         
         // Device Controllers
-        private HVACController _hvacController;
-        private MusicSystemController _musicController;
+        private EnhancedHVACController _hvacController;
+        private EnhancedMusicSystemController _musicController;
         
         // Current configuration
         private MSUConfiguration _currentMSUConfig;
@@ -44,8 +46,8 @@ namespace flexpod.Services
         public MSUIdentificationService IdentificationService => _identificationService;
         public UserManager UserManager => _userManager;
         public StudioManager StudioManager => _studioManager;
-        public HVACController HVACController => _hvacController;
-        public MusicSystemController MusicController => _musicController;
+        public EnhancedHVACController HVACController => _hvacController;
+        public EnhancedMusicSystemController MusicController => _musicController;
 
         // Events
         public event EventHandler<MSUInitializedEventArgs> MSUInitialized;
@@ -217,12 +219,12 @@ namespace flexpod.Services
             Debug.Console(1, this, "Initializing device controllers");
 
             // HVAC Controller
-            _hvacController = new HVACController(_key + "HVAC", _localConfig.HVAC);
+            _hvacController = new EnhancedHVACController(_key + "HVAC", _localConfig.HVAC);
             _hvacController.StatusUpdated += OnHVACStatusUpdated;
             _hvacController.SetpointChanged += OnHVACSetpointChanged;
 
             // Music System Controller
-            _musicController = new MusicSystemController(_key + "Music", _localConfig.DMS, _currentMSUConfig.MSU_UID);
+            _musicController = new EnhancedMusicSystemController(_key + "Music", _localConfig.DMS, _currentMSUConfig.MSU_UID);
             _musicController.CatalogUpdated += OnMusicCatalogUpdated;
             _musicController.PlaybackUpdated += OnPlaybackStatusUpdated;
             _musicController.TimeUpdated += OnTrackTimeUpdated;

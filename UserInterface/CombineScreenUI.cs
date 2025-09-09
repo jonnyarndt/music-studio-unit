@@ -4,10 +4,10 @@ using System.Linq;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
-using flexpod.Services;
-using flexpod.UserInterface;
+using musicStudioUnit.Services;
+using musicStudioUnit.UserInterface;
 
-namespace flexpod.UserInterface
+namespace musicStudioUnit.UserInterface
 {
     /// <summary>
     /// Combine Screen UI for MSU TouchPanel

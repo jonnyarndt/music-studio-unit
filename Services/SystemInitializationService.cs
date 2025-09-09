@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using Crestron.SimplSharp;
 using core_tools;
-using flexpod.Configuration;
-using flexpod.Services;
+using musicStudioUnit.Configuration;
+using musicStudioUnit.Services;
 
-namespace flexpod.Services
+namespace musicStudioUnit.Services
 {
     /// <summary>
     /// System Initialization Service - Orchestrates the complete MSU startup sequence

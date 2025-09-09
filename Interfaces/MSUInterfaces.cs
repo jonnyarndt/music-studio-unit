@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace flexpod.Interfaces
+namespace musicStudioUnit.Interfaces
 {
     /// <summary>
     /// Interface for MSU UI screens

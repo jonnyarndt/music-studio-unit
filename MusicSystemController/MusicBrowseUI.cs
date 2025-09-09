@@ -4,9 +4,9 @@ using System.Linq;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
-using flexpod.Devices;
+using musicStudioUnit.Devices;
 
-namespace flexpod.UserInterface
+namespace musicStudioUnit.UserInterface
 {
     /// <summary>
     /// Music Browse UI Controller for touch panel integration

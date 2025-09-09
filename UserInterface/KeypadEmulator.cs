@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace flexpod
+namespace musicStudioUnit
 {
     /// <summary>
     /// Emaulte a keypad with number, enter, clear, and backspace buttons.

@@ -4,10 +4,10 @@ using System.Linq;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
-using flexpod.Configuration;
-using flexpod.HvacController;
+using musicStudioUnit.Configuration;
+using musicStudioUnit.HvacController;
 
-namespace flexpod.UserInterface
+namespace musicStudioUnit.UserInterface
 {
     /// <summary>
     /// Enhanced Temperature Control Screen UI Handler for MSU

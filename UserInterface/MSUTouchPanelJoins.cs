@@ -1,6 +1,6 @@
 using System;
 
-namespace flexpod.UserInterface
+namespace musicStudioUnit.UserInterface
 {
     /// <summary>
     /// MSU-specific touch panel join definitions

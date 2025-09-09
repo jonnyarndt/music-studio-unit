@@ -8,9 +8,9 @@ using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharp.CrestronIO;
 using Crestron.SimplSharpPro.DeviceSupport;
-using flexpod.Controllers;
+using musicStudioUnit.Controllers;
 
-namespace flexpod
+namespace musicStudioUnit
 {
     internal class TP01 : TouchPanelBase, IDisposable
     {

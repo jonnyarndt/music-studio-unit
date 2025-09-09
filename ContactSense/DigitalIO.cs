@@ -4,7 +4,7 @@ using Crestron.SimplSharp.Net;
 using System.Windows.Input;
 using System;
 
-namespace flexpod
+namespace musicStudioUnit
 {
     internal class DigitalIO : IDisposable
     {

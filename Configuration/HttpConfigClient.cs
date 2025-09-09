@@ -6,7 +6,7 @@ using Crestron.SimplSharp;
 using Newtonsoft.Json;
 using core_tools;
 
-namespace flexpod.Configuration
+namespace musicStudioUnit.Configuration
 {
     /// <summary>
     /// HTTP Client for JSON Configuration Retrieval

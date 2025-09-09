@@ -1,9 +1,9 @@
 using System;
 using Crestron.SimplSharp;
 using core_tools;
-using flexpod.Configuration;
+using musicStudioUnit.Configuration;
 
-namespace flexpod.Services
+namespace musicStudioUnit.Services
 {
     /// <summary>
     /// MSU Identification Service - Uses processor MAC address to identify and configure the MSU

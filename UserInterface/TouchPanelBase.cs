@@ -8,7 +8,7 @@ using Crestron.SimplSharpPro.DeviceSupport;
 using System;
 
 
-namespace flexpod
+namespace musicStudioUnit
 {
     public abstract class TouchPanelBase: IKeyName, IHasBasicTriListWithSmartObject
     {

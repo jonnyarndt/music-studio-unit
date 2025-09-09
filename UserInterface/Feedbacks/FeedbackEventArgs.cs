@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace flexpod
+namespace musicStudioUnit
 {
     public class FeedbackEventArgs : EventArgs
     {

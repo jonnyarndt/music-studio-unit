@@ -3,7 +3,7 @@ using Crestron.SimplSharp;
 using core_tools;
 using USER;
 
-namespace Masters.Karaoke.User
+namespace musicStudioUnit
 {
     public class UserManager : IKeyName
     {

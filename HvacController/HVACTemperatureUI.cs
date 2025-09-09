@@ -4,9 +4,9 @@ using System.Linq;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
-using flexpod.Configuration;
+using musicStudioUnit.Configuration;
 
-namespace flexpod.UserInterface
+namespace musicStudioUnit.UserInterface
 {
     /// <summary>
     /// HVAC Temperature Control UI Handler

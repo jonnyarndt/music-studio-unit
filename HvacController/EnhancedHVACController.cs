@@ -5,15 +5,15 @@ using System.Threading;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronIO;
 using core_tools;
-using flexpod.Configuration;
+using musicStudioUnit.Configuration;
 
-namespace flexpod.Devices
+namespace musicStudioUnit.Devices
 {
     /// <summary>
     /// Enhanced HVAC Controller for Borden Air Multi-Zone HVAC System
     /// Implements complete binary protocol per Client-Scope.md Appendix B
     /// </summary>
-    public class HVACController : IKeyName, IDisposable
+    public class EnhancedHVACController : IKeyName, IDisposable
     {
         private readonly string _key;
         private readonly HVACInfo _config;
@@ -60,7 +60,7 @@ namespace flexpod.Devices
         public event EventHandler<HVACConnectedEventArgs> Connected;
         public event EventHandler<HVACDisconnectedEventArgs> Disconnected;
 
-        public HVACController(string key, HVACInfo config)
+        public EnhancedHVACController(string key, HVACInfo config)
         {
             _key = key;
             _config = config;

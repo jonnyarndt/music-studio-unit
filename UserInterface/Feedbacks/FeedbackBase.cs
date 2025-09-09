@@ -2,7 +2,7 @@
 using Crestron.SimplSharp;
 using core_tools;
 
-namespace flexpod
+namespace musicStudioUnit
 {
 	public abstract class Feedback : IKeyed
 	{

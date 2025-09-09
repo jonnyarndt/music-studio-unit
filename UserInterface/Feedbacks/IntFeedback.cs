@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Crestron.SimplSharpPro;
 
-namespace flexpod
+namespace musicStudioUnit
 {
     public class IntFeedback : Feedback
     {

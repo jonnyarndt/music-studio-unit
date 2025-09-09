@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
 
-namespace flexpod.Configuration
+namespace musicStudioUnit.Configuration
 {
     /// <summary>
     /// Local XML Configuration Model for msu.xml

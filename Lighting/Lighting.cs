@@ -4,7 +4,7 @@ using System.Text;
 using core_tools;
 using Crestron.SimplSharp.CrestronSockets;
 
-namespace flexpod
+namespace musicStudioUnit
 {
     // Mathew 5: 14-16 (ESV)
     // 14 You are the light of the world. A city set on a hill cannot be hidden.

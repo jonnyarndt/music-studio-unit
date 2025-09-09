@@ -1,6 +1,6 @@
 ﻿using Crestron.SimplSharpPro;
 
-namespace flexpod
+namespace musicStudioUnit
 {
     public class SmartObjectNumeric : SmartObjectHelperBase
     {

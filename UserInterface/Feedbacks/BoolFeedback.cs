@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Crestron.SimplSharpPro;
 
-namespace flexpod
+namespace musicStudioUnit
 {
     /// <summary>
     /// A Feedback whose output is derived from the return value of a provided Func.

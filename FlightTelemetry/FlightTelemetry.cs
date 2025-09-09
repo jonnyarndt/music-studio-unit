@@ -2,7 +2,7 @@
 using Crestron.SimplSharp;
 using System;
 
-namespace flexpod
+namespace musicStudioUnit
 {
     internal class FlightTelemetry : IKeyName, IDisposable
     {

@@ -1,6 +1,6 @@
 ﻿using Crestron.SimplSharp;
 
-namespace flexpod
+namespace musicStudioUnit
 {
 	public class BoolFeedbackPulse
 	{

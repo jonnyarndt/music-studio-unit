@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharp;
 using core_tools;
-using flexpod.Configuration;
+using musicStudioUnit.Configuration;
 
-namespace flexpod.Services
+namespace musicStudioUnit.Services
 {
     public class StudioCombinationManager : IKeyName
     {

@@ -6,10 +6,10 @@ using System.Threading;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronIO;
 using core_tools;
-using flexpod.Configuration;
+using musicStudioUnit.Configuration;
 using System.Text.RegularExpressions;
 
-namespace flexpod.Devices
+namespace musicStudioUnit.Devices
 {
     /// <summary>
     /// Enhanced Music System Controller for QuirkyTech Digital Music System (DMS)

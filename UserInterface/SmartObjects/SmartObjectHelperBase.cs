@@ -2,7 +2,7 @@
 using core_tools;
 using Crestron.SimplSharpPro;
 
-namespace flexpod
+namespace musicStudioUnit
 {
     public class SmartObjectHelperBase
     {

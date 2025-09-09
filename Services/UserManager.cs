@@ -2,7 +2,7 @@ using System;
 using Crestron.SimplSharp;
 using core_tools;
 
-namespace flexpod.Services
+namespace musicStudioUnit.Services
 {
     /// <summary>
     /// User Management Service for handling user login and ID lookup

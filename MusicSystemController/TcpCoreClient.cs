@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using Crestron.SimplSharp;
 
-namespace flexpod.Devices
+namespace musicStudioUnit.Devices
 {
     /// <summary>
     /// Enhanced TCP client with proper data receive handling for music system

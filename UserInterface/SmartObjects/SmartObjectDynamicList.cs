@@ -4,7 +4,7 @@ using System.Linq;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 
-namespace flexpod
+namespace musicStudioUnit
 {
     public class SmartObjectDynamicList : SmartObjectHelperBase
     {

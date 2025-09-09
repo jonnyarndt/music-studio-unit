@@ -3,11 +3,11 @@ using System.Globalization;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
-using flexpod.Configuration;
-using flexpod.Services;
+using musicStudioUnit.Configuration;
+using musicStudioUnit.Services;
 using core_tools;
 
-namespace flexpod.UserInterface
+namespace musicStudioUnit.UserInterface
 {
     /// <summary>
     /// Settings Screen UI Handler for MSU

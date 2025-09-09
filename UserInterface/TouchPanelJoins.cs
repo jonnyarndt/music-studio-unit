@@ -1,4 +1,4 @@
-﻿namespace flexpod
+﻿namespace musicStudioUnit
 {
     internal class TouchPanelJoins
     {

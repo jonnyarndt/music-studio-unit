@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace flexpod
+namespace musicStudioUnit
 {
 	public abstract class BoolFeedbackLogic
 	{

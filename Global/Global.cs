@@ -1,7 +1,7 @@
 ﻿using Crestron.SimplSharpPro;
 using System;
 
-namespace flexpod
+namespace musicStudioUnit
 {
     /// <summary>
     /// Global class of static variables and events

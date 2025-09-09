@@ -4,9 +4,9 @@ using System.Xml.Serialization;
 using Crestron.SimplSharp;
 using Newtonsoft.Json;
 using core_tools;
-using flexpod.Configuration;
+using musicStudioUnit.Configuration;
 
-namespace flexpod.Services
+namespace musicStudioUnit.Services
 {
     /// <summary>
     /// Configuration Manager for loading local XML and remote JSON configuration files

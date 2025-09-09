@@ -2,7 +2,7 @@ using System;
 using System.Net.Sockets;
 using Crestron.SimplSharp;
 
-namespace flexpod.Devices
+namespace musicStudioUnit.Devices
 {
     /// <summary>
     /// Specialized TCP client for HVAC binary protocol communication

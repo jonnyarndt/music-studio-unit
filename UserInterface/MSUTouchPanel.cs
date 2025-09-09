@@ -4,13 +4,13 @@ using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using core_tools;
-using flexpod.Services;
-using flexpod.Controllers;
-using flexpod.Passengers;
-using flexpod.Configuration;
-using flexpod.MusicSystemController;
+using musicStudioUnit.Services;
+using musicStudioUnit.Controllers;
+using musicStudioUnit.Passengers;
+using musicStudioUnit.Configuration;
+using musicStudioUnit.MusicSystemController;
 
-namespace flexpod.UserInterface
+namespace musicStudioUnit.UserInterface
 {
     /// <summary>
     /// MSU TouchPanel - Extends TouchPanelBase for Music Studio Unit specific screens

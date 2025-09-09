@@ -4,7 +4,7 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 
 
-namespace flexpod
+namespace musicStudioUnit
 {
     /// <summary>
     /// Extensions used for more-clear attachment of Actions to user objects on sigs

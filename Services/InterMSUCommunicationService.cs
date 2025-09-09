@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronSockets;
 using core_tools;
-using flexpod.Configuration;
-using flexpod.Services;
+using musicStudioUnit.Configuration;
+using musicStudioUnit.Services;
 
-namespace flexpod.Services
+namespace musicStudioUnit.Services
 {
     /// <summary>
     /// Inter-MSU Communication Service

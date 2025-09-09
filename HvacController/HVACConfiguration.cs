@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace flexpod.Configuration
+namespace musicStudioUnit.Configuration
 {
     /// <summary>
     /// HVAC configuration information from JSON config

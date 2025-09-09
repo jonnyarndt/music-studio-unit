@@ -6,13 +6,14 @@ using core_tools;
 using Crestron.SimplSharpPro.Diagnostics;		    	// For System Monitor Access
 using Crestron.SimplSharpPro.DeviceSupport;         	// For Generic Device Support
 using Crestron.SimplSharpPro.UI;
-using flexpod.Services;
-using flexpod.Controllers;
-using flexpod.Devices;
-using flexpod.Configuration;
-using flexpod.UserInterface;
+using musicStudioUnit.Services;
+using musicStudioUnit.Configuration;
+using musicStudioUnit.UserInterface;
+using musicStudioUnit.HvacController;
+using musicStudioUnit.MusicSystemController;
+using musicStudioUnit.Passengers;
 
-namespace flexpod
+namespace musicStudioUnit
 {
     public class ControlSystem : CrestronControlSystem
     {      

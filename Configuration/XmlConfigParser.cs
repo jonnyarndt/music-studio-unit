@@ -6,7 +6,7 @@ using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronIO;
 using core_tools;
 
-namespace flexpod.Configuration
+namespace musicStudioUnit.Configuration
 {
     /// <summary>
     /// XML Configuration Parser for MSU local configuration files

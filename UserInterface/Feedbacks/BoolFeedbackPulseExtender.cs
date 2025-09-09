@@ -1,6 +1,6 @@
 ﻿using Crestron.SimplSharp;
 
-namespace flexpod
+namespace musicStudioUnit
 {
 	/// <summary>
 	/// A class that wraps a BoolFeedback with logic that extends it's true state for

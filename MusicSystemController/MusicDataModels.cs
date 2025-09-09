@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace flexpod.Devices
+namespace musicStudioUnit.Devices
 {
     /// <summary>
     /// Represents a music artist in the catalog

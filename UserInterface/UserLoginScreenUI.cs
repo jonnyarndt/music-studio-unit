@@ -4,9 +4,9 @@ using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using core_tools;
-using flexpod.Passengers;
+using musicStudioUnit.Passengers;
 
-namespace flexpod.UserInterface
+namespace musicStudioUnit.UserInterface
 {
     /// <summary>
     /// User Login Screen UI Handler for MSU
