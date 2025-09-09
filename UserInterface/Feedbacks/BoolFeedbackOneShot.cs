@@ -1,4 +1,4 @@
-﻿using Crestron.SimplSharp;
+using Crestron.SimplSharp;
 
 namespace musicStudioUnit
 {

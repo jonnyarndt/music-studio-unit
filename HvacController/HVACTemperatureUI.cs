@@ -1,3 +1,4 @@
+using PepperDash.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,6 +6,7 @@ using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using musicStudioUnit.Configuration;
+using musicStudioUnit.Devices;
 
 namespace musicStudioUnit.UserInterface
 {
@@ -52,7 +54,7 @@ namespace musicStudioUnit.UserInterface
             _panel = panel ?? throw new ArgumentNullException(nameof(panel));
             _presets = presets ?? CreateDefaultPresets();
 
-            Debug.Console(1, "HVACTemperatureUI", "Initializing HVAC temperature UI");
+            PepperDash.Core.PepperDash.Core.Debug.Console(1, "HVACTemperatureUI", "Initializing HVAC temperature UI");
 
             // Subscribe to HVAC events
             _hvacController.StatusUpdated += OnHVACStatusUpdated;
@@ -67,7 +69,7 @@ namespace musicStudioUnit.UserInterface
             // Initialize UI display
             UpdateUI();
 
-            Debug.Console(1, "HVACTemperatureUI", "HVAC temperature UI initialized successfully");
+            PepperDash.Core.PepperDash.Core.Debug.Console(1, "HVACTemperatureUI", "HVAC temperature UI initialized successfully");
         }
 
         /// <summary>
@@ -96,7 +98,7 @@ namespace musicStudioUnit.UserInterface
                 }
             };
 
-            Debug.Console(2, "HVACTemperatureUI", "Touch panel events configured");
+            PepperDash.Core.PepperDash.Core.Debug.Console(2, "HVACTemperatureUI", "Touch panel events configured");
         }
 
         /// <summary>
@@ -113,19 +115,19 @@ namespace musicStudioUnit.UserInterface
                     // Validate against maximum temperature
                     if (newTemp > 50.0f)
                     {
-                        Debug.Console(1, "HVACTemperatureUI", "Temperature {0}°C exceeds maximum (50°C)", newTemp);
+                        PepperDash.Core.PepperDash.Core.Debug.Console(1, "HVACTemperatureUI", "Temperature {0}°C exceeds maximum (50°C)", newTemp);
                         ShowTemperatureError("Maximum temperature reached");
                         return;
                     }
 
-                    Debug.Console(1, "HVACTemperatureUI", "Temperature UP: {0:F1}°C -> {1:F1}°C", 
+                    PepperDash.Core.PepperDash.Core.Debug.Console(1, "HVACTemperatureUI", "Temperature UP: {0:F1}°C -> {1:F1}°C", 
                         _currentDisplayTemp, newTemp);
 
                     SetTemperature(newTemp);
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "HVACTemperatureUI", "Error handling temperature up: {0}", ex.Message);
+                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "HVACTemperatureUI", "Error handling temperature up: {0}", ex.Message);
                 }
             }
         }
@@ -144,19 +146,19 @@ namespace musicStudioUnit.UserInterface
                     // Validate against minimum temperature
                     if (newTemp < -40.0f)
                     {
-                        Debug.Console(1, "HVACTemperatureUI", "Temperature {0}°C below minimum (-40°C)", newTemp);
+                        PepperDash.Core.PepperDash.Core.Debug.Console(1, "HVACTemperatureUI", "Temperature {0}°C below minimum (-40°C)", newTemp);
                         ShowTemperatureError("Minimum temperature reached");
                         return;
                     }
 
-                    Debug.Console(1, "HVACTemperatureUI", "Temperature DOWN: {0:F1}°C -> {1:F1}°C", 
+                    PepperDash.Core.PepperDash.Core.Debug.Console(1, "HVACTemperatureUI", "Temperature DOWN: {0:F1}°C -> {1:F1}°C", 
                         _currentDisplayTemp, newTemp);
 
                     SetTemperature(newTemp);
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "HVACTemperatureUI", "Error handling temperature down: {0}", ex.Message);
+                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "HVACTemperatureUI", "Error handling temperature down: {0}", ex.Message);
                 }
             }
         }
@@ -173,7 +175,7 @@ namespace musicStudioUnit.UserInterface
                     if (presetIndex >= 0 && presetIndex < _presets.Count)
                     {
                         var preset = _presets[presetIndex];
-                        Debug.Console(1, "HVACTemperatureUI", "Preset '{0}' selected: {1:F1}°C", 
+                        PepperDash.Core.PepperDash.Core.Debug.Console(1, "HVACTemperatureUI", "Preset '{0}' selected: {1:F1}°C", 
                             preset.Name, preset.Temperature);
 
                         SetTemperature(preset.Temperature);
@@ -181,7 +183,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "HVACTemperatureUI", "Error handling preset button: {0}", ex.Message);
+                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "HVACTemperatureUI", "Error handling preset button: {0}", ex.Message);
                 }
             }
         }
@@ -195,7 +197,7 @@ namespace musicStudioUnit.UserInterface
             {
                 if (!_hvacController.IsConnected)
                 {
-                    Debug.Console(0, "HVACTemperatureUI", "Cannot set temperature - HVAC not connected");
+                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "HVACTemperatureUI", "Cannot set temperature - HVAC not connected");
                     ShowTemperatureError("HVAC system not connected");
                     return;
                 }
@@ -222,13 +224,13 @@ namespace musicStudioUnit.UserInterface
                 }
                 else
                 {
-                    Debug.Console(0, "HVACTemperatureUI", "Failed to set temperature");
+                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "HVACTemperatureUI", "Failed to set temperature");
                     ShowTemperatureError("Failed to set temperature");
                 }
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "HVACTemperatureUI", "Error setting temperature: {0}", ex.Message);
+                PepperDash.Core.PepperDash.Core.Debug.Console(0, "HVACTemperatureUI", "Error setting temperature: {0}", ex.Message);
                 ShowTemperatureError("Temperature control error");
             }
         }
@@ -259,11 +261,11 @@ namespace musicStudioUnit.UserInterface
                     // Update connection status
                     UpdateConnectionStatus(status.IsConnected);
 
-                    Debug.Console(2, "HVACTemperatureUI", "UI updated successfully");
+                    PepperDash.Core.PepperDash.Core.Debug.Console(2, "HVACTemperatureUI", "UI updated successfully");
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "HVACTemperatureUI", "Error updating UI: {0}", ex.Message);
+                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "HVACTemperatureUI", "Error updating UI: {0}", ex.Message);
                 }
                 finally
                 {
@@ -279,7 +281,7 @@ namespace musicStudioUnit.UserInterface
         {
             string tempText = string.Format("{0:F1}°C", _currentDisplayTemp);
             _panel.StringInput[TempDisplayJoin].StringValue = tempText;
-            Debug.Console(2, "HVACTemperatureUI", "Temperature display updated: {0}", tempText);
+            PepperDash.Core.PepperDash.Core.Debug.Console(2, "HVACTemperatureUI", "Temperature display updated: {0}", tempText);
         }
 
         /// <summary>
@@ -343,7 +345,7 @@ namespace musicStudioUnit.UserInterface
             _panel.StringInput[StatusTextJoin].StringValue = message;
             
             // TODO: Add timer to clear error message after a few seconds
-            Debug.Console(1, "HVACTemperatureUI", "Temperature error: {0}", message);
+            PepperDash.Core.PepperDash.Core.Debug.Console(1, "HVACTemperatureUI", "Temperature error: {0}", message);
         }
 
         /// <summary>
@@ -351,7 +353,7 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         private void OnHVACStatusUpdated(object sender, HVACStatusUpdatedEventArgs args)
         {
-            Debug.Console(2, "HVACTemperatureUI", "HVAC status updated - updating UI");
+            PepperDash.Core.PepperDash.Core.Debug.Console(2, "HVACTemperatureUI", "HVAC status updated - updating UI");
             UpdateUI();
         }
 
@@ -360,7 +362,7 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         private void OnSetpointChanged(object sender, HVACSetpointChangedEventArgs args)
         {
-            Debug.Console(1, "HVACTemperatureUI", "Setpoint changed for zone {0}: {1:F1}°C", 
+            PepperDash.Core.PepperDash.Core.Debug.Console(1, "HVACTemperatureUI", "Setpoint changed for zone {0}: {1:F1}°C", 
                 args.ZoneId, args.Temperature);
             
             _currentSetpoints[args.ZoneId] = args.Temperature;
@@ -373,7 +375,7 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         private void OnHVACConnected(object sender, HVACConnectedEventArgs args)
         {
-            Debug.Console(1, "HVACTemperatureUI", "HVAC connected - updating UI");
+            PepperDash.Core.PepperDash.Core.Debug.Console(1, "HVACTemperatureUI", "HVAC connected - updating UI");
             UpdateUI();
         }
 
@@ -382,7 +384,7 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         private void OnHVACDisconnected(object sender, HVACDisconnectedEventArgs args)
         {
-            Debug.Console(1, "HVACTemperatureUI", "HVAC disconnected - updating UI");
+            PepperDash.Core.PepperDash.Core.Debug.Console(1, "HVACTemperatureUI", "HVAC disconnected - updating UI");
             UpdateUI();
         }
 
@@ -391,7 +393,7 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         private void OnHVACError(object sender, HVACErrorEventArgs args)
         {
-            Debug.Console(0, "HVACTemperatureUI", "HVAC error: {0}", args.ErrorMessage);
+            PepperDash.Core.PepperDash.Core.Debug.Console(0, "HVACTemperatureUI", "HVAC error: {0}", args.ErrorMessage);
             ShowTemperatureError(args.ErrorMessage);
         }
 
@@ -439,3 +441,6 @@ namespace musicStudioUnit.UserInterface
         }
     }
 }
+
+
+

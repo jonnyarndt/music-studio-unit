@@ -446,7 +446,7 @@ namespace musicStudioUnit.UserInterface
             Debug.Console(0, "MusicBrowseUI", "Error displayed: {0}", message);
             
             // Clear error after 5 seconds
-            CTimer.Wait(5000, () => _panel.StringInput[ErrorMessageJoin].StringValue = "");
+            new CTimer((obj) => _panel.StringInput[ErrorMessageJoin].StringValue = "", 5000);
         }
 
         /// <summary>

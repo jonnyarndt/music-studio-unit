@@ -1,8 +1,8 @@
-﻿using Crestron.SimplSharp;
+using Crestron.SimplSharp;
 
 namespace musicStudioUnit
 {
-    internal class LoyaltyID
+    public class LoyaltyID
     {
         //internal NameGenerator LoyaltyMemberName { get; set; }
         internal LoyaltyID() { }

@@ -1,3 +1,4 @@
+using PepperDash.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,7 +85,7 @@ namespace musicStudioUnit.UserInterface
             _panel = panel ?? throw new ArgumentNullException(nameof(panel));
             _combinationManager = combinationManager ?? throw new ArgumentNullException(nameof(combinationManager));
 
-            Debug.Console(1, "CombineScreenUI", "Initializing combine screen UI");
+            PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Initializing combine screen UI");
 
             InitializeUI();
         }
@@ -109,11 +110,11 @@ namespace musicStudioUnit.UserInterface
                     UpdateCombinationStatus();
                     _isInitialized = true;
 
-                    Debug.Console(1, "CombineScreenUI", "Combine screen initialized successfully");
+                    PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Combine screen initialized successfully");
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "CombineScreenUI", "Error initializing combine screen: {0}", ex.Message);
+                    PepperDash.Core.Debug.Console(0, "CombineScreenUI", "Error initializing combine screen: {0}", ex.Message);
                 }
             }
         }
@@ -131,7 +132,7 @@ namespace musicStudioUnit.UserInterface
             RefreshAdjacentUnits();
             UpdateCombinationDisplay();
 
-            Debug.Console(1, "CombineScreenUI", "Combine screen shown - Current: {0}", _currentCombination);
+            PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Combine screen shown - Current: {0}", _currentCombination);
         }
 
         /// <summary>
@@ -151,7 +152,7 @@ namespace musicStudioUnit.UserInterface
 
             try
             {
-                Debug.Console(1, "CombineScreenUI", "Refreshing adjacent units");
+                PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Refreshing adjacent units");
 
                 // Get current combination state from manager
                 _currentCombination = _combinationManager.CombinationType;
@@ -160,11 +161,11 @@ namespace musicStudioUnit.UserInterface
                 // Check what combinations are available
                 CheckCombinationAvailability();
 
-                Debug.Console(1, "CombineScreenUI", "Adjacent units refreshed - Available combinations updated");
+                PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Adjacent units refreshed - Available combinations updated");
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "CombineScreenUI", "Error refreshing adjacent units: {0}", ex.Message);
+                PepperDash.Core.Debug.Console(0, "CombineScreenUI", "Error refreshing adjacent units: {0}", ex.Message);
                 ShowError("Failed to refresh adjacent units");
             }
         }
@@ -184,11 +185,11 @@ namespace musicStudioUnit.UserInterface
                 ClearCombinationDisplay();
                 UpdateCombinationStatus();
 
-                Debug.Console(2, "CombineScreenUI", "UI initialized");
+                PepperDash.Core.Debug.Console(2, "CombineScreenUI", "UI initialized");
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "CombineScreenUI", "Error initializing UI: {0}", ex.Message);
+                PepperDash.Core.Debug.Console(0, "CombineScreenUI", "Error initializing UI: {0}", ex.Message);
             }
         }
 
@@ -197,7 +198,7 @@ namespace musicStudioUnit.UserInterface
             if (_combinationManager != null)
             {
                 _combinationManager.CombinationChanged += OnCombinationChanged;
-                Debug.Console(2, "CombineScreenUI", "Event handlers configured");
+                PepperDash.Core.Debug.Console(2, "CombineScreenUI", "Event handlers configured");
             }
         }
 
@@ -241,7 +242,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "CombineScreenUI", "Error handling button press for join {0}: {1}", join, ex.Message);
+                PepperDash.Core.Debug.Console(0, "CombineScreenUI", "Error handling button press for join {0}: {1}", join, ex.Message);
             }
         }
 
@@ -255,7 +256,7 @@ namespace musicStudioUnit.UserInterface
             {
                 try
                 {
-                    Debug.Console(1, "CombineScreenUI", "Single studio selected");
+                    PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Single studio selected");
 
                     if (_currentCombination != StudioCombinationType.Single)
                     {
@@ -264,7 +265,7 @@ namespace musicStudioUnit.UserInterface
 
                         if (success)
                         {
-                            Debug.Console(1, "CombineScreenUI", "Successfully uncombined studios");
+                            PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Successfully uncombined studios");
                             ShowStatus("Studios uncombined successfully");
                         }
                         else
@@ -279,7 +280,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "CombineScreenUI", "Error selecting single studio: {0}", ex.Message);
+                    PepperDash.Core.Debug.Console(0, "CombineScreenUI", "Error selecting single studio: {0}", ex.Message);
                     ShowError("Error changing to Single Studio");
                 }
             }
@@ -291,7 +292,7 @@ namespace musicStudioUnit.UserInterface
             {
                 try
                 {
-                    Debug.Console(1, "CombineScreenUI", "Mega studio selected");
+                    PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Mega studio selected");
 
                     // Check if Mega combination is available
                     bool canCombine = _combinationManager.CanCombineWithAdjacentMSUs(StudioCombinationType.Mega);
@@ -307,7 +308,7 @@ namespace musicStudioUnit.UserInterface
 
                     if (success)
                     {
-                        Debug.Console(1, "CombineScreenUI", "Successfully combined into Mega Studio");
+                        PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Successfully combined into Mega Studio");
                         ShowStatus("Mega Studio created successfully");
                     }
                     else
@@ -317,7 +318,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "CombineScreenUI", "Error selecting mega studio: {0}", ex.Message);
+                    PepperDash.Core.Debug.Console(0, "CombineScreenUI", "Error selecting mega studio: {0}", ex.Message);
                     ShowError("Error creating Mega Studio");
                 }
             }
@@ -329,7 +330,7 @@ namespace musicStudioUnit.UserInterface
             {
                 try
                 {
-                    Debug.Console(1, "CombineScreenUI", "Monster studio selected");
+                    PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Monster studio selected");
 
                     // Check if Monster combination is available
                     bool canCombine = _combinationManager.CanCombineWithAdjacentMSUs(StudioCombinationType.Monster);
@@ -345,7 +346,7 @@ namespace musicStudioUnit.UserInterface
 
                     if (success)
                     {
-                        Debug.Console(1, "CombineScreenUI", "Successfully combined into Monster Studio");
+                        PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Successfully combined into Monster Studio");
                         ShowStatus("Monster Studio created successfully");
                     }
                     else
@@ -355,7 +356,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "CombineScreenUI", "Error selecting monster studio: {0}", ex.Message);
+                    PepperDash.Core.Debug.Console(0, "CombineScreenUI", "Error selecting monster studio: {0}", ex.Message);
                     ShowError("Error creating Monster Studio");
                 }
             }
@@ -392,11 +393,11 @@ namespace musicStudioUnit.UserInterface
                 // Update status information
                 UpdateCombinationStatus();
 
-                Debug.Console(2, "CombineScreenUI", "Combination display updated");
+                PepperDash.Core.Debug.Console(2, "CombineScreenUI", "Combination display updated");
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "CombineScreenUI", "Error updating combination display: {0}", ex.Message);
+                PepperDash.Core.Debug.Console(0, "CombineScreenUI", "Error updating combination display: {0}", ex.Message);
             }
         }
 
@@ -458,7 +459,7 @@ namespace musicStudioUnit.UserInterface
             _panel.StringInput[MSUTouchPanelJoins.Combine.MonsterStudioText].StringValue = 
                 canMonster ? "Monster Studio" : "Monster Studio (N/A)";
 
-            Debug.Console(2, "CombineScreenUI", "Combination options - Single: {0}, Mega: {1}, Monster: {2}", 
+            PepperDash.Core.Debug.Console(2, "CombineScreenUI", "Combination options - Single: {0}, Mega: {1}, Monster: {2}", 
                 canSingle, canMega, canMonster);
         }
 
@@ -492,7 +493,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "CombineScreenUI", "Error updating combined units list: {0}", ex.Message);
+                PepperDash.Core.Debug.Console(0, "CombineScreenUI", "Error updating combined units list: {0}", ex.Message);
             }
         }
 
@@ -541,12 +542,12 @@ namespace musicStudioUnit.UserInterface
                 bool megaAvailable = _combinationManager.CanCombineWithAdjacentMSUs(StudioCombinationType.Mega);
                 bool monsterAvailable = _combinationManager.CanCombineWithAdjacentMSUs(StudioCombinationType.Monster);
 
-                Debug.Console(2, "CombineScreenUI", "Combination availability checked - Mega: {0}, Monster: {1}", 
+                PepperDash.Core.Debug.Console(2, "CombineScreenUI", "Combination availability checked - Mega: {0}, Monster: {1}", 
                     megaAvailable, monsterAvailable);
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "CombineScreenUI", "Error checking combination availability: {0}", ex.Message);
+                PepperDash.Core.Debug.Console(0, "CombineScreenUI", "Error checking combination availability: {0}", ex.Message);
             }
         }
 
@@ -576,7 +577,7 @@ namespace musicStudioUnit.UserInterface
                 _panel.BooleanInput[MSUTouchPanelJoins.Combine.ErrorVisible].BoolValue = false;
             }, 3000);
 
-            Debug.Console(1, "CombineScreenUI", "Error displayed: {0}", message);
+            PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Error displayed: {0}", message);
         }
 
         private void ShowStatus(string message)
@@ -590,7 +591,7 @@ namespace musicStudioUnit.UserInterface
                 _panel.BooleanInput[MSUTouchPanelJoins.Combine.StatusVisible].BoolValue = false;
             }, 2000);
 
-            Debug.Console(1, "CombineScreenUI", "Status displayed: {0}", message);
+            PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Status displayed: {0}", message);
         }
 
         private string GetConfigurationDescription(StudioCombinationType type)
@@ -614,7 +615,7 @@ namespace musicStudioUnit.UserInterface
 
         private void OnCombinationChanged(object sender, StudioCombinationChangedEventArgs e)
         {
-            Debug.Console(1, "CombineScreenUI", "Combination changed - Type: {0}, Units: {1}", 
+            PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Combination changed - Type: {0}, Units: {1}", 
                 e.CombinationType, e.CombinedMSUs?.Count ?? 0);
 
             lock (_lockObject)
@@ -647,14 +648,15 @@ namespace musicStudioUnit.UserInterface
                 }
 
                 _disposed = true;
-                Debug.Console(1, "CombineScreenUI", "Disposed");
+                PepperDash.Core.Debug.Console(1, "CombineScreenUI", "Disposed");
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "CombineScreenUI", "Error during disposal: {0}", ex.Message);
+                PepperDash.Core.Debug.Console(0, "CombineScreenUI", "Error during disposal: {0}", ex.Message);
             }
         }
 
         #endregion
     }
 }
+

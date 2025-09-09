@@ -123,7 +123,7 @@ namespace musicStudioUnit.Configuration
         public void LoadConfigurationAsync(string serverIP, int port, string fileName, int timeoutMs = DEFAULT_TIMEOUT_MS)
         {
             // Use CTimer to perform async operation
-            CTimer.Wait(1, () => LoadConfiguration(serverIP, port, fileName, timeoutMs));
+            new CTimer((obj) => LoadConfiguration(serverIP, port, fileName, timeoutMs), 1);
         }
 
         /// <summary>

@@ -5,10 +5,8 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using core_tools;
 using musicStudioUnit.Services;
-using musicStudioUnit.Controllers;
-using musicStudioUnit.Passengers;
 using musicStudioUnit.Configuration;
-using musicStudioUnit.MusicSystemController;
+using musicStudioUnit.Devices;
 
 namespace musicStudioUnit.UserInterface
 {

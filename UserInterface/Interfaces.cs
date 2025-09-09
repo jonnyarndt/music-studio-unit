@@ -1,4 +1,4 @@
-﻿using Crestron.SimplSharpPro.DeviceSupport;
+using Crestron.SimplSharpPro.DeviceSupport;
 using System;
 using System.Collections.Generic;
 using System.Linq;

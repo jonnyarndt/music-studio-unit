@@ -1,19 +1,18 @@
 using System;
 using System.Collections.Generic;
 using Crestron.SimplSharp;
+using PepperDash.Core;
 using core_tools;
 using musicStudioUnit.Configuration;
 using musicStudioUnit.Services;
 using musicStudioUnit.Devices;
-using musicStudioUnit.HvacController;
-using musicStudioUnit.MusicSystemController;
 
 namespace musicStudioUnit.Services
 {
     /// <summary>
     /// Main MSU Controller that coordinates all system components
     /// </summary>
-    public class MSUController : IKeyName, IDisposable
+    public class MSUController : core_tools.IKeyName, IDisposable
     {
         private readonly string _key;
         
@@ -60,7 +59,7 @@ namespace musicStudioUnit.Services
             _configManager = configManager;
             
             DeviceManager.AddDevice(key, this);
-            Debug.Console(1, this, "MSU Controller created");
+            PepperDash.Core.Debug.Console(1, "MSUController", "MSU Controller created");
         }
 
         /// <summary>
@@ -72,7 +71,7 @@ namespace musicStudioUnit.Services
             if (_identificationService?.IsIdentified == true)
             {
                 _currentMSUConfig = _identificationService.IdentifiedMSU;
-                Debug.Console(1, this, "MSU identification data set: {0}", _currentMSUConfig.MSU_NAME);
+                PepperDash.Core.Debug.Console(1, "MSUController", "MSU identification data set: {0}", _currentMSUConfig.MSU_NAME);
             }
         }
 
@@ -81,7 +80,7 @@ namespace musicStudioUnit.Services
         /// </summary>
         public bool Initialize()
         {
-            Debug.Console(1, this, "Initializing MSU Controller");
+            PepperDash.Core.Debug.Console(1, "MSUController", "Initializing MSU Controller");
 
             try
             {
@@ -93,7 +92,7 @@ namespace musicStudioUnit.Services
                 if (!_configManager.LoadLocalConfiguration())
                 {
                     var error = "Failed to load local configuration file";
-                    Debug.Console(0, this, error);
+                    PepperDash.Core.Debug.Console(0, "MSUController", error);
                     MSUError?.Invoke(this, new MSUErrorEventArgs { ErrorMessage = error });
                     return false;
                 }
@@ -104,7 +103,7 @@ namespace musicStudioUnit.Services
                 if (!_configManager.LoadRemoteConfiguration())
                 {
                     var error = "Failed to load remote configuration file";
-                    Debug.Console(0, this, error);
+                    PepperDash.Core.Debug.Console(0, "MSUController", error);
                     MSUError?.Invoke(this, new MSUErrorEventArgs { ErrorMessage = error });
                     return false;
                 }
@@ -116,12 +115,12 @@ namespace musicStudioUnit.Services
                 if (_currentMSUConfig == null)
                 {
                     var error = "Could not find MSU configuration for this processor";
-                    Debug.Console(0, this, error);
+                    PepperDash.Core.Debug.Console(0, "MSUController", error);
                     MSUError?.Invoke(this, new MSUErrorEventArgs { ErrorMessage = error });
                     return false;
                 }
 
-                Debug.Console(1, this, "Found MSU configuration: {0} at ({1},{2})",
+                PepperDash.Core.Debug.Console(1, "MSUController", "Found MSU configuration: {0} at ({1},{2})",
                     _currentMSUConfig.MSU_NAME, _currentMSUConfig.X_COORD, _currentMSUConfig.Y_COORD);
 
                 // Step 5: Initialize Core Services
@@ -135,7 +134,7 @@ namespace musicStudioUnit.Services
 
                 _isInitialized = true;
                 
-                Debug.Console(1, this, "MSU Controller initialization complete");
+                PepperDash.Core.Debug.Console(1, "MSUController", "MSU Controller initialization complete");
 
                 // Fire initialized event
                 MSUInitialized?.Invoke(this, new MSUInitializedEventArgs
@@ -149,7 +148,7 @@ namespace musicStudioUnit.Services
             catch (Exception ex)
             {
                 var error = string.Format("Error during MSU initialization: {0}", ex.Message);
-                Debug.Console(0, this, error);
+                PepperDash.Core.Debug.Console(0, "MSUController", error);
                 MSUError?.Invoke(this, new MSUErrorEventArgs { ErrorMessage = error });
                 return false;
             }
@@ -160,7 +159,7 @@ namespace musicStudioUnit.Services
         /// </summary>
         public bool ReloadConfiguration()
         {
-            Debug.Console(1, this, "Reloading MSU configuration");
+            PepperDash.Core.Debug.Console(1, "MSUController", "Reloading MSU configuration");
 
             try
             {
@@ -172,7 +171,7 @@ namespace musicStudioUnit.Services
             }
             catch (Exception ex)
             {
-                Debug.Console(0, this, "Error reloading configuration: {0}", ex.Message);
+                PepperDash.Core.Debug.Console(0, "MSUController", "Error reloading configuration: {0}", ex.Message);
                 return false;
             }
         }
@@ -190,7 +189,7 @@ namespace musicStudioUnit.Services
             {
                 MSUName = _currentMSUConfig?.MSU_NAME ?? "Unknown",
                 MSU_UID = _currentMSUConfig?.MSU_UID ?? "Unknown",
-                ProcessorModel = sysInfo.Processor.ProcessorType,
+                ProcessorModel = sysInfo.Processor.Model,
                 FirmwareVersion = sysInfo.Processor.Firmware,
                 MACAddress = sysInfo.Adapter.MacAddress,
                 IPAddress = sysInfo.Adapter.IpAddress,
@@ -204,7 +203,7 @@ namespace musicStudioUnit.Services
 
         private void InitializeCoreServices()
         {
-            Debug.Console(1, this, "Initializing core services");
+            PepperDash.Core.Debug.Console(1, "MSUController", "Initializing core services");
 
             // User Manager
             _userManager = new UserManager(_key + "UserMgr");
@@ -216,7 +215,7 @@ namespace musicStudioUnit.Services
 
         private void InitializeDeviceControllers()
         {
-            Debug.Console(1, this, "Initializing device controllers");
+            PepperDash.Core.Debug.Console(1, "MSUController", "Initializing device controllers");
 
             // HVAC Controller
             _hvacController = new EnhancedHVACController(_key + "HVAC", _localConfig.HVAC);
@@ -232,7 +231,7 @@ namespace musicStudioUnit.Services
 
         private void StartServices()
         {
-            Debug.Console(1, this, "Starting services");
+            PepperDash.Core.Debug.Console(1, "MSUController", "Starting services");
 
             // Start Studio Manager
             _studioManager.Initialize();
@@ -244,12 +243,12 @@ namespace musicStudioUnit.Services
 
         private void OnConfigurationLoaded(object sender, ConfigurationLoadedEventArgs e)
         {
-            Debug.Console(1, this, "Configuration loaded event received");
+            PepperDash.Core.Debug.Console(1, "MSUController", "Configuration loaded event received");
         }
 
         private void OnStudioCombinationChanged(object sender, StudioCombinationChangedEventArgs e)
         {
-            Debug.Console(1, this, "Studio combination changed: {0}", e.CombinationType);
+            PepperDash.Core.Debug.Console(1, "MSUController", "Studio combination changed: {0}", e.CombinationType);
 
             // Synchronize HVAC temperatures for combined studios
             if (e.IsMainController && e.CombinedMSUs.Count > 1)
@@ -257,43 +256,43 @@ namespace musicStudioUnit.Services
                 var hvacZones = _studioManager.GetCombinationHVACZones();
                 var currentSetpoint = _hvacController.CurrentSetpoint;
                 
-                Debug.Console(1, this, "Synchronizing HVAC for {0} zones at {1:F1}°C", 
+                PepperDash.Core.Debug.Console(1, "MSUController", "Synchronizing HVAC for {0} zones at {1:F1}°C", 
                     hvacZones.Count, currentSetpoint);
                 
                 _hvacController.SetMultipleZoneTemperatures(hvacZones, currentSetpoint);
             }
         }
 
-        private void OnHVACStatusUpdated(object sender, HVACStatusUpdatedEventArgs e)
+        private void OnHVACStatusUpdated(object sender, musicStudioUnit.HvacController.HVACStatusUpdatedEventArgs e)
         {
-            Debug.Console(2, this, "HVAC status updated: Temp={0:F2}°C", e.ExternalTemperature);
+            PepperDash.Core.Debug.Console(2, "MSUController", "HVAC status updated: Connected={0}", e.Status?.IsConnected);
         }
 
-        private void OnHVACSetpointChanged(object sender, HVACSetpointChangedEventArgs e)
+        private void OnHVACSetpointChanged(object sender, musicStudioUnit.HvacController.HVACSetpointChangedEventArgs e)
         {
-            Debug.Console(1, this, "HVAC setpoint changed: Zone {0} = {1:F1}°C", e.ZoneId, e.Temperature);
+            PepperDash.Core.Debug.Console(1, "MSUController", "HVAC setpoint changed: Zone {0} = {1:F1}°C", e.ZoneId, e.Setpoint);
         }
 
         private void OnMusicCatalogUpdated(object sender, MusicCatalogUpdatedEventArgs e)
         {
-            Debug.Console(1, this, "Music catalog updated: {0} artists", e.ArtistCount);
+            PepperDash.Core.Debug.Console(1, "MSUController", "Music catalog updated: {0} artists", e.ArtistCount);
         }
 
-        private void OnPlaybackStatusUpdated(object sender, PlaybackStatusUpdatedEventArgs e)
+        private void OnPlaybackStatusUpdated(object sender, musicStudioUnit.MusicSystemController.PlaybackStatusUpdatedEventArgs e)
         {
-            Debug.Console(1, this, "Playback status: {0} - {1} by {2}", 
+            PepperDash.Core.Debug.Console(1, "MSUController", "Playback status: {0} - {1} by {2}", 
                 e.IsPlaying ? "Playing" : "Stopped", e.TrackName, e.ArtistName);
         }
 
         private void OnTrackTimeUpdated(object sender, TrackTimeUpdatedEventArgs e)
         {
-            Debug.Console(2, this, "Track time: {0}:{1:D2} remaining", 
+            PepperDash.Core.Debug.Console(2, "MSUController", "Track time: {0}:{1:D2} remaining", 
                 e.RemainingTimeSeconds / 60, e.RemainingTimeSeconds % 60);
         }
 
         public void Dispose()
         {
-            Debug.Console(1, this, "Disposing MSU Controller");
+            PepperDash.Core.Debug.Console(1, "MSUController", "Disposing MSU Controller");
 
             _configManager?.Dispose();
             _userManager?.Dispose();
@@ -337,3 +336,4 @@ namespace musicStudioUnit.Services
         public string ErrorMessage { get; set; }
     }
 }
+

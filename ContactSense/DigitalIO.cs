@@ -1,4 +1,4 @@
-﻿using Crestron.SimplSharpPro;
+using Crestron.SimplSharpPro;
 using core_tools;
 using Crestron.SimplSharp.Net;
 using System.Windows.Input;

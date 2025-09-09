@@ -431,12 +431,19 @@ namespace musicStudioUnit.Devices
         {
             try
             {
-                if (File.Exists(_setpointFilePath))
+                if (Crestron.SimplSharp.CrestronIO.File.Exists(_setpointFilePath))
                 {
-                    string[] lines = File.ReadAllLines(_setpointFilePath);
-                    foreach (string line in lines)
+                    var fileStream = Crestron.SimplSharp.CrestronIO.File.OpenText(_setpointFilePath);
+                    var lines = new List<string>();
+                    string line;
+                    while ((line = fileStream.ReadLine()) != null)
                     {
-                        string[] parts = line.Split(',');
+                        lines.Add(line);
+                    }
+                    fileStream.Close();
+                    foreach (string lineContent in lines)
+                    {
+                        string[] parts = lineContent.Split(',');
                         if (parts.Length == 2)
                         {
                             byte zoneId = byte.Parse(parts[0]);
@@ -474,7 +481,13 @@ namespace musicStudioUnit.Devices
                 {
                     lines.Add(string.Format("{0},{1:F1}", kvp.Key, kvp.Value));
                 }
-                File.WriteAllLines(_setpointFilePath, lines.ToArray());
+                
+                var fileStream = Crestron.SimplSharp.CrestronIO.File.CreateText(_setpointFilePath);
+                foreach (string line in lines)
+                {
+                    fileStream.WriteLine(line);
+                }
+                fileStream.Close();
                 Debug.Console(2, this, "Persisted {0} setpoints to file", _zoneSetpoints.Count);
             }
             catch (Exception ex)

@@ -6,10 +6,10 @@ namespace musicStudioUnit.UserInterface
     /// MSU-specific touch panel join definitions
     /// Extends the base TouchPanelJoins for Music Studio Unit screens
     /// </summary>
-    internal class MSUTouchPanelJoins
+    public class MSUTouchPanelJoins
     {
         #region Page Joins (Client-Scope.md function screens)
-        internal enum Pages
+        public enum Pages
         {
             Settings = 401,      // Settings screen - shows on boot
             User = 402,          // User login/profile screen

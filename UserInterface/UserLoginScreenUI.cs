@@ -4,7 +4,6 @@ using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using core_tools;
-using musicStudioUnit.Passengers;
 
 namespace musicStudioUnit.UserInterface
 {

@@ -31,7 +31,7 @@ namespace musicStudioUnit.Services
         public ConfigurationManager(string key)
         {
             _key = key;
-            Debug.SetContextName(key);
+            // Debug.SetContextName(key); // Not available in current PepperDash version
             DeviceManager.AddDevice(key, this);
 
             // Initialize parsers

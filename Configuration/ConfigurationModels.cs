@@ -55,21 +55,6 @@ namespace musicStudioUnit.Configuration
     }
 
     /// <summary>
-    /// HVAC system configuration
-    /// </summary>
-    public class HVACInfo
-    {
-        [XmlElement("ip")]
-        public string IP { get; set; }
-
-        [XmlElement("port")]
-        public int Port { get; set; }
-
-        [XmlElement("idle")]
-        public float IdleSetpoint { get; set; }
-    }
-
-    /// <summary>
     /// Digital Music System configuration
     /// </summary>
     public class DMSInfo

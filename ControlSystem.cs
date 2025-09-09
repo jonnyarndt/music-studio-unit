@@ -9,9 +9,7 @@ using Crestron.SimplSharpPro.UI;
 using musicStudioUnit.Services;
 using musicStudioUnit.Configuration;
 using musicStudioUnit.UserInterface;
-using musicStudioUnit.HvacController;
-using musicStudioUnit.MusicSystemController;
-using musicStudioUnit.Passengers;
+using musicStudioUnit.Devices;
 
 namespace musicStudioUnit
 {
@@ -444,7 +442,7 @@ namespace musicStudioUnit
                 string msuUID = macAddress; // Use MAC as MSU UID per spec
 
                 // Create DMS configuration
-                var dmsConfig = new DMSInfo
+                var dmsConfig = new musicStudioUnit.Configuration.DMSInfo
                 {
                     IP = "10.0.0.200", // TODO: Read from configuration file
                     Port = 4010, // TODO: Read from configuration file
@@ -607,7 +605,7 @@ namespace musicStudioUnit
                 Debug.Console(1, "Initializing User Database for loyalty identification...");
                 
                 // Create user database instance (LoyaltyID class from existing code)
-                _userDatabase = new LoyaltyID("UserDatabase");
+                _userDatabase = new LoyaltyID();
                 
                 Debug.Console(1, "User Database initialized successfully");
             }
@@ -651,9 +649,13 @@ namespace musicStudioUnit
                     return;
                 }
 
+                // Create Studio Combination Manager
+                var combinationManager = new musicStudioUnit.Services.StudioCombinationManager(
+                    "studioCombination", _msuController?.Key ?? "default_msu", 0, 0, 1, new Dictionary<string, musicStudioUnit.Services.MusicStudioUnit>());
+
                 // Create MSU TouchPanel with all components
                 _msuTouchPanel = new MSUTouchPanel("msuTouchPanel", "MSU TouchPanel", panel,
-                    _msuController, _initializationService, _hvacController, _musicController, _userDatabase);
+                    _msuController, _initializationService, _hvacController, _musicController, _userDatabase, combinationManager);
 
                 Debug.Console(1, "MSU TouchPanel initialized successfully with all screen handlers");
                 Debug.Console(1, "Available screens: Settings, User, Music, Temperature, Combine");
@@ -744,9 +746,9 @@ namespace musicStudioUnit
                     //Shutdown all Client/Servers in the system.
                     //General cleanup.
                     //Unsubscribe to all System Monitor events
-                    FlightTelemetry.Dispose();
-                    Lighting.Dispose();
-                    TP01.Dispose();
+                    // FlightTelemetry.Dispose(); // Not static
+                    // Lighting.Dispose(); // Not static  
+                    // TP01.Dispose(); // Not static
                     break;
             }
         }

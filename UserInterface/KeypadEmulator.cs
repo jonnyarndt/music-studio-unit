@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 
 namespace musicStudioUnit
@@ -65,7 +65,7 @@ namespace musicStudioUnit
         {
             UpdateResult();
             // 1 second wait, then clear input string
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.System.Threading.Thread.Sleep(1000);
             Clear();
         }
 

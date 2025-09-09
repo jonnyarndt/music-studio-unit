@@ -1,4 +1,4 @@
-﻿namespace musicStudioUnit
+namespace musicStudioUnit
 {
     internal class TouchPanelJoins
     {

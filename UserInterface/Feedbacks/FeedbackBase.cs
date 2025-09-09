@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Crestron.SimplSharp;
 using core_tools;
 

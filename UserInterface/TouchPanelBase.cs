@@ -1,4 +1,4 @@
-﻿using core_tools;
+using core_tools;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using System.Collections.Generic;
@@ -53,7 +53,7 @@ namespace musicStudioUnit
             SubPage = 0;
             CrestronInvoke.BeginInvoke((o) => {
                 Panel.SetBool(value, true);
-                Thread.Sleep(100);
+                System.Threading.System.Threading.Thread.Sleep(100);
                 Panel.SetBool(value, false);
             });                
             Debug.Console(2, this, "Page {0} > Set True.", value); 

@@ -1,3 +1,4 @@
+using PepperDash.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,7 +6,8 @@ using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using musicStudioUnit.Configuration;
-using musicStudioUnit.HvacController;
+using musicStudioUnit.Services;
+using musicStudioUnit.Devices;
 
 namespace musicStudioUnit.UserInterface
 {
@@ -48,7 +50,7 @@ namespace musicStudioUnit.UserInterface
             _msuController = msuController ?? throw new ArgumentNullException(nameof(msuController));
             _presets = presets ?? CreateDefaultPresets();
 
-            Debug.Console(1, "TemperatureScreenUI", "Initializing Temperature screen UI");
+            PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "Initializing Temperature screen UI");
 
             // Subscribe to HVAC events
             _hvacController.StatusUpdated += OnHVACStatusUpdated;
@@ -75,7 +77,7 @@ namespace musicStudioUnit.UserInterface
             // Initialize UI display
             UpdateUI();
 
-            Debug.Console(1, "TemperatureScreenUI", "Temperature screen UI initialized successfully");
+            PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "Temperature screen UI initialized successfully");
         }
 
         /// <summary>
@@ -113,7 +115,7 @@ namespace musicStudioUnit.UserInterface
                 }
             };
 
-            Debug.Console(2, "TemperatureScreenUI", "Touch panel events configured");
+            PepperDash.Core.PepperDash.Core.Debug.Console(2, "TemperatureScreenUI", "Touch panel events configured");
         }
 
         /// <summary>
@@ -130,19 +132,19 @@ namespace musicStudioUnit.UserInterface
                     // Validate against maximum temperature per Client-Scope.md
                     if (newTemp > 50.0f)
                     {
-                        Debug.Console(1, "TemperatureScreenUI", "Temperature {0}°C exceeds maximum (50°C)", newTemp);
+                        PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "Temperature {0}°C exceeds maximum (50°C)", newTemp);
                         ShowTemperatureError("Maximum temperature reached");
                         return;
                     }
 
-                    Debug.Console(1, "TemperatureScreenUI", "Temperature UP: {0:F1}°C -> {1:F1}°C", 
+                    PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "Temperature UP: {0:F1}°C -> {1:F1}°C", 
                         _currentDisplayTemp, newTemp);
                     
                     SetTemperature(newTemp);
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "TemperatureScreenUI", "Error handling temperature up: {0}", ex.Message);
+                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "TemperatureScreenUI", "Error handling temperature up: {0}", ex.Message);
                 }
             }
         }
@@ -161,19 +163,19 @@ namespace musicStudioUnit.UserInterface
                     // Validate against minimum temperature per Client-Scope.md
                     if (newTemp < -40.0f)
                     {
-                        Debug.Console(1, "TemperatureScreenUI", "Temperature {0}°C below minimum (-40°C)", newTemp);
+                        PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "Temperature {0}°C below minimum (-40°C)", newTemp);
                         ShowTemperatureError("Minimum temperature reached");
                         return;
                     }
 
-                    Debug.Console(1, "TemperatureScreenUI", "Temperature DOWN: {0:F1}°C -> {1:F1}°C", 
+                    PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "Temperature DOWN: {0:F1}°C -> {1:F1}°C", 
                         _currentDisplayTemp, newTemp);
                     
                     SetTemperature(newTemp);
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "TemperatureScreenUI", "Error handling temperature down: {0}", ex.Message);
+                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "TemperatureScreenUI", "Error handling temperature down: {0}", ex.Message);
                 }
             }
         }
@@ -190,7 +192,7 @@ namespace musicStudioUnit.UserInterface
                     if (presetIndex >= 0 && presetIndex < _presets.Count)
                     {
                         var preset = _presets[presetIndex];
-                        Debug.Console(1, "TemperatureScreenUI", "Preset '{0}' selected: {1:F1}°C", 
+                        PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "Preset '{0}' selected: {1:F1}°C", 
                             preset.Name, preset.Temperature);
 
                         SetTemperature(preset.Temperature);
@@ -198,7 +200,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "TemperatureScreenUI", "Error handling preset button: {0}", ex.Message);
+                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "TemperatureScreenUI", "Error handling preset button: {0}", ex.Message);
                 }
             }
         }
@@ -212,7 +214,7 @@ namespace musicStudioUnit.UserInterface
             {
                 if (!_hvacController.IsConnected)
                 {
-                    Debug.Console(0, "TemperatureScreenUI", "Cannot set temperature - HVAC not connected");
+                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "TemperatureScreenUI", "Cannot set temperature - HVAC not connected");
                     ShowTemperatureError("HVAC system not connected");
                     return;
                 }
@@ -242,18 +244,18 @@ namespace musicStudioUnit.UserInterface
                     // Notify listeners
                     TemperatureChanged?.Invoke(this, new TemperatureChangedEventArgs(temperature, _controlledZones));
 
-                    Debug.Console(1, "TemperatureScreenUI", "Temperature set successfully: {0:F1}°C for zones: {1}", 
+                    PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "Temperature set successfully: {0:F1}°C for zones: {1}", 
                         temperature, string.Join(",", _controlledZones));
                 }
                 else
                 {
-                    Debug.Console(0, "TemperatureScreenUI", "Failed to set temperature");
+                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "TemperatureScreenUI", "Failed to set temperature");
                     ShowTemperatureError("Failed to set temperature");
                 }
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "TemperatureScreenUI", "Error setting temperature: {0}", ex.Message);
+                PepperDash.Core.PepperDash.Core.Debug.Console(0, "TemperatureScreenUI", "Error setting temperature: {0}", ex.Message);
                 ShowTemperatureError("Temperature control error");
             }
         }
@@ -297,14 +299,14 @@ namespace musicStudioUnit.UserInterface
                     _controlledZones.Add(1);
                 }
 
-                Debug.Console(1, "TemperatureScreenUI", "Controlled zones updated: {0}", 
+                PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "Controlled zones updated: {0}", 
                     string.Join(",", _controlledZones));
                 
                 UpdateZoneDisplay();
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "TemperatureScreenUI", "Error updating controlled zones: {0}", ex.Message);
+                PepperDash.Core.PepperDash.Core.Debug.Console(0, "TemperatureScreenUI", "Error updating controlled zones: {0}", ex.Message);
                 _controlledZones.Clear();
                 _controlledZones.Add(1); // Fallback to zone 1
             }
@@ -331,7 +333,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "TemperatureScreenUI", "Error updating zone display: {0}", ex.Message);
+                PepperDash.Core.PepperDash.Core.Debug.Console(0, "TemperatureScreenUI", "Error updating zone display: {0}", ex.Message);
             }
         }
 
@@ -351,7 +353,7 @@ namespace musicStudioUnit.UserInterface
                     if (!string.IsNullOrEmpty(savedValue) && float.TryParse(savedValue, out float setpoint))
                     {
                         _savedSetpoints[zoneId] = setpoint;
-                        Debug.Console(2, "TemperatureScreenUI", "Loaded saved setpoint for zone {0}: {1:F1}°C", 
+                        PepperDash.Core.PepperDash.Core.Debug.Console(2, "TemperatureScreenUI", "Loaded saved setpoint for zone {0}: {1:F1}°C", 
                             zoneId, setpoint);
                     }
                     else
@@ -360,7 +362,7 @@ namespace musicStudioUnit.UserInterface
                         var config = _msuController?.GetCurrentConfiguration();
                         float idleSetpoint = config?.LocalConfig?.HVAC?.IdleSetpoint ?? 21.5f;
                         _savedSetpoints[zoneId] = idleSetpoint;
-                        Debug.Console(2, "TemperatureScreenUI", "Using idle setpoint for zone {0}: {1:F1}°C", 
+                        PepperDash.Core.PepperDash.Core.Debug.Console(2, "TemperatureScreenUI", "Using idle setpoint for zone {0}: {1:F1}°C", 
                             zoneId, idleSetpoint);
                     }
                 }
@@ -373,7 +375,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "TemperatureScreenUI", "Error loading saved setpoints: {0}", ex.Message);
+                PepperDash.Core.PepperDash.Core.Debug.Console(0, "TemperatureScreenUI", "Error loading saved setpoints: {0}", ex.Message);
             }
         }
 
@@ -390,13 +392,13 @@ namespace musicStudioUnit.UserInterface
                     CrestronEnvironment.SetKeyValue(key, temperature.ToString("F1"));
                     _savedSetpoints[zoneId] = temperature;
                     
-                    Debug.Console(2, "TemperatureScreenUI", "Saved setpoint for zone {0}: {1:F1}°C", 
+                    PepperDash.Core.PepperDash.Core.Debug.Console(2, "TemperatureScreenUI", "Saved setpoint for zone {0}: {1:F1}°C", 
                         zoneId, temperature);
                 }
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "TemperatureScreenUI", "Error saving setpoint to nonvolatile storage: {0}", ex.Message);
+                PepperDash.Core.PepperDash.Core.Debug.Console(0, "TemperatureScreenUI", "Error saving setpoint to nonvolatile storage: {0}", ex.Message);
             }
         }
 
@@ -428,11 +430,11 @@ namespace musicStudioUnit.UserInterface
                     // Update zone display
                     UpdateZoneDisplay();
 
-                    Debug.Console(2, "TemperatureScreenUI", "UI updated successfully");
+                    PepperDash.Core.PepperDash.Core.Debug.Console(2, "TemperatureScreenUI", "UI updated successfully");
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "TemperatureScreenUI", "Error updating UI: {0}", ex.Message);
+                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "TemperatureScreenUI", "Error updating UI: {0}", ex.Message);
                 }
                 finally
                 {
@@ -453,7 +455,7 @@ namespace musicStudioUnit.UserInterface
             _panel.UShortInput[(uint)MSUTouchPanelJoins.TemperatureScreen.CurrentTempAnalog].UShortValue = 
                 (ushort)((_currentDisplayTemp + 40.0f) * 10); // Offset for negative temperatures
             
-            Debug.Console(2, "TemperatureScreenUI", "Temperature display updated: {0}", tempText);
+            PepperDash.Core.PepperDash.Core.Debug.Console(2, "TemperatureScreenUI", "Temperature display updated: {0}", tempText);
         }
 
         /// <summary>
@@ -519,7 +521,7 @@ namespace musicStudioUnit.UserInterface
         private void ShowTemperatureError(string message)
         {
             _panel.StringInput[(uint)MSUTouchPanelJoins.TemperatureScreen.StatusText].StringValue = message;
-            Debug.Console(1, "TemperatureScreenUI", "Temperature error: {0}", message);
+            PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "Temperature error: {0}", message);
         }
 
         /// <summary>
@@ -556,25 +558,25 @@ namespace musicStudioUnit.UserInterface
 
         private void OnHVACConnected(object sender, HVACConnectedEventArgs args)
         {
-            Debug.Console(1, "TemperatureScreenUI", "HVAC connected - updating UI");
+            PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "HVAC connected - updating UI");
             UpdateUI();
         }
 
         private void OnHVACDisconnected(object sender, HVACDisconnectedEventArgs args)
         {
-            Debug.Console(1, "TemperatureScreenUI", "HVAC disconnected - updating UI");
+            PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "HVAC disconnected - updating UI");
             UpdateUI();
         }
 
         private void OnHVACError(object sender, HVACErrorEventArgs args)
         {
-            Debug.Console(0, "TemperatureScreenUI", "HVAC error: {0}", args.ErrorMessage);
+            PepperDash.Core.PepperDash.Core.Debug.Console(0, "TemperatureScreenUI", "HVAC error: {0}", args.ErrorMessage);
             ShowTemperatureError(args.ErrorMessage);
         }
 
         private void OnCombinationChanged(object sender, CombinationChangedEventArgs args)
         {
-            Debug.Console(1, "TemperatureScreenUI", "Combination changed - updating controlled zones");
+            PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "Combination changed - updating controlled zones");
             _isCombinedMode = args.IsCombined;
             UpdateControlledZones();
             UpdateUI();
@@ -604,11 +606,11 @@ namespace musicStudioUnit.UserInterface
                     _msuController.CombinationChanged -= OnCombinationChanged;
                 }
 
-                Debug.Console(1, "TemperatureScreenUI", "Temperature screen UI disposed");
+                PepperDash.Core.PepperDash.Core.Debug.Console(1, "TemperatureScreenUI", "Temperature screen UI disposed");
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "TemperatureScreenUI", "Error disposing: {0}", ex.Message);
+                PepperDash.Core.PepperDash.Core.Debug.Console(0, "TemperatureScreenUI", "Error disposing: {0}", ex.Message);
             }
             finally
             {
@@ -657,3 +659,6 @@ namespace musicStudioUnit.UserInterface
 
     #endregion
 }
+
+
+

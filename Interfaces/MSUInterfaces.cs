@@ -1,8 +1,60 @@
 using System;
 using System.Collections.Generic;
+using musicStudioUnit.Services;
+using musicStudioUnit.Devices;
+using musicStudioUnit.MusicSystemController;
 
 namespace musicStudioUnit.Interfaces
 {
+    // Event argument classes for interfaces
+    public class TemperatureChangedEventArgs : EventArgs
+    {
+        public float OldTemperature { get; set; }
+        public float NewTemperature { get; set; }
+    }
+
+    public class TemperatureStatusEventArgs : EventArgs
+    {
+        public float ExternalTemperature { get; set; }
+        public bool OverTemp { get; set; }
+        public bool PressureFault { get; set; }
+        public bool VoltageFault { get; set; }
+        public bool AirflowBlocked { get; set; }
+    }
+
+    public class PlaybackStatusChangedEventArgs : EventArgs
+    {
+        public bool IsPlaying { get; set; }
+        public string TrackName { get; set; }
+        public string ArtistName { get; set; }
+    }
+
+    public class TrackTimeChangedEventArgs : EventArgs
+    {
+        public int RemainingTimeSeconds { get; set; }
+        public string FormattedTime { get; set; }
+    }
+
+    public class CombinationChangedEventArgs : EventArgs
+    {
+        public StudioCombinationType OldCombination { get; set; }
+        public StudioCombinationType NewCombination { get; set; }
+        public List<string> CombinedMSUNames { get; set; }
+    }
+
+    public class UserLoginChangedEventArgs : EventArgs
+    {
+        public bool IsLoggedIn { get; set; }
+        public UserInfo User { get; set; }
+        public bool IsBirthday { get; set; }
+    }
+
+    public class SystemStatusChangedEventArgs : EventArgs
+    {
+        public string StatusMessage { get; set; }
+        public bool IsOnline { get; set; }
+    }
+
     /// <summary>
     /// Interface for MSU UI screens
     /// </summary>
@@ -98,57 +150,5 @@ namespace musicStudioUnit.Interfaces
         void RestartSystem();
 
         event EventHandler<SystemStatusChangedEventArgs> StatusChanged;
-    }
-}
-
-namespace flexpod.Interfaces
-{
-    // Event argument classes for interfaces
-    public class TemperatureChangedEventArgs : EventArgs
-    {
-        public float OldTemperature { get; set; }
-        public float NewTemperature { get; set; }
-    }
-
-    public class TemperatureStatusEventArgs : EventArgs
-    {
-        public float ExternalTemperature { get; set; }
-        public bool OverTemp { get; set; }
-        public bool PressureFault { get; set; }
-        public bool VoltageFault { get; set; }
-        public bool AirflowBlocked { get; set; }
-    }
-
-    public class PlaybackStatusChangedEventArgs : EventArgs
-    {
-        public bool IsPlaying { get; set; }
-        public string TrackName { get; set; }
-        public string ArtistName { get; set; }
-    }
-
-    public class TrackTimeChangedEventArgs : EventArgs
-    {
-        public int RemainingTimeSeconds { get; set; }
-        public string FormattedTime { get; set; }
-    }
-
-    public class CombinationChangedEventArgs : EventArgs
-    {
-        public StudioCombinationType OldCombination { get; set; }
-        public StudioCombinationType NewCombination { get; set; }
-        public List<string> CombinedMSUNames { get; set; }
-    }
-
-    public class UserLoginChangedEventArgs : EventArgs
-    {
-        public bool IsLoggedIn { get; set; }
-        public UserInfo User { get; set; }
-        public bool IsBirthday { get; set; }
-    }
-
-    public class SystemStatusChangedEventArgs : EventArgs
-    {
-        public string StatusMessage { get; set; }
-        public bool IsOnline { get; set; }
     }
 }
