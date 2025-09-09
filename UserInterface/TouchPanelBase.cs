@@ -2,15 +2,15 @@ using core_tools;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using System.Collections.Generic;
-using PepperDash.Core;
+using core_tools;
 using System.Collections.Concurrent;
-using PepperDash.Core;
+using core_tools;
 using Crestron.SimplSharpPro.CrestronThread;
 using Crestron.SimplSharpPro.DeviceSupport;
 using System;
 
 
-using PepperDash.Core;
+using core_tools;
 namespace musicStudioUnit
 {
     public abstract class TouchPanelBase: IKeyName, IHasBasicTriListWithSmartObject

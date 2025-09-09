@@ -10,7 +10,6 @@
   <ItemGroup>
     <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.133" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="PepperDashCore" Version="2.15.0" />
   </ItemGroup>
 
   <ItemGroup>

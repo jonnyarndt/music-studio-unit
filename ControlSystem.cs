@@ -1,5 +1,5 @@
 using System;
-using PepperDash.Core;
+using core_tools;
 using Crestron.SimplSharp;                          	// For Basic SIMPL# Classes
 using Crestron.SimplSharpPro;                       	// For Basic SIMPL#Pro classes
 using Crestron.SimplSharpPro.CrestronThread;        	// For Threading
@@ -25,7 +25,6 @@ namespace musicStudioUnit
         private HVACTemperatureUI _hvacTemperatureUI;
         private EnhancedMusicSystemController _musicController;
         private MusicBrowseUI _musicBrowseUI;
-        private LoyaltyID _userDatabase;
 
         /// <summary>
         /// ControlSystem Constructor. Starting point for the SIMPL#Pro program.
@@ -603,12 +602,7 @@ namespace musicStudioUnit
         {
             try
             {
-                Debug.Console(1, "Initializing User Database for loyalty identification...");
-                
-                // Create user database instance (LoyaltyID class from existing code)
-                _userDatabase = new LoyaltyID();
-                
-                Debug.Console(1, "User Database initialized successfully");
+                Debug.Console(1, "User Database initialization skipped - loyalty system removed");
             }
             catch (Exception ex)
             {
@@ -644,19 +638,13 @@ namespace musicStudioUnit
                     return;
                 }
 
-                if (_userDatabase == null)
-                {
-                    Debug.Console(0, "Cannot initialize MSU TouchPanel - User Database not available");
-                    return;
-                }
-
                 // Create Studio Combination Manager
                 var combinationManager = new musicStudioUnit.Services.StudioCombinationManager(
                     "studioCombination", _msuController?.Key ?? "default_msu", 0, 0, 1, new Dictionary<string, musicStudioUnit.Services.MusicStudioUnit>());
 
                 // Create MSU TouchPanel with all components
                 _msuTouchPanel = new MSUTouchPanel("msuTouchPanel", "MSU TouchPanel", panel,
-                    _msuController, _initializationService, _hvacController, _musicController, _userDatabase, combinationManager);
+                    _msuController, _initializationService, _hvacController, _musicController, combinationManager);
 
                 Debug.Console(1, "MSU TouchPanel initialized successfully with all screen handlers");
                 Debug.Console(1, "Available screens: Settings, User, Music, Temperature, Combine");

@@ -1,7 +1,7 @@
 using System;
-using PepperDash.Core;
+using core_tools;
 using System.Collections.Concurrent;
-using PepperDash.Core;
+using core_tools;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -25,7 +25,6 @@ namespace musicStudioUnit.UserInterface
         private readonly SystemInitializationService _initService;
         private readonly EnhancedHVACController _hvacController;
         private readonly EnhancedMusicSystemController _musicController;
-        private readonly LoyaltyID _userDatabase;
 
         // UI Screen Handlers
         private SettingsScreenUI _settingsScreen;
@@ -63,14 +62,13 @@ namespace musicStudioUnit.UserInterface
         public MSUTouchPanel(string keyId, string friendlyId, BasicTriListWithSmartObject panel,
                            MSUController msuController, SystemInitializationService initService,
                            EnhancedHVACController hvacController, EnhancedMusicSystemController musicController,
-                           LoyaltyID userDatabase, StudioCombinationManager combinationManager) 
+                           StudioCombinationManager combinationManager) 
             : base(keyId, friendlyId, panel)
         {
             _msuController = msuController ?? throw new ArgumentNullException(nameof(msuController));
             _initService = initService ?? throw new ArgumentNullException(nameof(initService));
             _hvacController = hvacController ?? throw new ArgumentNullException(nameof(hvacController));
             _musicController = musicController ?? throw new ArgumentNullException(nameof(musicController));
-            _userDatabase = userDatabase ?? throw new ArgumentNullException(nameof(userDatabase));
             _combinationManager = combinationManager ?? throw new ArgumentNullException(nameof(combinationManager));
 
             Debug.Console(1, this, "Initializing MSU TouchPanel");
@@ -147,7 +145,7 @@ namespace musicStudioUnit.UserInterface
                 _settingsScreen.ConfigurationReloadRequested += OnConfigurationReloadRequested;
 
                 // User Login Screen
-                _userLoginScreen = new UserLoginScreenUI(Panel, _userDatabase);
+                _userLoginScreen = new UserLoginScreenUI(Panel);
                 _userLoginScreen.UserLoggedIn += OnUserLoggedIn;
                 _userLoginScreen.UserLoggedOut += OnUserLoggedOut;
                 _userLoginScreen.GuestModeActivated += OnGuestModeActivated;

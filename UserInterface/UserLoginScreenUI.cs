@@ -1,7 +1,7 @@
 using System;
-using PepperDash.Core;
+using core_tools;
 using System.Text;
-using PepperDash.Core;
+using core_tools;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -18,7 +18,6 @@ namespace musicStudioUnit.UserInterface
     {
         private readonly BasicTriList _panel;
         private readonly StringBuilder _userIdBuilder = new StringBuilder(5); // Max 5 digits for user IDs up to 60,000
-        private readonly LoyaltyID _userDatabase;
         
         private bool _isLoggedIn = false;
         private int _currentUserId = 0;
@@ -35,18 +34,14 @@ namespace musicStudioUnit.UserInterface
         public int CurrentUserId => _currentUserId;
         public string CurrentUserName => _currentUserName;
 
-        public UserLoginScreenUI(BasicTriList panel, LoyaltyID userDatabase)
+        public UserLoginScreenUI(BasicTriList panel)
         {
             _panel = panel ?? throw new ArgumentNullException(nameof(panel));
-            _userDatabase = userDatabase ?? throw new ArgumentNullException(nameof(userDatabase));
 
             Debug.Console(1, "UserLoginScreenUI", "Initializing User Login screen UI");
 
             // Setup event handlers
             SetupTouchPanelEvents();
-
-            // Setup user database event handler
-            _userDatabase.UserName += OnUserDatabaseResponse;
 
             // Initialize UI display
             UpdateLoginDisplay();
@@ -177,8 +172,9 @@ namespace musicStudioUnit.UserInterface
                 Debug.Console(1, "UserLoginScreenUI", "Login requested for User ID: {0}", userId);
                 UpdateLoginStatus("Looking up user...");
 
-                // Query user database
-                _userDatabase.LookupUID(userId);
+                // Simulate user lookup (removed loyalty system dependency)
+                string userName = $"User{userId}";
+                HandleUserLogin(userId, userName);
             }
             catch (Exception ex)
             {
@@ -439,12 +435,6 @@ namespace musicStudioUnit.UserInterface
 
             try
             {
-                // Unsubscribe from user database events
-                if (_userDatabase != null)
-                {
-                    _userDatabase.UserName -= OnUserDatabaseResponse;
-                }
-
                 Debug.Console(1, "UserLoginScreenUI", "User Login screen UI disposed");
             }
             catch (Exception ex)

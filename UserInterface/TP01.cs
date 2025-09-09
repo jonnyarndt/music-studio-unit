@@ -1,13 +1,13 @@
 using System;
-using PepperDash.Core;
+using core_tools;
 using System.Text;
-using PepperDash.Core;
+using core_tools;
 using System.Linq;
-using PepperDash.Core;
+using core_tools;
 using System.Collections.Generic;
-using PepperDash.Core;
+using core_tools;
 using System.Collections.Concurrent;
-using PepperDash.Core;
+using core_tools;
 using core_tools;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
@@ -24,7 +24,7 @@ namespace musicStudioUnit
         private bool alreadyDisposed = false;
         private uint maxPageCount = 10;
         private CTimer onlinePageTransitionTimer;
-        private readonly LoyaltyID loyaltyID;
+
         internal override uint SubPage { get; set; }
         internal override uint MaxNumItems
         {
@@ -39,7 +39,7 @@ namespace musicStudioUnit
         readonly StringBuilder PinEntryBuilder = new StringBuilder(5);
         readonly StringBuilder PinEntryStarBuilder = new StringBuilder(5);
         internal SmartObjectNumeric PinKeypad;
-        internal SmartObjectDynamicList TelemetryList, PassengersList, MediaItemsList;
+        internal SmartObjectDynamicList TelemetryList;
         internal FlightTelemetry FlightTelemetryInfo { get; }
         private MSUController _msuController;
         #endregion
@@ -115,7 +115,6 @@ namespace musicStudioUnit
                 PageDictionary = new ConcurrentDictionary<uint, bool>();
                 PopupPageDictionary = new ConcurrentDictionary<uint, bool>();
                 PanelWidePopupPageDictionary = new ConcurrentDictionary<uint, bool>();
-                loyaltyID = new LoyaltyID();
 
                 Panel.OnlineStatusChange += (sender, args) => OnlineStatusChangeHandler(args);
 
@@ -315,18 +314,6 @@ namespace musicStudioUnit
                     {
                         //TelemetryList.Dispose();
                         TelemetryList = null;
-                    }
-
-                    if (PassengersList != null)
-                    {
-                        //PassengersList.Dispose();
-                        PassengersList = null;
-                    }
-
-                    if (MediaItemsList != null)
-                    {
-                        //MediaItemsList.Dispose();
-                        MediaItemsList = null;
                     }
                 }
                 // Dispose unmanaged resources here, meaning Release them explicitly (e.g., close file handles, free memory)
@@ -538,7 +525,7 @@ namespace musicStudioUnit
                 try 
                 { 
                     ushort.TryParse(PinEntryBuilder.ToString(), out ushort memberID);
-                    Global.MemberName = loyaltyID.LookupID(memberID);
+                    Global.MemberName = $"Member{memberID}"; // Simplified member lookup
                 }
                 catch (Exception e)
                 {

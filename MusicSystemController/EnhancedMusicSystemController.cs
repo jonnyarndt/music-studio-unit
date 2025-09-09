@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronIO;
-using PepperDash.Core;
+using core_tools;
 using core_tools;
 using musicStudioUnit.Configuration;
 using System.Text.RegularExpressions;
@@ -72,14 +72,14 @@ namespace musicStudioUnit.Devices
             _config = config;
             _msuUID = msuUID;
             
-            PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Initializing Enhanced Music System Controller for MSU: {0}", msuUID);
+            core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Initializing Enhanced Music System Controller for MSU: {0}", msuUID);
 
             // Initialize response queue and timeout timer
             _responseQueue = new CrestronQueue<string>(50);
             _responseTimeoutTimer = new CTimer(OnResponseTimeout, 10000);
 
             DeviceManager.AddDevice(key, this);
-            PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Enhanced Music System Controller created successfully");
+            core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Enhanced Music System Controller created successfully");
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace musicStudioUnit.Devices
         {
             try
             {
-                PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Initializing Enhanced Music System Controller");
+                core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Initializing Enhanced Music System Controller");
 
                 // Create command client for DMS commands
                 _commandClient = new TcpCoreClient(
@@ -113,7 +113,7 @@ namespace musicStudioUnit.Devices
                 // Connect command client
                 if (_commandClient.Connect())
                 {
-                    PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Music System Controller initialized successfully");
+                    core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Music System Controller initialized successfully");
                     
                     // Load initial catalog
                     new CTimer((obj) => LoadMusicCatalog(), 1000);
@@ -121,13 +121,13 @@ namespace musicStudioUnit.Devices
                 }
                 else
                 {
-                    PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Failed to connect to DMS");
+                    core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Failed to connect to DMS");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error initializing Music System Controller: {0}", ex.Message);
+                core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error initializing Music System Controller: {0}", ex.Message);
                 MusicSystemError?.Invoke(this, new MusicSystemErrorEventArgs { ErrorMessage = ex.Message });
                 return false;
             }
@@ -142,12 +142,12 @@ namespace musicStudioUnit.Devices
             {
                 try
                 {
-                    PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Loading music catalog from DMS...");
+                    core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Loading music catalog from DMS...");
 
                     // First, get the total artist count
                     if (GetArtistCount())
                     {
-                        PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Found {0} artists in catalog", _totalArtistCount);
+                        core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Found {0} artists in catalog", _totalArtistCount);
                         
                         // Load all artists in chunks of 10 (DMS limitation)
                         _artists.Clear();
@@ -161,7 +161,7 @@ namespace musicStudioUnit.Devices
                             }
                         }
 
-                        PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Loaded {0} artists from catalog", _artists.Count);
+                        core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Loaded {0} artists from catalog", _artists.Count);
                         
                         // Fire catalog updated event
                         CatalogUpdated?.Invoke(this, new MusicCatalogUpdatedEventArgs
@@ -172,12 +172,12 @@ namespace musicStudioUnit.Devices
                     }
                     else
                     {
-                        PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get artist count from DMS");
+                        core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get artist count from DMS");
                     }
                 }
                 catch (Exception ex)
                 {
-                    PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error loading music catalog: {0}", ex.Message);
+                    core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error loading music catalog: {0}", ex.Message);
                     MusicSystemError?.Invoke(this, new MusicSystemErrorEventArgs { ErrorMessage = ex.Message });
                 }
             }
@@ -192,7 +192,7 @@ namespace musicStudioUnit.Devices
             {
                 if (!SendCommandAndWaitForResponse("QDMS ARTIST COUNT?", out string response))
                 {
-                    PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get response for artist count");
+                    core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get response for artist count");
                     return false;
                 }
 
@@ -200,16 +200,16 @@ namespace musicStudioUnit.Devices
                 var match = Regex.Match(response, @"QDMS ARTIST COUNT (\d+)");
                 if (match.Success && int.TryParse(match.Groups[1].Value, out _totalArtistCount))
                 {
-                    PepperDash.Core.Debug.Console(2, "EnhancedMusicSystemController", "Artist count: {0}", _totalArtistCount);
+                    core_tools.Debug.Console(2, "EnhancedMusicSystemController", "Artist count: {0}", _totalArtistCount);
                     return true;
                 }
 
-                PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Invalid artist count response: {0}", response);
+                core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Invalid artist count response: {0}", response);
                 return false;
             }
             catch (Exception ex)
             {
-                PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error getting artist count: {0}", ex.Message);
+                core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error getting artist count: {0}", ex.Message);
                 return false;
             }
         }
@@ -227,7 +227,7 @@ namespace musicStudioUnit.Devices
                 
                 if (!SendCommandAndWaitForResponse(command, out string initialResponse))
                 {
-                    PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get response for artist range");
+                    core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get response for artist range");
                     return artists;
                 }
 
@@ -244,11 +244,11 @@ namespace musicStudioUnit.Devices
                     }
                 }
 
-                PepperDash.Core.Debug.Console(2, "EnhancedMusicSystemController", "Retrieved {0} artists from range {1}-{2}", artists.Count, startIndex, endIndex);
+                core_tools.Debug.Console(2, "EnhancedMusicSystemController", "Retrieved {0} artists from range {1}-{2}", artists.Count, startIndex, endIndex);
             }
             catch (Exception ex)
             {
-                PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error getting artist range: {0}", ex.Message);
+                core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error getting artist range: {0}", ex.Message);
             }
 
             return artists;
@@ -276,16 +276,16 @@ namespace musicStudioUnit.Devices
                         Name = artistName
                     });
 
-                    PepperDash.Core.Debug.Console(2, "EnhancedMusicSystemController", "Parsed artist: {0} - {1}", artistId, artistName);
+                    core_tools.Debug.Console(2, "EnhancedMusicSystemController", "Parsed artist: {0} - {1}", artistId, artistName);
                 }
                 else
                 {
-                    PepperDash.Core.Debug.Console(2, "EnhancedMusicSystemController", "Empty or invalid artist response: {0}", response);
+                    core_tools.Debug.Console(2, "EnhancedMusicSystemController", "Empty or invalid artist response: {0}", response);
                 }
             }
             catch (Exception ex)
             {
-                PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error processing artist response: {0}", ex.Message);
+                core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error processing artist response: {0}", ex.Message);
             }
 
             return artists;
@@ -306,13 +306,13 @@ namespace musicStudioUnit.Devices
                         return _artistTracks[artistId];
                     }
 
-                    PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Loading tracks for artist {0}", artistId);
+                    core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Loading tracks for artist {0}", artistId);
 
                     // Get track count for artist
                     string countCommand = string.Format("QDMS ARTIST {0} TRACK COUNT?", artistId);
                     if (!SendCommandAndWaitForResponse(countCommand, out string countResponse))
                     {
-                        PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get track count for artist {0}", artistId);
+                        core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get track count for artist {0}", artistId);
                         return new List<MusicTrack>();
                     }
 
@@ -320,12 +320,12 @@ namespace musicStudioUnit.Devices
                     var countMatch = Regex.Match(countResponse, string.Format(@"QDMS ARTIST {0} TRACK COUNT (\d+)", artistId));
                     if (!countMatch.Success || !int.TryParse(countMatch.Groups[1].Value, out int trackCount))
                     {
-                        PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Invalid track count response for artist {0}: {1}", artistId, countResponse);
+                        core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Invalid track count response for artist {0}: {1}", artistId, countResponse);
                         return new List<MusicTrack>();
                     }
 
                     _artistTrackCounts[artistId] = trackCount;
-                    PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Artist {0} has {1} tracks", artistId, trackCount);
+                    core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Artist {0} has {1} tracks", artistId, trackCount);
 
                     // Load all tracks in chunks of 10
                     var allTracks = new List<MusicTrack>();
@@ -339,12 +339,12 @@ namespace musicStudioUnit.Devices
                     // Cache the tracks
                     _artistTracks[artistId] = allTracks;
                     
-                    PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Loaded {0} tracks for artist {1}", allTracks.Count, artistId);
+                    core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Loaded {0} tracks for artist {1}", allTracks.Count, artistId);
                     return allTracks;
                 }
                 catch (Exception ex)
                 {
-                    PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error getting tracks for artist {0}: {1}", artistId, ex.Message);
+                    core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error getting tracks for artist {0}: {1}", artistId, ex.Message);
                     MusicSystemError?.Invoke(this, new MusicSystemErrorEventArgs { ErrorMessage = ex.Message });
                     return new List<MusicTrack>();
                 }
@@ -365,7 +365,7 @@ namespace musicStudioUnit.Devices
                 
                 if (!SendCommandAndWaitForResponse(command, out string initialResponse))
                 {
-                    PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get response for track range");
+                    core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get response for track range");
                     return tracks;
                 }
 
@@ -382,12 +382,12 @@ namespace musicStudioUnit.Devices
                     }
                 }
 
-                PepperDash.Core.Debug.Console(2, "EnhancedMusicSystemController", "Retrieved {0} tracks from range {1}-{2} for artist {3}", 
+                core_tools.Debug.Console(2, "EnhancedMusicSystemController", "Retrieved {0} tracks from range {1}-{2} for artist {3}", 
                     tracks.Count, startIndex, endIndex, artistId);
             }
             catch (Exception ex)
             {
-                PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error getting track range: {0}", ex.Message);
+                core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error getting track range: {0}", ex.Message);
             }
 
             return tracks;
@@ -415,16 +415,16 @@ namespace musicStudioUnit.Devices
                         Name = trackName
                     });
 
-                    PepperDash.Core.Debug.Console(2, "EnhancedMusicSystemController", "Parsed track: {0} - {1}", trackId, trackName);
+                    core_tools.Debug.Console(2, "EnhancedMusicSystemController", "Parsed track: {0} - {1}", trackId, trackName);
                 }
                 else
                 {
-                    PepperDash.Core.Debug.Console(2, "EnhancedMusicSystemController", "Empty or invalid track response: {0}", response);
+                    core_tools.Debug.Console(2, "EnhancedMusicSystemController", "Empty or invalid track response: {0}", response);
                 }
             }
             catch (Exception ex)
             {
-                PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error processing track response: {0}", ex.Message);
+                core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error processing track response: {0}", ex.Message);
             }
 
             return tracks;
@@ -441,11 +441,11 @@ namespace musicStudioUnit.Devices
                 {
                     if (_isPlaying)
                     {
-                        PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Cannot play track - another track is already playing. Stop current track first.");
+                        core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Cannot play track - another track is already playing. Stop current track first.");
                         return false;
                     }
 
-                    PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Starting playback: Track {0} ({1}) by {2}", trackId, trackName, artistName);
+                    core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Starting playback: Track {0} ({1}) by {2}", trackId, trackName, artistName);
 
                     // Get current IP address for feedback
                     var sysInfo = new SystemInformationMethods();
@@ -458,7 +458,7 @@ namespace musicStudioUnit.Devices
 
                     if (!SendCommandAndWaitForResponse(command, out string response))
                     {
-                        PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get response for play command");
+                        core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get response for play command");
                         return false;
                     }
 
@@ -472,7 +472,7 @@ namespace musicStudioUnit.Devices
                         _currentArtistName = artistName;
                         _remainingTimeSeconds = 0; // Will be updated by feedback
 
-                        PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Track playback started successfully");
+                        core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Track playback started successfully");
 
                         // Fire playback status changed event
                         PlaybackStatusChanged?.Invoke(this, new PlaybackStatusChangedEventArgs
@@ -487,13 +487,13 @@ namespace musicStudioUnit.Devices
                     }
                     else
                     {
-                        PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "DMS returned error for play command: {0}", response);
+                        core_tools.Debug.Console(0, "EnhancedMusicSystemController", "DMS returned error for play command: {0}", response);
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
-                    PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error playing track: {0}", ex.Message);
+                    core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error playing track: {0}", ex.Message);
                     MusicSystemError?.Invoke(this, new MusicSystemErrorEventArgs { ErrorMessage = ex.Message });
                     return false;
                 }
@@ -511,18 +511,18 @@ namespace musicStudioUnit.Devices
                 {
                     if (!_isPlaying)
                     {
-                        PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "No track currently playing");
+                        core_tools.Debug.Console(1, "EnhancedMusicSystemController", "No track currently playing");
                         return true;
                     }
 
-                    PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Stopping playback of track {0}", _currentTrackId);
+                    core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Stopping playback of track {0}", _currentTrackId);
 
                     // Build STOP command per Client-Scope.md
                     string command = string.Format("QDMS STOP {0} FOR {1}", _currentTrackId, _msuUID);
 
                     if (!SendCommandAndWaitForResponse(command, out string response))
                     {
-                        PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get response for stop command");
+                        core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Failed to get response for stop command");
                         return false;
                     }
 
@@ -540,7 +540,7 @@ namespace musicStudioUnit.Devices
                         _currentArtistName = "";
                         _remainingTimeSeconds = 0;
 
-                        PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Track playback stopped successfully");
+                        core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Track playback stopped successfully");
 
                         // Fire playback status changed event
                         PlaybackStatusChanged?.Invoke(this, new PlaybackStatusChangedEventArgs
@@ -555,13 +555,13 @@ namespace musicStudioUnit.Devices
                     }
                     else
                     {
-                        PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "DMS returned error for stop command: {0}", response);
+                        core_tools.Debug.Console(0, "EnhancedMusicSystemController", "DMS returned error for stop command: {0}", response);
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
-                    PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error stopping track: {0}", ex.Message);
+                    core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error stopping track: {0}", ex.Message);
                     MusicSystemError?.Invoke(this, new MusicSystemErrorEventArgs { ErrorMessage = ex.Message });
                     return false;
                 }
@@ -579,17 +579,17 @@ namespace musicStudioUnit.Devices
             {
                 if (!_commandClient.IsConnected)
                 {
-                    PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Cannot send command - not connected to DMS");
+                    core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Cannot send command - not connected to DMS");
                     return false;
                 }
 
                 if (_waitingForResponse)
                 {
-                    PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Cannot send command - already waiting for response");
+                    core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Cannot send command - already waiting for response");
                     return false;
                 }
 
-                PepperDash.Core.Debug.Console(2, "EnhancedMusicSystemController", "Sending DMS command: {0}", command);
+                core_tools.Debug.Console(2, "EnhancedMusicSystemController", "Sending DMS command: {0}", command);
 
                 // Clear any old responses
                 while (_responseQueue.Count > 0)
@@ -612,20 +612,20 @@ namespace musicStudioUnit.Devices
                 {
                     _waitingForResponse = false;
                     _responseTimeoutTimer.Stop();
-                    PepperDash.Core.Debug.Console(2, "EnhancedMusicSystemController", "Received DMS response: {0}", response);
+                    core_tools.Debug.Console(2, "EnhancedMusicSystemController", "Received DMS response: {0}", response);
                     return true;
                 }
                 else
                 {
                     _waitingForResponse = false;
-                    PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Timeout waiting for DMS response to: {0}", command);
+                    core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Timeout waiting for DMS response to: {0}", command);
                     return false;
                 }
             }
             catch (Exception ex)
             {
                 _waitingForResponse = false;
-                PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error sending command: {0}", ex.Message);
+                core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error sending command: {0}", ex.Message);
                 return false;
             }
         }
@@ -654,7 +654,7 @@ namespace musicStudioUnit.Devices
             }
             catch (Exception ex)
             {
-                PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error waiting for response: {0}", ex.Message);
+                core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error waiting for response: {0}", ex.Message);
                 return false;
             }
         }
@@ -667,17 +667,17 @@ namespace musicStudioUnit.Devices
             try
             {
                 string receivedData = Encoding.ASCII.GetString(args.Data).Trim();
-                PepperDash.Core.Debug.Console(2, "EnhancedMusicSystemController", "DMS command response received: {0}", receivedData);
+                core_tools.Debug.Console(2, "EnhancedMusicSystemController", "DMS command response received: {0}", receivedData);
 
                 // Queue the response for processing
                 if (!_responseQueue.Enqueue(receivedData))
                 {
-                    PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Response queue full, dropping response");
+                    core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Response queue full, dropping response");
                 }
             }
             catch (Exception ex)
             {
-                PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error processing command data: {0}", ex.Message);
+                core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error processing command data: {0}", ex.Message);
             }
         }
 
@@ -688,7 +688,7 @@ namespace musicStudioUnit.Devices
         {
             try
             {
-                PepperDash.Core.Debug.Console(2, "EnhancedMusicSystemController", "DMS feedback received: {0} bytes", data.Length);
+                core_tools.Debug.Console(2, "EnhancedMusicSystemController", "DMS feedback received: {0} bytes", data.Length);
 
                 // Parse time counter per Client-Scope.md: [51][51][51]<lsb><msb>[03]
                 if (data.Length == 6 && 
@@ -697,7 +697,7 @@ namespace musicStudioUnit.Devices
                     // Combine LSB and MSB to get remaining seconds
                     int remainingSeconds = (data[4] << 8) | data[3];
                     
-                    PepperDash.Core.Debug.Console(2, "EnhancedMusicSystemController", "Track time remaining: {0} seconds", remainingSeconds);
+                    core_tools.Debug.Console(2, "EnhancedMusicSystemController", "Track time remaining: {0} seconds", remainingSeconds);
 
                     _remainingTimeSeconds = remainingSeconds;
 
@@ -712,7 +712,7 @@ namespace musicStudioUnit.Devices
                     // If time reaches zero, track has finished
                     if (remainingSeconds == 0 && _isPlaying)
                     {
-                        PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Track playback completed");
+                        core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Track playback completed");
                         
                         _isPlaying = false;
                         int finishedTrackId = _currentTrackId;
@@ -735,12 +735,12 @@ namespace musicStudioUnit.Devices
                 }
                 else
                 {
-                    PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "Received non-time-counter feedback data");
+                    core_tools.Debug.Console(1, "EnhancedMusicSystemController", "Received non-time-counter feedback data");
                 }
             }
             catch (Exception ex)
             {
-                PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "Error processing feedback data: {0}", ex.Message);
+                core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Error processing feedback data: {0}", ex.Message);
             }
         }
 
@@ -749,7 +749,7 @@ namespace musicStudioUnit.Devices
         /// </summary>
         private void OnCommandClientConnected(object sender, EventArgs args)
         {
-            PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "DMS command client connected");
+            core_tools.Debug.Console(1, "EnhancedMusicSystemController", "DMS command client connected");
             Connected?.Invoke(this, new MusicSystemConnectedEventArgs());
         }
 
@@ -758,7 +758,7 @@ namespace musicStudioUnit.Devices
         /// </summary>
         private void OnCommandClientDisconnected(object sender, EventArgs args)
         {
-            PepperDash.Core.Debug.Console(1, "EnhancedMusicSystemController", "DMS command client disconnected");
+            core_tools.Debug.Console(1, "EnhancedMusicSystemController", "DMS command client disconnected");
             _waitingForResponse = false;
             Disconnected?.Invoke(this, new MusicSystemDisconnectedEventArgs());
         }
@@ -771,7 +771,7 @@ namespace musicStudioUnit.Devices
             if (_waitingForResponse)
             {
                 _waitingForResponse = false;
-                PepperDash.Core.Debug.Console(0, "EnhancedMusicSystemController", "DMS response timeout");
+                core_tools.Debug.Console(0, "EnhancedMusicSystemController", "DMS response timeout");
                 MusicSystemError?.Invoke(this, new MusicSystemErrorEventArgs 
                 { 
                     ErrorMessage = "DMS response timeout" 
