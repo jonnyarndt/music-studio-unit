@@ -1,6 +1,9 @@
 using System;
+using PepperDash.Core;
 using System.IO;
+using PepperDash.Core;
 using System.Xml.Serialization;
+using PepperDash.Core;
 using Crestron.SimplSharp;
 using Newtonsoft.Json;
 using core_tools;
@@ -217,12 +220,12 @@ namespace musicStudioUnit.Services
             
             // Try standard user directory
             string configPath = Path.Combine(userDir, "user", "msu.xml");
-            if (File.Exists(configPath))
+            if (Crestron.SimplSharp.CrestronIO.File.Exists(configPath))
                 return configPath;
 
             // Try alternate paths for different processor types
             configPath = Path.Combine(userDir, "msu.xml");
-            if (File.Exists(configPath))
+            if (Crestron.SimplSharp.CrestronIO.File.Exists(configPath))
                 return configPath;
 
             // Default to user directory path
@@ -232,7 +235,7 @@ namespace musicStudioUnit.Services
         /// <summary>
         /// Event handler for XML configuration loading
         /// </summary>
-        private void OnXmlConfigurationLoaded(object sender, XmlConfigLoadedEventArgs args)
+        private void OnXmlConfigurationLoaded(object sender, XmlConfigurationLoadedEventArgs args)
         {
             Debug.Console(1, this, "XML configuration loaded via parser");
             _localConfig = args.Configuration;
@@ -241,7 +244,7 @@ namespace musicStudioUnit.Services
         /// <summary>
         /// Event handler for XML configuration errors
         /// </summary>
-        private void OnXmlConfigurationError(object sender, XmlConfigErrorEventArgs args)
+        private void OnXmlConfigurationError(object sender, XmlConfigurationErrorEventArgs args)
         {
             Debug.Console(0, this, "XML configuration error: {0}", args.ErrorMessage);
         }

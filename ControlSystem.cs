@@ -1,4 +1,5 @@
 using System;
+using PepperDash.Core;
 using Crestron.SimplSharp;                          	// For Basic SIMPL# Classes
 using Crestron.SimplSharpPro;                       	// For Basic SIMPL#Pro classes
 using Crestron.SimplSharpPro.CrestronThread;        	// For Threading
@@ -43,7 +44,7 @@ namespace musicStudioUnit
         {
             try
             {
-                Thread.MaxNumberOfUserThreads = 400;
+                Crestron.SimplSharpPro.CrestronThread.Thread.MaxNumberOfUserThreads = 400;
                 Global.ControlSystem = this;
                 Global.DIO = new DigitalIO();
 

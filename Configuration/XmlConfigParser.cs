@@ -1,7 +1,11 @@
 using System;
+using PepperDash.Core;
 using System.IO;
+using PepperDash.Core;
 using System.Xml;
+using PepperDash.Core;
 using System.Xml.Serialization;
+using PepperDash.Core;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronIO;
 using core_tools;
@@ -47,7 +51,7 @@ namespace musicStudioUnit.Configuration
                 Debug.Console(1, this, "Loading XML configuration from: {0}", configPath);
 
                 // Check if file exists
-                if (!File.Exists(configPath))
+                if (!Crestron.SimplSharp.CrestronIO.File.Exists(configPath))
                 {
                     var error = string.Format("Configuration file not found: {0}", configPath);
                     Debug.Console(0, this, error);
@@ -216,9 +220,9 @@ namespace musicStudioUnit.Configuration
         {
             try
             {
-                // Use StreamReader for robust file reading similar to core_tools pattern
-                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-                using (StreamReader sr = new StreamReader(fs))
+                // Use Crestron.SimplSharp.CrestronIO.StreamReader for robust file reading similar to core_tools pattern
+                using (Crestron.SimplSharp.CrestronIO.FileStream fs = new Crestron.SimplSharp.CrestronIO.FileStream(filePath, Crestron.SimplSharp.CrestronIO.FileMode.Open, Crestron.SimplSharp.CrestronIO.FileAccess.Read))
+                using (Crestron.SimplSharp.CrestronIO.StreamReader sr = new Crestron.SimplSharp.CrestronIO.StreamReader(fs))
                 {
                     string content = sr.ReadToEnd();
                     Debug.Console(2, this, "Read {0} characters from configuration file", content.Length);
@@ -260,7 +264,7 @@ namespace musicStudioUnit.Configuration
                 Debug.Console(2, this, "XML structure validation passed");
                 return true;
             }
-            catch (XmlException ex)
+            catch (System.Xml.XmlException ex)
             {
                 Debug.Console(0, this, "XML validation error: {0}", ex.Message);
                 return false;
@@ -272,7 +276,7 @@ namespace musicStudioUnit.Configuration
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(LocalConfiguration));
-                using (StringReader reader = new StringReader(xmlContent))
+                using (Crestron.SimplSharp.CrestronIO.StringReader reader = new Crestron.SimplSharp.CrestronIO.StringReader(xmlContent))
                 {
                     LocalConfiguration config = (LocalConfiguration)serializer.Deserialize(reader);
                     return config;
@@ -292,7 +296,7 @@ namespace musicStudioUnit.Configuration
             
             // Try user subdirectory first (standard for RMC4)
             string userDir = Path.Combine(currentDir, "user");
-            if (Directory.Exists(userDir))
+            if (Crestron.SimplSharp.CrestronIO.Directory.Exists(userDir))
             {
                 Debug.Console(2, this, "Using user directory: {0}", userDir);
                 return userDir;

@@ -2,6 +2,7 @@ using core_tools;
 using Crestron.SimplSharp;
 using System;
 
+using PepperDash.Core;
 namespace musicStudioUnit
 {
     internal class FlightTelemetry : IKeyName, IDisposable

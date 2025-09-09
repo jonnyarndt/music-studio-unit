@@ -93,7 +93,7 @@ namespace musicStudioUnit.UserInterface
             _panel = panel ?? throw new ArgumentNullException(nameof(panel));
             _musicController = musicController ?? throw new ArgumentNullException(nameof(musicController));
 
-            PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Initializing enhanced music screen UI");
+            PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Initializing enhanced music screen UI");
 
             InitializeUI();
         }
@@ -119,11 +119,11 @@ namespace musicStudioUnit.UserInterface
                     ShowArtistSelection();
                     _isInitialized = true;
 
-                    PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Music screen initialized successfully");
+                    PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Music screen initialized successfully");
                 }
                 catch (Exception ex)
                 {
-                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Error initializing music screen: {0}", ex.Message);
+                    PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Error initializing music screen: {0}", ex.Message);
                 }
             }
         }
@@ -152,7 +152,7 @@ namespace musicStudioUnit.UserInterface
                     break;
             }
 
-            PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Music screen shown - State: {0}", _currentState);
+            PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Music screen shown - State: {0}", _currentState);
         }
 
         /// <summary>
@@ -175,12 +175,12 @@ namespace musicStudioUnit.UserInterface
 
             try
             {
-                PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Refreshing music catalog");
+                PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Refreshing music catalog");
                 _musicController?.RefreshCatalog();
             }
             catch (Exception ex)
             {
-                PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Error refreshing catalog: {0}", ex.Message);
+                PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Error refreshing catalog: {0}", ex.Message);
                 ShowError("Failed to refresh music catalog");
             }
         }
@@ -204,11 +204,11 @@ namespace musicStudioUnit.UserInterface
                 // Initialize with disconnected state
                 UpdateConnectionStatus();
 
-                PepperDash.Core.PepperDash.Core.Debug.Console(2, "MusicScreenUI", "UI initialized");
+                PepperDash.Core.Core.Debug.Console(2, "MusicScreenUI", "UI initialized");
             }
             catch (Exception ex)
             {
-                PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Error initializing UI: {0}", ex.Message);
+                PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Error initializing UI: {0}", ex.Message);
             }
         }
 
@@ -223,7 +223,7 @@ namespace musicStudioUnit.UserInterface
                 _musicController.Disconnected += OnMusicSystemDisconnected;
                 _musicController.MusicSystemError += OnMusicSystemError;
 
-                PepperDash.Core.PepperDash.Core.Debug.Console(2, "MusicScreenUI", "Event handlers configured");
+                PepperDash.Core.Core.Debug.Console(2, "MusicScreenUI", "Event handlers configured");
             }
         }
 
@@ -297,7 +297,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Error handling button press for join {0}: {1}", join, ex.Message);
+                PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Error handling button press for join {0}: {1}", join, ex.Message);
             }
         }
 
@@ -325,7 +325,7 @@ namespace musicStudioUnit.UserInterface
                         _selectedArtistId = selectedArtist.Id;
                         _selectedArtistName = selectedArtist.Name;
 
-                        PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Artist selected: {0} - {1}", 
+                        PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Artist selected: {0} - {1}", 
                             selectedArtist.Id, selectedArtist.Name);
 
                         // Load tracks for selected artist
@@ -334,7 +334,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Error selecting artist: {0}", ex.Message);
+                    PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Error selecting artist: {0}", ex.Message);
                     ShowError("Error selecting artist");
                 }
             }
@@ -360,7 +360,7 @@ namespace musicStudioUnit.UserInterface
                         _selectedTrackId = selectedTrack.Id;
                         _selectedTrackName = selectedTrack.Name;
 
-                        PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Track selected: {0} - {1}", 
+                        PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Track selected: {0} - {1}", 
                             selectedTrack.Id, selectedTrack.Name);
 
                         // Start playback per Client-Scope.md protocol
@@ -369,7 +369,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Error selecting track: {0}", ex.Message);
+                    PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Error selecting track: {0}", ex.Message);
                     ShowError("Error selecting track");
                 }
             }
@@ -386,13 +386,13 @@ namespace musicStudioUnit.UserInterface
                     if (status.IsPlaying)
                     {
                         // Stop current playback
-                        PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Stopping playback - Track: {0}", _selectedTrackId);
+                        PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Stopping playback - Track: {0}", _selectedTrackId);
                         _musicController.StopTrack(_selectedTrackId);
                     }
                     else if (_selectedTrackId > 0)
                     {
                         // Resume/start playback of selected track
-                        PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Starting playback - Track: {0}", _selectedTrackId);
+                        PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Starting playback - Track: {0}", _selectedTrackId);
                         StartTrackPlayback(_selectedTrackId, _selectedTrackName, _selectedArtistName);
                     }
                     else
@@ -402,7 +402,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Error handling play/stop: {0}", ex.Message);
+                    PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Error handling play/stop: {0}", ex.Message);
                     ShowError("Playback control error");
                 }
             }
@@ -421,7 +421,7 @@ namespace musicStudioUnit.UserInterface
             _currentTrackPage = 1;
             ShowArtistSelection();
 
-            PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Navigated back to artist selection");
+            PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Navigated back to artist selection");
         }
 
         private void OnBackToBrowse()
@@ -438,7 +438,7 @@ namespace musicStudioUnit.UserInterface
                 ShowArtistSelection();
             }
 
-            PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Navigated back to browse - State: {0}", _currentState);
+            PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Navigated back to browse - State: {0}", _currentState);
         }
 
         private void OnRefreshCatalog()
@@ -457,7 +457,7 @@ namespace musicStudioUnit.UserInterface
             {
                 _currentArtistPage--;
                 UpdateArtistList();
-                PepperDash.Core.PepperDash.Core.Debug.Console(2, "MusicScreenUI", "Artist page: {0}", _currentArtistPage);
+                PepperDash.Core.Core.Debug.Console(2, "MusicScreenUI", "Artist page: {0}", _currentArtistPage);
             }
         }
 
@@ -468,7 +468,7 @@ namespace musicStudioUnit.UserInterface
             {
                 _currentArtistPage++;
                 UpdateArtistList();
-                PepperDash.Core.PepperDash.Core.Debug.Console(2, "MusicScreenUI", "Artist page: {0}", _currentArtistPage);
+                PepperDash.Core.Core.Debug.Console(2, "MusicScreenUI", "Artist page: {0}", _currentArtistPage);
             }
         }
 
@@ -478,7 +478,7 @@ namespace musicStudioUnit.UserInterface
             {
                 _currentTrackPage--;
                 UpdateTrackList();
-                PepperDash.Core.PepperDash.Core.Debug.Console(2, "MusicScreenUI", "Track page: {0}", _currentTrackPage);
+                PepperDash.Core.Core.Debug.Console(2, "MusicScreenUI", "Track page: {0}", _currentTrackPage);
             }
         }
 
@@ -489,7 +489,7 @@ namespace musicStudioUnit.UserInterface
             {
                 _currentTrackPage++;
                 UpdateTrackList();
-                PepperDash.Core.PepperDash.Core.Debug.Console(2, "MusicScreenUI", "Track page: {0}", _currentTrackPage);
+                PepperDash.Core.Core.Debug.Console(2, "MusicScreenUI", "Track page: {0}", _currentTrackPage);
             }
         }
 
@@ -501,7 +501,7 @@ namespace musicStudioUnit.UserInterface
         {
             try
             {
-                PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Starting playback - Track: {0}, Artist: {1}", trackName, artistName);
+                PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Starting playback - Track: {0}, Artist: {1}", trackName, artistName);
 
                 bool success = _musicController.PlayTrack(trackId, trackName, artistName);
 
@@ -525,7 +525,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Error starting playback: {0}", ex.Message);
+                PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Error starting playback: {0}", ex.Message);
                 ShowError("Playback start error");
             }
         }
@@ -534,7 +534,7 @@ namespace musicStudioUnit.UserInterface
         {
             try
             {
-                PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Loading tracks for artist {0}", artistId);
+                PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Loading tracks for artist {0}", artistId);
 
                 _currentTracks = _musicController.GetTracksForArtist(artistId);
                 _currentTrackPage = 1;
@@ -542,11 +542,11 @@ namespace musicStudioUnit.UserInterface
 
                 ShowTrackSelection();
 
-                PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Loaded {0} tracks for artist {1}", _currentTracks.Count, artistId);
+                PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Loaded {0} tracks for artist {1}", _currentTracks.Count, artistId);
             }
             catch (Exception ex)
             {
-                PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Error loading tracks: {0}", ex.Message);
+                PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Error loading tracks: {0}", ex.Message);
                 ShowError("Failed to load tracks");
             }
         }
@@ -570,7 +570,7 @@ namespace musicStudioUnit.UserInterface
             // Update screen title
             _panel.StringInput[MSUTouchPanelJoins.Music.ScreenTitle].StringValue = "Select Artist";
 
-            PepperDash.Core.PepperDash.Core.Debug.Console(2, "MusicScreenUI", "Showing artist selection");
+            PepperDash.Core.Core.Debug.Console(2, "MusicScreenUI", "Showing artist selection");
         }
 
         private void ShowTrackSelection()
@@ -589,7 +589,7 @@ namespace musicStudioUnit.UserInterface
             _panel.StringInput[MSUTouchPanelJoins.Music.ScreenTitle].StringValue = 
                 string.Format("Select Track - {0}", _selectedArtistName);
 
-            PepperDash.Core.PepperDash.Core.Debug.Console(2, "MusicScreenUI", "Showing track selection for artist: {0}", _selectedArtistName);
+            PepperDash.Core.Core.Debug.Console(2, "MusicScreenUI", "Showing track selection for artist: {0}", _selectedArtistName);
         }
 
         private void ShowNowPlaying()
@@ -607,7 +607,7 @@ namespace musicStudioUnit.UserInterface
             // Update screen title
             _panel.StringInput[MSUTouchPanelJoins.Music.ScreenTitle].StringValue = "Now Playing";
 
-            PepperDash.Core.PepperDash.Core.Debug.Console(2, "MusicScreenUI", "Showing now playing");
+            PepperDash.Core.Core.Debug.Console(2, "MusicScreenUI", "Showing now playing");
         }
 
         private void UpdateArtistList()
@@ -646,12 +646,12 @@ namespace musicStudioUnit.UserInterface
                 // Update pagination
                 UpdateArtistPagination();
 
-                PepperDash.Core.PepperDash.Core.Debug.Console(2, "MusicScreenUI", "Updated artist list - page {0}, showing {1} artists", 
+                PepperDash.Core.Core.Debug.Console(2, "MusicScreenUI", "Updated artist list - page {0}, showing {1} artists", 
                     _currentArtistPage, endIndex - startIndex);
             }
             catch (Exception ex)
             {
-                PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Error updating artist list: {0}", ex.Message);
+                PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Error updating artist list: {0}", ex.Message);
             }
         }
 
@@ -685,12 +685,12 @@ namespace musicStudioUnit.UserInterface
                 // Update pagination
                 UpdateTrackPagination();
 
-                PepperDash.Core.PepperDash.Core.Debug.Console(2, "MusicScreenUI", "Updated track list - page {0}, showing {1} tracks", 
+                PepperDash.Core.Core.Debug.Console(2, "MusicScreenUI", "Updated track list - page {0}, showing {1} tracks", 
                     _currentTrackPage, endIndex - startIndex);
             }
             catch (Exception ex)
             {
-                PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Error updating track list: {0}", ex.Message);
+                PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Error updating track list: {0}", ex.Message);
             }
         }
 
@@ -745,11 +745,11 @@ namespace musicStudioUnit.UserInterface
                 string statusText = status.IsPlaying ? "Playing" : "Stopped";
                 _panel.StringInput[MSUTouchPanelJoins.Music.PlaybackStatus].StringValue = statusText;
 
-                PepperDash.Core.PepperDash.Core.Debug.Console(2, "MusicScreenUI", "Updated now playing display - Status: {0}", statusText);
+                PepperDash.Core.Core.Debug.Console(2, "MusicScreenUI", "Updated now playing display - Status: {0}", statusText);
             }
             catch (Exception ex)
             {
-                PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Error updating now playing display: {0}", ex.Message);
+                PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Error updating now playing display: {0}", ex.Message);
             }
         }
 
@@ -765,7 +765,7 @@ namespace musicStudioUnit.UserInterface
             bool browsingEnabled = connected && IsBrowsingAllowed;
             _panel.BooleanInput[MSUTouchPanelJoins.Music.BrowsingEnabled].BoolValue = browsingEnabled;
 
-            PepperDash.Core.PepperDash.Core.Debug.Console(2, "MusicScreenUI", "Connection status updated - Connected: {0}, Browsing: {1}", 
+            PepperDash.Core.Core.Debug.Console(2, "MusicScreenUI", "Connection status updated - Connected: {0}, Browsing: {1}", 
                 connected, browsingEnabled);
         }
 
@@ -780,7 +780,7 @@ namespace musicStudioUnit.UserInterface
                 _panel.BooleanInput[MSUTouchPanelJoins.Music.ErrorVisible].BoolValue = false;
             }, 3000);
 
-            PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Error displayed: {0}", message);
+            PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Error displayed: {0}", message);
         }
 
         private void ClearArtistList()
@@ -822,7 +822,7 @@ namespace musicStudioUnit.UserInterface
 
         private void OnCatalogUpdated(object sender, EventArgs e)
         {
-            PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Catalog updated - refreshing display");
+            PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Catalog updated - refreshing display");
 
             // Refresh current view
             _currentArtists.Clear();
@@ -836,7 +836,7 @@ namespace musicStudioUnit.UserInterface
 
         private void OnPlaybackStatusChanged(object sender, PlaybackStatusEventArgs e)
         {
-            PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Playback status changed - Playing: {0}", e.Status.IsPlaying);
+            PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Playback status changed - Playing: {0}", e.Status.IsPlaying);
 
             // Update browsing availability per Client-Scope.md (only when stopped)
             UpdateConnectionStatus();
@@ -850,7 +850,7 @@ namespace musicStudioUnit.UserInterface
             // If playback stopped automatically (time reached 0:00), return to artist selection
             if (!e.Status.IsPlaying && e.Status.RemainingTimeSeconds == 0)
             {
-                PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Track finished - returning to artist selection");
+                PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Track finished - returning to artist selection");
                 _currentState = BrowseState.ArtistSelection;
                 ShowArtistSelection();
             }
@@ -875,20 +875,20 @@ namespace musicStudioUnit.UserInterface
 
         private void OnMusicSystemConnected(object sender, EventArgs e)
         {
-            PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Music system connected");
+            PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Music system connected");
             UpdateConnectionStatus();
         }
 
         private void OnMusicSystemDisconnected(object sender, EventArgs e)
         {
-            PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Music system disconnected");
+            PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Music system disconnected");
             UpdateConnectionStatus();
             ShowError("Music system disconnected");
         }
 
         private void OnMusicSystemError(object sender, musicStudioUnit.MusicSystemController.MusicSystemErrorEventArgs e)
         {
-            PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Music system error: {0}", e.ErrorMessage);
+            PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Music system error: {0}", e.ErrorMessage);
             ShowError(e.ErrorMessage);
         }
 
@@ -914,11 +914,11 @@ namespace musicStudioUnit.UserInterface
                 }
 
                 _disposed = true;
-                PepperDash.Core.PepperDash.Core.Debug.Console(1, "MusicScreenUI", "Disposed");
+                PepperDash.Core.Core.Debug.Console(1, "MusicScreenUI", "Disposed");
             }
             catch (Exception ex)
             {
-                PepperDash.Core.PepperDash.Core.Debug.Console(0, "MusicScreenUI", "Error during disposal: {0}", ex.Message);
+                PepperDash.Core.Core.Debug.Console(0, "MusicScreenUI", "Error during disposal: {0}", ex.Message);
             }
         }
 

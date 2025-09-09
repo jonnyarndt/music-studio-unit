@@ -1,7 +1,11 @@
 using System;
+using PepperDash.Core;
 using System.Collections.Generic;
+using PepperDash.Core;
 using System.Net.Sockets;
+using PepperDash.Core;
 using System.Threading;
+using PepperDash.Core;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronIO;
 using core_tools;
@@ -431,7 +435,7 @@ namespace musicStudioUnit.Devices
         {
             try
             {
-                if (Crestron.SimplSharp.CrestronIO.File.Exists(_setpointFilePath))
+                if (Crestron.SimplSharp.CrestronIO.Crestron.SimplSharp.CrestronIO.File.Exists(_setpointFilePath))
                 {
                     var fileStream = Crestron.SimplSharp.CrestronIO.File.OpenText(_setpointFilePath);
                     var lines = new List<string>();
