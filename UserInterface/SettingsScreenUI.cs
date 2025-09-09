@@ -92,8 +92,8 @@ namespace musicStudioUnit.UserInterface
                 // Update status
                 UpdateConfigurationStatus("Reloading configuration...");
 
-                // Trigger configuration reload
-                ConfigurationReloadRequested?.Invoke(this, 
+                // Trigger configuration reload event
+                ConfigurationReloadRequested?.Invoke(this, EventArgs.Empty);
 
                 // The actual reload will be handled by the initialization service
                 if (_initService != null)
