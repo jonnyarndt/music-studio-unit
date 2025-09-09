@@ -37,8 +37,7 @@ namespace musicStudioUnit.UserInterface
         private TemperatureScreenUI _temperatureScreen;
         private MusicScreenUI _musicScreen;
         private CombineScreenUI _combineScreen;
-        private StudioCombinationManager _combinationManager;
-        private StudioCombinationManager _combinationManager;
+    private StudioCombinationManager _combinationManager;
 
         // State tracking
         private MSUTouchPanelJoins.Pages _currentPage = MSUTouchPanelJoins.Pages.Settings;
