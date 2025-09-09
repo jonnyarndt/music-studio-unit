@@ -1,8 +1,6 @@
-using System;
 using core_tools;
 using Crestron.SimplSharp;
-using core_tools;
-
+using System;
 namespace musicStudioUnit.Services
 {
     /// <summary>

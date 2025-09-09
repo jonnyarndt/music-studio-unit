@@ -1,11 +1,8 @@
+using core_tools;
 using System;
-using core_tools;
-using core_tools;
 using System.Linq;
-using core_tools;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
-
 namespace musicStudioUnit
 {
     public class SmartObjectDynamicList : SmartObjectHelperBase

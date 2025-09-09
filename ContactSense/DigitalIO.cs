@@ -2,10 +2,7 @@ using Crestron.SimplSharpPro;
 using core_tools;
 using Crestron.SimplSharp.Net;
 using System.Windows.Input;
-using core_tools;
 using System;
-
-using core_tools;
 namespace musicStudioUnit
 {
     internal class DigitalIO : IDisposable

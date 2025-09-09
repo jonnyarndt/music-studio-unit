@@ -1,15 +1,20 @@
-using System;
 using core_tools;
 using System.Collections.Concurrent;
-using core_tools;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
-using core_tools;
 using musicStudioUnit.Services;
 using musicStudioUnit.Configuration;
 using musicStudioUnit.Devices;
 
+using System;
+using System.Collections.Concurrent;
+using Crestron.SimplSharp;
+using Crestron.SimplSharpPro;
+using Crestron.SimplSharpPro.DeviceSupport;
+using musicStudioUnit.Services;
+using musicStudioUnit.Configuration;
+using musicStudioUnit.Devices;
 namespace musicStudioUnit.UserInterface
 {
     /// <summary>
@@ -33,12 +38,12 @@ namespace musicStudioUnit.UserInterface
         private MusicScreenUI _musicScreen;
         private CombineScreenUI _combineScreen;
         private StudioCombinationManager _combinationManager;
+        private StudioCombinationManager _combinationManager;
 
         // State tracking
         private MSUTouchPanelJoins.Pages _currentPage = MSUTouchPanelJoins.Pages.Settings;
         private bool _isUserLoggedIn = false;
         private string _currentUserName = string.Empty;
-        private bool _isMusicPlaying = false;
         private string _currentTrackInfo = string.Empty;
 
         #endregion
@@ -89,6 +94,7 @@ namespace musicStudioUnit.UserInterface
 
             // Set initial page to Settings per Client-Scope.md requirement
             NavigateToPage(MSUTouchPanelJoins.Pages.Settings);
+                    NavigateToPage(MSUTouchPanelJoins.Pages.Settings);
 
             // Initialize menu bar display
             UpdateMenuBar();

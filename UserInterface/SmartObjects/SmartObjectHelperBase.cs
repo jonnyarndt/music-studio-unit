@@ -1,8 +1,6 @@
+using core_tools;
 using System;
-using core_tools;
-using core_tools;
 using Crestron.SimplSharpPro;
-
 namespace musicStudioUnit
 {
     public class SmartObjectHelperBase

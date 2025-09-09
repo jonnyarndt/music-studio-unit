@@ -8,7 +8,6 @@ using Crestron.SimplSharpPro.DeviceSupport;
 using musicStudioUnit.Devices;
 using musicStudioUnit.UserInterface;
 using musicStudioUnit.MusicSystemController;
-
 namespace musicStudioUnit.UserInterface
 {
     /// <summary>
@@ -169,7 +168,7 @@ namespace musicStudioUnit.UserInterface
         /// <summary>
         /// Refresh the music catalog from the server
         /// </summary>
-        public void RefreshCatalog()
+        public void RefreshCatalogFromServer()
         {
             if (_disposed) return;
 
@@ -200,7 +199,6 @@ namespace musicStudioUnit.UserInterface
 
                 // Setup touch panel button events
                 SetupTouchPanelEvents();
-
                 // Initialize with disconnected state
                 UpdateConnectionStatus();
 
@@ -209,6 +207,7 @@ namespace musicStudioUnit.UserInterface
             catch (Exception ex)
             {
                 Debug.Console(0, "MusicScreenUI", "Error initializing UI: {0}", ex.Message);
+        
             }
         }
 

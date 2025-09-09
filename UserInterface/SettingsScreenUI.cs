@@ -1,14 +1,11 @@
-using System;
 using core_tools;
 using System.Globalization;
-using core_tools;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using musicStudioUnit.Configuration;
 using musicStudioUnit.Services;
-using core_tools;
-
+using System;
 namespace musicStudioUnit.UserInterface
 {
     /// <summary>
@@ -22,7 +19,6 @@ namespace musicStudioUnit.UserInterface
         private readonly MSUController _msuController;
         private readonly SystemInitializationService _initService;
         private CTimer _timeUpdateTimer;
-        private bool _disposed = false;
 
         // Update intervals
         private const int TimeUpdateInterval = 1000; // Update time every second
@@ -62,6 +58,7 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         private void SetupTouchPanelEvents()
         {
+        
             _panel.SigChange += (device, args) =>
             {
                 if (args.Sig.Number == (uint)MSUTouchPanelJoins.SettingsScreen.ReloadConfigButton && 
@@ -97,7 +94,6 @@ namespace musicStudioUnit.UserInterface
 
                 // Trigger configuration reload
                 ConfigurationReloadRequested?.Invoke(this, 
-                    new ConfigurationReloadEventArgs("User requested reload"));
 
                 // The actual reload will be handled by the initialization service
                 if (_initService != null)
@@ -177,6 +173,7 @@ namespace musicStudioUnit.UserInterface
                 var config = _msuController?.GetCurrentConfiguration();
                 if (config?.LocalConfig != null)
                 {
+                    
                     // MSU Name from remote configuration
                     var remoteConfig = _msuController.GetRemoteConfiguration();
                     var msuInfo = remoteConfig?.GetMSUByMAC(InitializationManager.ProcessorMAC);

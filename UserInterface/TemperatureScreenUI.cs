@@ -8,7 +8,6 @@ using Crestron.SimplSharpPro.DeviceSupport;
 using musicStudioUnit.Configuration;
 using musicStudioUnit.Services;
 using musicStudioUnit.Devices;
-
 namespace musicStudioUnit.UserInterface
 {
     /// <summary>
@@ -59,7 +58,6 @@ namespace musicStudioUnit.UserInterface
             _hvacController.Disconnected += OnHVACDisconnected;
             _hvacController.HVACError += OnHVACError;
 
-            // Subscribe to MSU combination events
             if (_msuController != null)
             {
                 _msuController.CombinationChanged += OnCombinationChanged;
@@ -95,7 +93,6 @@ namespace musicStudioUnit.UserInterface
                         OnTemperatureUpPressed();
                         break;
                     case (uint)MSUTouchPanelJoins.TemperatureScreen.TempDownButton:
-                        OnTemperatureDownPressed();
                         break;
                     case (uint)MSUTouchPanelJoins.TemperatureScreen.PresetButton1:
                         OnPresetButtonPressed(0);
@@ -135,6 +132,7 @@ namespace musicStudioUnit.UserInterface
                         Debug.Console(1, "TemperatureScreenUI", "Temperature {0}°C exceeds maximum (50°C)", newTemp);
                         ShowTemperatureError("Maximum temperature reached");
                         return;
+                        
                     }
 
                     Debug.Console(1, "TemperatureScreenUI", "Temperature UP: {0:F1}°C -> {1:F1}°C", 
@@ -205,7 +203,6 @@ namespace musicStudioUnit.UserInterface
             }
         }
 
-        /// <summary>
         /// Set temperature for current zones with nonvolatile storage
         /// </summary>
         private void SetTemperature(float temperature)
