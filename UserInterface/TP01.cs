@@ -1,14 +1,7 @@
 using System;
 using core_tools;
 using System.Text;
-using core_tools;
-using System.Linq;
-using core_tools;
-using System.Collections.Generic;
-using core_tools;
 using System.Collections.Concurrent;
-using core_tools;
-using core_tools;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharp.CrestronIO;
@@ -39,8 +32,6 @@ namespace musicStudioUnit
         readonly StringBuilder PinEntryBuilder = new StringBuilder(5);
         readonly StringBuilder PinEntryStarBuilder = new StringBuilder(5);
         internal SmartObjectNumeric PinKeypad;
-        internal SmartObjectDynamicList TelemetryList;
-        internal FlightTelemetry FlightTelemetryInfo { get; }
         private MSUController _msuController;
         #endregion
 
@@ -95,7 +86,7 @@ namespace musicStudioUnit
         /// <summary>
         /// Default Constructor for TP01
         /// </summary>
-        internal TP01(string keyId, string friendlyId, BasicTriListWithSmartObject panel, FlightTelemetry flightTelemetry) : base(keyId, friendlyId, panel)
+        internal TP01(string keyId, string friendlyId, BasicTriListWithSmartObject panel) : base(keyId, friendlyId, panel)
         {
             try
             {
@@ -104,7 +95,6 @@ namespace musicStudioUnit
                 
                 DeviceManager.AddDevice(Key, this);             
                 Panel = panel;
-                FlightTelemetryInfo = flightTelemetry;
 
                 SubPageJoinStart = PageJoinStart + MaxNumItems;
                 PopupPageJoinStart = SubPageJoinStart + MaxNumItems;
@@ -145,14 +135,6 @@ namespace musicStudioUnit
 
                 if(Panel.SmartObjects.Contains((uint)TouchPanelJoins.SmartObject.Keypad)) { PinKeypad = new SmartObjectNumeric(Panel.SmartObjects[(uint)TouchPanelJoins.SmartObject.Keypad], true); }
                 SetupPinModal();
-
-                if (Panel.SmartObjects.Contains((uint)TouchPanelJoins.SmartObject.FlightTelemetry)) { TelemetryList = new SmartObjectDynamicList(Panel.SmartObjects[(uint)TouchPanelJoins.SmartObject.FlightTelemetry], true, 3100); }
-                ResetTelemetryList();
-                PopulateTelemetryList();
-                PopulateTelemetryTopBarIcons();
-
-                // add subscribe to FlightTelemetryDataReceived event
-                flightTelemetry.DataReceived += (s, e) => { Debug.Console(2, this, "FlightTelemetryDataReceived event raised"); };
             }
             catch (Exception e)
             {
@@ -308,12 +290,6 @@ namespace musicStudioUnit
                     {
                         //PinKeypad.Dispose();
                         PinKeypad = null;
-                    }
-
-                    if (TelemetryList != null)
-                    {
-                        //TelemetryList.Dispose();
-                        TelemetryList = null;
                     }
                 }
                 // Dispose unmanaged resources here, meaning Release them explicitly (e.g., close file handles, free memory)
@@ -548,61 +524,6 @@ namespace musicStudioUnit
             PinEntryStarBuilder.Remove(0, PinEntryStarBuilder.Length);
             Panel.SetString((uint)TouchPanelJoins.Serial.PinKeypadEntryText, "");
             Panel.SetBool((uint)TouchPanelJoins.PanelWidePopUps.Signin, false);
-        }
-
-        /// <summary>
-        /// Reset all Telemetry List items
-        /// </summary>
-        internal void ResetTelemetryList()
-        {
-            TelemetryList.SetItemMainText(1, "Altitude: TBD");
-            TelemetryList.SetItemMainText(2, "Vertical Speed: TBD");
-            TelemetryList.SetItemMainText(3, "Heading: TBD");
-            TelemetryList.SetItemMainText(4, "Airspeed: TBD");
-            TelemetryList.SetItemMainText(5, "Ext. Temperature: TBD");
-        }
-
-        /// <summary>
-        /// Populate the Telemetry List with Flight Telemetry Info
-        /// </summary>
-        internal void PopulateTelemetryList()
-        {
-            TelemetryList.SetItemMainText(1, $"Altitude: {FlightTelemetryInfo.Altitude}");
-            TelemetryList.SetItemMainText(2, $"Vertical Speed: {FlightTelemetryInfo.VerticalSpeed}");
-            TelemetryList.SetItemMainText(3, $"Heading: {FlightTelemetryInfo.CompassDirection}");
-            TelemetryList.SetItemMainText(4, $"Airspeed: {FlightTelemetryInfo.Airspeed}");
-            TelemetryList.SetItemMainText(5, $"Ext. Temperature: {FlightTelemetryInfo.Temperature}");
-        }
-
-        /// <summary>
-        /// Populate the Top Bar Icons with Flight Telemetry Info
-        /// </summary>
-        internal void PopulateTelemetryTopBarIcons()
-        {
-            if(FlightTelemetryInfo.CrewAnnouncementInProgressFlag)
-                Panel.SetUshort((uint)TouchPanelJoins.Analog.CrewAnnouncementStatus, (ushort)TouchPanelJoins.TopBarIconMap.OrangeMessage);
-            else
-                Panel.SetUshort((uint)TouchPanelJoins.Analog.CrewAnnouncementStatus, (ushort)TouchPanelJoins.TopBarIconMap.GreyedOutHeadphones);
-
-            if (FlightTelemetryInfo.FastenSeatbeltsFlag)
-                Panel.SetUshort((uint)TouchPanelJoins.Analog.SeatbeltStatus, (ushort)TouchPanelJoins.TopBarIconMap.RedSeatbeltsRequired);
-            else
-                Panel.SetUshort((uint)TouchPanelJoins.Analog.SeatbeltStatus, (ushort)TouchPanelJoins.TopBarIconMap.GreenPersonWalking);
-
-            if (FlightTelemetryInfo.InFlightFlag)
-                Panel.SetUshort((uint)TouchPanelJoins.Analog.FlightStatus, (ushort)TouchPanelJoins.TopBarIconMap.BlueFlightStatusInFlight);
-            else
-                Panel.SetUshort((uint)TouchPanelJoins.Analog.FlightStatus, (ushort)TouchPanelJoins.TopBarIconMap.OrangeFlightStatusOnGround);
-
-            if (FlightTelemetryInfo.CabinPressureOxygenFlag)
-                Panel.SetUshort((uint)TouchPanelJoins.Analog.OxygenStatus, (ushort)TouchPanelJoins.TopBarIconMap.GreyedOutBlankInactive);
-            else
-                Panel.SetUshort((uint)TouchPanelJoins.Analog.OxygenStatus, (ushort)TouchPanelJoins.TopBarIconMap.RedOxygenRequired);
-
-            if(FlightTelemetryInfo.CabinSecuredFlag)
-                Panel.SetUshort((uint)TouchPanelJoins.Analog.CabinStatus, (ushort)TouchPanelJoins.TopBarIconMap.OrangeLock);
-            else
-                Panel.SetUshort((uint)TouchPanelJoins.Analog.CabinStatus, (ushort)TouchPanelJoins.TopBarIconMap.GreyedOutLock);
         }
     }
 }

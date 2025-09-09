@@ -2,8 +2,6 @@ using System;
 using core_tools;
 using Crestron.SimplSharp;                          	// For Basic SIMPL# Classes
 using Crestron.SimplSharpPro;                       	// For Basic SIMPL#Pro classes
-using Crestron.SimplSharpPro.CrestronThread;        	// For Threading
-using core_tools;
 using Crestron.SimplSharpPro.Diagnostics;		    	// For System Monitor Access
 using Crestron.SimplSharpPro.DeviceSupport;         	// For Generic Device Support
 using Crestron.SimplSharpPro.UI;
@@ -87,10 +85,9 @@ namespace musicStudioUnit
                 var panel = GetPanelForType(_touchPanelOneIPID);
                 var dIO = Global.DIO;
 
-                var flightTelemetry = new FlightTelemetry("flightTelemtry", "Flight-Telemtry");
                 CrestronConsole.AddNewConsoleCommand(PrintDevMon, "printDevMon", "Print all Device Monitor devices", ConsoleAccessLevelEnum.AccessOperator);
 
-                var tp01 = new TP01("tp01", "TP01", panel, flightTelemetry);
+                var tp01 = new TP01("tp01", "TP01", panel);
                 var sysInfo = new SystemInformationMethods();
                 Debug.Console(2, "INIT: InitializeSystem().sysInfo - Check");
                 var sysProcessorInfo = new ProcessorInfo();
@@ -116,7 +113,7 @@ namespace musicStudioUnit
                 
                 // Initialize touch panel first
                 Debug.Console(0, "INIT: Initializing Touch Panel Interface");
-                _touchPanel = new TP01("tp01", "TP01", panel, flightTelemetry);
+                _touchPanel = new TP01("tp01", "TP01", panel);
                 
                 // Initialize User Database
                 Debug.Console(0, "INIT: Initializing User Database");
@@ -447,8 +444,6 @@ namespace musicStudioUnit
                     IP = "10.0.0.200", // TODO: Read from configuration file
                     Port = 4010, // TODO: Read from configuration file
                     ListenPort = 4011, // TODO: Read from configuration file
-                    DebugMode = true,
-                    AutoReconnect = true
                 };
 
                 // Create music controller

@@ -292,7 +292,7 @@ namespace musicStudioUnit.Configuration
         private string GetConfigDirectory()
         {
             // Handle different file system structures between 4-series processor and VC-4
-            string currentDir = Directory.GetCurrentDirectory();
+            string currentDir = Crestron.SimplSharp.CrestronIO.Directory.GetApplicationDirectory();
             
             // Try user subdirectory first (standard for RMC4)
             string userDir = Path.Combine(currentDir, "user");
