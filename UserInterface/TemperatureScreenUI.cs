@@ -35,7 +35,8 @@ namespace musicStudioUnit.UserInterface
         }
         private readonly BasicTriList _panel;
         private readonly EnhancedHVACController _hvacController;
-        private readonly MSUController _msuController;
+    private readonly MSUController _msuController;
+    private readonly StudioCombinationManager _combinationManager;
         private readonly Dictionary<byte, float> _currentSetpoints = new Dictionary<byte, float>();
         private readonly List<TemperaturePreset> _presets;
         
@@ -57,12 +58,13 @@ namespace musicStudioUnit.UserInterface
         public bool IsConnected => _hvacController?.IsConnected == true;
         public bool IsCombinedMode => _isCombinedMode;
 
-        public TemperatureScreenUI(BasicTriList panel, EnhancedHVACController hvacController, 
-                                  MSUController msuController, List<TemperaturePreset> presets = null)
+    public TemperatureScreenUI(BasicTriList panel, EnhancedHVACController hvacController, 
+                  MSUController msuController, StudioCombinationManager combinationManager, List<TemperaturePreset> presets = null)
         {
             _panel = panel ?? throw new ArgumentNullException(nameof(panel));
             _hvacController = hvacController ?? throw new ArgumentNullException(nameof(hvacController));
             _msuController = msuController ?? throw new ArgumentNullException(nameof(msuController));
+            _combinationManager = combinationManager ?? throw new ArgumentNullException(nameof(combinationManager));
             _presets = presets ?? CreateDefaultPresets();
 
             Debug.Console(1, "TemperatureScreenUI", "Initializing Temperature screen UI");
@@ -74,9 +76,9 @@ namespace musicStudioUnit.UserInterface
             _hvacController.Disconnected += OnHVACDisconnected;
             _hvacController.HVACError += OnHVACError;
 
-            if (_msuController != null)
+            if (_combinationManager != null)
             {
-                _msuController.CombinationChanged += OnCombinationChanged;
+                _combinationManager.CombinationChanged += OnCombinationChanged;
             }
 
             // Setup touch panel event handlers
@@ -282,27 +284,12 @@ namespace musicStudioUnit.UserInterface
             {
                 _controlledZones.Clear();
 
-                var config = _msuController?.GetCurrentConfiguration();
-                var remoteConfig = _msuController?.GetRemoteConfiguration();
-                
-                if (config?.LocalConfig != null && remoteConfig != null)
+                // Use combination manager for zone logic
+                if (_combinationManager != null && _combinationManager.CombinedMSUs.Count > 0)
                 {
-                    // Get current MSU configuration
-                    var currentMSU = remoteConfig.GetMSUByMAC(InitializationManager.ProcessorMAC);
-                    if (currentMSU != null)
+                    foreach (var msu in _combinationManager.CombinedMSUs)
                     {
-                        // Add primary zone
-                        _controlledZones.Add((byte)currentMSU.HVAC_ID);
-
-                        // Add combined zones if in combination mode
-                        if (_isCombinedMode)
-                        {
-                            var combinedMSUs = _msuController.GetCombinedMSUs();
-                            foreach (var msu in combinedMSUs.Where(m => m.MSU_UID != currentMSU.MSU_UID))
-                            {
-                                _controlledZones.Add((byte)msu.HVAC_ID);
-                            }
-                        }
+                        _controlledZones.Add(msu.HVACZoneId);
                     }
                 }
 
@@ -372,8 +359,8 @@ namespace musicStudioUnit.UserInterface
                     else
                     {
                         // Use idle setpoint from configuration as default
-                        var config = _msuController?.GetCurrentConfiguration();
-                        float idleSetpoint = config?.LocalConfig?.HVAC?.IdleSetpoint ?? 21.5f;
+                        // Use a default idle setpoint if not available
+                        float idleSetpoint = 21.5f;
                         _savedSetpoints[zoneId] = idleSetpoint;
                         Debug.Console(2, "TemperatureScreenUI", "Using idle setpoint for zone {0}: {1:F1}°C", 
                             zoneId, idleSetpoint);
@@ -587,10 +574,10 @@ namespace musicStudioUnit.UserInterface
             ShowTemperatureError(args.ErrorMessage);
         }
 
-        private void OnCombinationChanged(object sender, CombinationChangedEventArgs args)
+        private void OnCombinationChanged(object sender, EventArgs args)
         {
             Debug.Console(1, "TemperatureScreenUI", "Combination changed - updating controlled zones");
-            _isCombinedMode = args.IsCombined;
+            _isCombinedMode = _combinationManager.IsCombined;
             UpdateControlledZones();
             UpdateUI();
         }
@@ -613,10 +600,10 @@ namespace musicStudioUnit.UserInterface
                     _hvacController.HVACError -= OnHVACError;
                 }
 
-                // Unsubscribe from MSU events
-                if (_msuController != null)
+                // Unsubscribe from combination manager events
+                if (_combinationManager != null)
                 {
-                    _msuController.CombinationChanged -= OnCombinationChanged;
+                    _combinationManager.CombinationChanged -= OnCombinationChanged;
                 }
 
                 Debug.Console(1, "TemperatureScreenUI", "Temperature screen UI disposed");

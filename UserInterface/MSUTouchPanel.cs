@@ -156,7 +156,7 @@ namespace musicStudioUnit.UserInterface
                 _userLoginScreen.GuestModeActivated += OnGuestModeActivated;
 
                 // Temperature Screen
-                _temperatureScreen = new TemperatureScreenUI(Panel, _hvacController, _msuController);
+                _temperatureScreen = new TemperatureScreenUI(Panel, _hvacController, _msuController, _combinationManager);
                 _temperatureScreen.TemperatureChanged += OnTemperatureChanged;
                 _temperatureScreen.TemperatureFault += OnTemperatureFault;
 
