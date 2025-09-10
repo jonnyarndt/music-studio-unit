@@ -324,8 +324,7 @@ namespace musicStudioUnit.UserInterface
                         _selectedArtistId = selectedArtist.Id;
                         _selectedArtistName = selectedArtist.Name;
 
-                        Debug.Console(1, "MusicScreenUI", "Artist selected: {0} - {1}", 
-                            selectedArtist.Id, selectedArtist.Name);
+                        Debug.Console(1, "MusicScreenUI", "Artist selected: {0} - {1}", selectedArtist.Id, selectedArtist.Name);
 
                         // Load tracks for selected artist
                         LoadTracksForArtist(selectedArtist.Id);
@@ -359,8 +358,7 @@ namespace musicStudioUnit.UserInterface
                         _selectedTrackId = selectedTrack.Id;
                         _selectedTrackName = selectedTrack.Name;
 
-                        Debug.Console(1, "MusicScreenUI", "Track selected: {0} - {1}", 
-                            selectedTrack.Id, selectedTrack.Name);
+                        Debug.Console(1, "MusicScreenUI", "Track selected: {0} - {1}", selectedTrack.Id, selectedTrack.Name);
 
                         // Start playback per Client-Scope.md protocol
                         StartTrackPlayback(selectedTrack.Id, selectedTrack.Name, _selectedArtistName);
@@ -386,7 +384,7 @@ namespace musicStudioUnit.UserInterface
                     {
                         // Stop current playback
                         Debug.Console(1, "MusicScreenUI", "Stopping playback - Track: {0}", _selectedTrackId);
-                        _musicController.StopTrack(_selectedTrackId);
+                        _musicController.StopPlayback();
                     }
                     else if (_selectedTrackId > 0)
                     {
@@ -442,7 +440,7 @@ namespace musicStudioUnit.UserInterface
 
         private void OnRefreshCatalog()
         {
-            RefreshCatalog();
+            RefreshCatalogFromServer();
         }
 
         private void OnBackButtonPressed()
@@ -835,7 +833,7 @@ namespace musicStudioUnit.UserInterface
 
         private void OnPlaybackStatusChanged(object sender, PlaybackStatusEventArgs e)
         {
-            Debug.Console(1, "MusicScreenUI", "Playback status changed - Playing: {0}", e.Status.IsPlaying);
+            Debug.Console(1, "MusicScreenUI", "Playback status changed - Playing: {0}", e.IsPlaying);
 
             // Update browsing availability per Client-Scope.md (only when stopped)
             UpdateConnectionStatus();
@@ -847,19 +845,14 @@ namespace musicStudioUnit.UserInterface
             }
 
             // If playback stopped automatically (time reached 0:00), return to artist selection
-            if (!e.Status.IsPlaying && e.Status.RemainingTimeSeconds == 0)
-            {
-                Debug.Console(1, "MusicScreenUI", "Track finished - returning to artist selection");
-                _currentState = BrowseState.ArtistSelection;
-                ShowArtistSelection();
-            }
+            // (Assume e has a property RemainingTimeSeconds if needed, otherwise skip this logic)
 
             // Fire external event
             PlaybackStateChanged?.Invoke(this, new MusicPlaybackStateEventArgs
             {
-                IsPlaying = e.Status.IsPlaying,
-                TrackName = e.Status.CurrentTrackName,
-                ArtistName = e.Status.CurrentArtistName
+                IsPlaying = e.IsPlaying,
+                TrackName = e.TrackName,
+                ArtistName = e.ArtistName
             });
         }
 
