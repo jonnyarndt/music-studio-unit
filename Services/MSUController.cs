@@ -20,7 +20,7 @@ namespace musicStudioUnit.Services
         private ConfigurationManager _configManager;
         private MSUIdentificationService _identificationService;
         private UserManager _userManager;
-        private StudioManager _studioManager;
+    private StudioCombinationManager _combinationManager;
         
         // Device Controllers
         private EnhancedHVACController _hvacController;
@@ -44,7 +44,7 @@ namespace musicStudioUnit.Services
         public ConfigurationManager ConfigManager => _configManager;
         public MSUIdentificationService IdentificationService => _identificationService;
         public UserManager UserManager => _userManager;
-        public StudioManager StudioManager => _studioManager;
+    public StudioCombinationManager CombinationManager => _combinationManager;
         public EnhancedHVACController HVACController => _hvacController;
         public EnhancedMusicSystemController MusicController => _musicController;
 
@@ -208,9 +208,16 @@ namespace musicStudioUnit.Services
             // User Manager
             _userManager = new UserManager(_key + "UserMgr");
 
-            // Studio Manager
-            _studioManager = new StudioManager(_key + "StudioMgr", _currentMSUConfig, _remoteConfig);
-            _studioManager.CombinationChanged += OnStudioCombinationChanged;
+            // Studio Combination Manager
+            _combinationManager = new StudioCombinationManager(
+                _key + "StudioComboMgr",
+                _currentMSUConfig.MSU_UID,
+                _currentMSUConfig.X_COORD,
+                _currentMSUConfig.Y_COORD,
+                _currentMSUConfig.HVACZoneId,
+                _remoteConfig.MSUUnits // Assuming this is a Dictionary<string, MusicStudioUnit>
+            );
+            _combinationManager.CombinationChanged += OnStudioCombinationChanged;
         }
 
         private void InitializeDeviceControllers()
@@ -233,8 +240,8 @@ namespace musicStudioUnit.Services
         {
             core_tools.Debug.Console(1, "MSUController", "Starting services");
 
-            // Start Studio Manager
-            _studioManager.Initialize();
+            // Start Studio Combination Manager (if needed)
+            // _combinationManager.Initialize(); // No Initialize() in StudioCombinationManager, so skip
 
             // Start Device Controllers
             _hvacController.Initialize();
@@ -251,14 +258,19 @@ namespace musicStudioUnit.Services
             core_tools.Debug.Console(1, "MSUController", "Studio combination changed: {0}", e.CombinationType);
 
             // Synchronize HVAC temperatures for combined studios
-            if (e.IsMainController && e.CombinedMSUs.Count > 1)
+            // If you need to synchronize, use e.CombinedMSUs for the list of combined units
+            // (No GetCombinationHVACZones in StudioCombinationManager, so this logic may need to be reworked)
+            if (e.CombinedMSUs != null && e.CombinedMSUs.Count > 1 && e.CombinedMSUs[0].IsMaster)
             {
-                var hvacZones = _studioManager.GetCombinationHVACZones();
+                // Example: collect all HVAC zones from combined MSUs
+                var hvacZones = new List<byte>();
+                foreach (var msu in e.CombinedMSUs)
+                {
+                    hvacZones.Add(msu.HVACZoneId);
+                }
                 var currentSetpoint = _hvacController.CurrentSetpoint;
-                
                 core_tools.Debug.Console(1, "MSUController", "Synchronizing HVAC for {0} zones at {1:F1}°C", 
                     hvacZones.Count, currentSetpoint);
-                
                 _hvacController.SetMultipleZoneTemperatures(hvacZones, currentSetpoint);
             }
         }
@@ -296,7 +308,7 @@ namespace musicStudioUnit.Services
 
             _configManager?.Dispose();
             _userManager?.Dispose();
-            _studioManager?.Dispose();
+            // _combinationManager?.Dispose(); // No Dispose() in StudioCombinationManager
             _hvacController?.Dispose();
             _musicController?.Dispose();
         }

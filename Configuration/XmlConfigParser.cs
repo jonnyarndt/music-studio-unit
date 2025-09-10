@@ -292,7 +292,7 @@ namespace musicStudioUnit.Configuration
             string currentDir = Crestron.SimplSharp.CrestronIO.Directory.GetApplicationDirectory();
             
             // Try user subdirectory first (standard for RMC4)
-            string userDir = Path.Combine(currentDir, "user");
+            string userDir = System.IO.Path.Combine(currentDir, "user");
             if (Crestron.SimplSharp.CrestronIO.Directory.Exists(userDir))
             {
                 Debug.Console(2, this, "Using user directory: {0}", userDir);
@@ -306,7 +306,7 @@ namespace musicStudioUnit.Configuration
 
         private string GetConfigFilePath()
         {
-            return Path.Combine(_configDirectory, _configFileName);
+            return System.IO.Path.Combine(_configDirectory, _configFileName);
         }
 
         private void LogConfigurationSummary(LocalConfiguration config)

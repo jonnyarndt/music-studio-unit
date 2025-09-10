@@ -121,7 +121,7 @@ namespace musicStudioUnit
 
                 CreateSubPageMap();
       
-                string[] matchingFiles = Directory.GetFiles(Global.ApplicationDirectoryPathPrefix, sgdFileNamePattern);
+                string[] matchingFiles = System.IO.Directory.GetFiles(Global.ApplicationDirectoryPathPrefix, sgdFileNamePattern);
 
                 if (matchingFiles.Length == 0)
                 {   
