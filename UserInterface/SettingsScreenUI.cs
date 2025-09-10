@@ -15,6 +15,24 @@ namespace musicStudioUnit.UserInterface
     /// </summary>
     public class SettingsScreenUI : IDisposable
     {
+        /// <summary>
+        /// Show the settings screen (entry point from MSU TouchPanel)
+        /// </summary>
+        public void Show()
+        {
+            // Optionally update display or make visible
+            UpdateSettingsDisplay();
+            Debug.Console(1, "SettingsScreenUI", "Settings screen shown");
+        }
+
+        /// <summary>
+        /// Hide the settings screen
+        /// </summary>
+        public void Hide()
+        {
+            // Optionally clear display or make invisible
+            Debug.Console(1, "SettingsScreenUI", "Settings screen hidden");
+        }
         private readonly BasicTriList _panel;
         private readonly MSUController _msuController;
         private readonly SystemInitializationService _initService;

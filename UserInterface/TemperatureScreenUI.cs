@@ -17,6 +17,22 @@ namespace musicStudioUnit.UserInterface
     /// </summary>
     public class TemperatureScreenUI : IDisposable
     {
+        /// <summary>
+        /// Show the temperature screen (entry point from MSU TouchPanel)
+        /// </summary>
+        public void Show()
+        {
+            UpdateUI();
+            Debug.Console(1, "TemperatureScreenUI", "Temperature screen shown");
+        }
+
+        /// <summary>
+        /// Hide the temperature screen
+        /// </summary>
+        public void Hide()
+        {
+            Debug.Console(1, "TemperatureScreenUI", "Temperature screen hidden");
+        }
         private readonly BasicTriList _panel;
         private readonly EnhancedHVACController _hvacController;
         private readonly MSUController _msuController;

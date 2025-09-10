@@ -15,6 +15,23 @@ namespace musicStudioUnit.UserInterface
     /// </summary>
     public class UserLoginScreenUI : IDisposable
     {
+        /// <summary>
+        /// Show the user login screen (entry point from MSU TouchPanel)
+        /// </summary>
+        public void Show()
+        {
+            // Optionally update display or make visible
+            Debug.Console(1, "UserLoginScreenUI", "User login screen shown");
+        }
+
+        /// <summary>
+        /// Hide the user login screen
+        /// </summary>
+        public void Hide()
+        {
+            // Optionally clear display or make invisible
+            Debug.Console(1, "UserLoginScreenUI", "User login screen hidden");
+        }
         private readonly BasicTriList _panel;
         private readonly StringBuilder _userIdBuilder = new StringBuilder(5); // Max 5 digits for user IDs up to 60,000
         
