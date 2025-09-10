@@ -1,11 +1,9 @@
 using core_tools;
 using System.Globalization;
 using Crestron.SimplSharp;
-using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using musicStudioUnit.Configuration;
 using musicStudioUnit.Services;
-using System;
 namespace musicStudioUnit.UserInterface
 {
     /// <summary>
@@ -36,7 +34,8 @@ namespace musicStudioUnit.UserInterface
         private readonly BasicTriList _panel;
         private readonly MSUController _msuController;
         private readonly SystemInitializationService _initService;
-        private CTimer _timeUpdateTimer;
+        private CTimer? _timeUpdateTimer;
+        private bool _disposed;
 
         // Update intervals
         private const int TimeUpdateInterval = 1000; // Update time every second
@@ -58,8 +57,9 @@ namespace musicStudioUnit.UserInterface
             // Subscribe to configuration events
             if (_initService != null)
             {
-                _initService.ConfigurationLoaded += OnConfigurationLoaded;
-                _initService.ConfigurationError += OnConfigurationError;
+                // TODO: Fix SystemInitializationService API - these events do not exist
+                // _initService.ConfigurationLoaded += OnConfigurationLoaded;
+                // _initService.ConfigurationError += OnConfigurationError;
             }
 
             // Start time update timer
@@ -111,7 +111,7 @@ namespace musicStudioUnit.UserInterface
                 UpdateConfigurationStatus("Reloading configuration...");
 
                 // Trigger configuration reload event
-                ConfigurationReloadRequested?.Invoke(this, EventArgs.Empty);
+                ConfigurationReloadRequested?.Invoke(this, new ConfigurationReloadEventArgs("Manual reload requested"));
 
                 // The actual reload will be handled by the initialization service
                 if (_initService != null)
@@ -189,15 +189,15 @@ namespace musicStudioUnit.UserInterface
 
             try
             {
-                var config = _msuController?.MSUConfig;
-                if (config?.LocalConfig != null)
+                var config = _msuController?.CurrentMSUConfig;
+                if (config != null)
                 {
                     // MSU Name from local configuration
-                    string msuName = config.LocalConfig?.MSU_NAME ?? "Unknown MSU";
+                    string msuName = config.MSU_NAME ?? "Unknown MSU";
                     _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.MSUNameText].StringValue = msuName;
 
                     // MSU UID (processor MAC address)
-                    string msuUID = config.LocalConfig?.MSU_UID ?? "Unknown";
+                    string msuUID = config.MSU_UID ?? "Unknown";
                     _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.MSUUIDText].StringValue = msuUID;
                 }
                 else
@@ -217,9 +217,6 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         private void UpdateProcessorInformation()
         {
-
-
-
             try
             {
                 // Processor model (should be RMC4 per Client-Scope.md)
@@ -227,15 +224,15 @@ namespace musicStudioUnit.UserInterface
                 _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.ProcessorModelText].StringValue = processorModel;
 
                 // Firmware version
-                string firmwareVersion = CrestronEnvironment.OSVersion.ToString();
+                string firmwareVersion = CrestronEnvironment.OSVersion.Firmware.ToString();
                 _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.FirmwareVersionText].StringValue = firmwareVersion;
 
                 // Processor MAC address
-                string processorMAC = CrestronEnvironment.DeviceMACAddress ?? "Unknown";
+                string processorMAC = "Unknown"; // CrestronEnvironment.DeviceMACAddress not available
                 _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.ProcessorMACText].StringValue = processorMAC;
 
                 // Current IP address
-                string currentIP = CrestronEnvironment.DeviceIpAddress ?? "DHCP Pending";
+                string currentIP = "DHCP Pending"; // CrestronEnvironment.DeviceIpAddress not available
                 _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.ProcessorIPText].StringValue = currentIP;
             }
             catch (Exception ex)
@@ -252,21 +249,12 @@ namespace musicStudioUnit.UserInterface
 
             try
             {
-                var config = _msuController?.MSUConfig;
-                if (config?.LocalConfig?.Address != null)
-                {
-                    // Building address
-                    var address = config.LocalConfig.Address;
-                    string buildingAddress = $"{address.Street}, {address.City}";
-                    _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.BuildingAddressText].StringValue = buildingAddress;
-                }
-                else
-                {
-                    _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.BuildingAddressText].StringValue = "Address not configured";
-                }
+                var config = _msuController?.CurrentMSUConfig;
+                // TODO: Fix configuration access - MSUConfiguration doesn't have Address property
+                _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.BuildingAddressText].StringValue = "Address not available";
 
-                // Number of MSUs in building
-                int msuCount = config?.RemoteConfig?.MSUUnits?.Count ?? 0;
+                // Number of MSUs in building - TODO: need access to RemoteConfig
+                int msuCount = 0;
                 string msuCountText = msuCount > 0 ? $"{msuCount} MSUs" : "MSU count unknown";
                 _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.MSUCountText].StringValue = msuCountText;
             }
@@ -320,8 +308,9 @@ namespace musicStudioUnit.UserInterface
                 // Unsubscribe from events
                 if (_initService != null)
                 {
-                    _initService.ConfigurationLoaded -= OnConfigurationLoaded;
-                    _initService.ConfigurationError -= OnConfigurationError;
+                    // TODO: Fix SystemInitializationService API - these events do not exist
+                    // _initService.ConfigurationLoaded -= OnConfigurationLoaded;
+                    // _initService.ConfigurationError -= OnConfigurationError;
                 }
 
                 Debug.Console(1, "SettingsScreenUI", "Settings screen UI disposed");

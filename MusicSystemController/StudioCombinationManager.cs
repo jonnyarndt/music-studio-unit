@@ -230,6 +230,7 @@ namespace musicStudioUnit.Services
         public string UID { get; set; }
         public string Name { get; set; }
         public string MAC { get; set; }
+        public string IPAddress { get; set; } = "";
         public int XCoord { get; set; }
         public int YCoord { get; set; }
         public byte HVACZoneId { get; set; }

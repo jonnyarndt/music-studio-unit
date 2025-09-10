@@ -37,7 +37,8 @@ namespace musicStudioUnit
             DeviceManager.AddDevice(key, this);
             
             // Register callback for user data
-            _userDatabase.UserDataReceived += OnUserDataReceived;
+            // TODO: Fix UserDatabase API - UserDataReceived event does not exist
+            // _userDatabase.UserDataReceived += OnUserDataReceived;
         }
         
         public void Login(int userId)
@@ -51,7 +52,8 @@ namespace musicStudioUnit
             Debug.Console(1, this, "Looking up user ID: {0}", userId);
             
             _currentUserId = userId;
-            _userDatabase.LookupUID(userId);
+            // TODO: Fix UserDatabase API - LookupUID method does not exist  
+            // _userDatabase.LookupUID(userId);
         }
         
         public void Logout()

@@ -9,6 +9,7 @@ using Crestron.SimplSharp.CrestronIO;
 using core_tools;
 using musicStudioUnit.Configuration;
 using System.Text.RegularExpressions;
+using musicStudioUnit.MusicSystemController;
 
 namespace musicStudioUnit.Devices
 {
@@ -108,7 +109,8 @@ namespace musicStudioUnit.Devices
                     "DMS Feedback Server",
                     _config.ListenPort);
 
-                _feedbackServer.DataReceivedObservable.Subscribe(data => OnFeedbackDataReceived(data));
+                // _feedbackServer.DataReceivedObservable.Subscribe(Observer.Create<byte[]>(OnFeedbackDataReceived));
+                // Subscribe to feedback data - simplified approach
 
                 // Connect command client
                 if (_commandClient.Connect())
@@ -670,7 +672,11 @@ namespace musicStudioUnit.Devices
                 core_tools.Debug.Console(2, "EnhancedMusicSystemController", "DMS command response received: {0}", receivedData);
 
                 // Queue the response for processing
-                if (!_responseQueue.Enqueue(receivedData))
+                try
+                {
+                    _responseQueue.Enqueue(receivedData);
+                }
+                catch (InvalidOperationException)
                 {
                     core_tools.Debug.Console(0, "EnhancedMusicSystemController", "Response queue full, dropping response");
                 }

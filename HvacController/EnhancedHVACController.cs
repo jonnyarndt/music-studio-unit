@@ -7,6 +7,7 @@ using System.Threading;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronIO;
 using musicStudioUnit.Configuration;
+using musicStudioUnit.HvacController;
 
 namespace musicStudioUnit.Devices
 {
@@ -432,7 +433,7 @@ namespace musicStudioUnit.Devices
         {
             try
             {
-                if (Crestron.SimplSharp.CrestronIO.Crestron.SimplSharp.CrestronIO.File.Exists(_setpointFilePath))
+                if (Crestron.SimplSharp.CrestronIO.File.Exists(_setpointFilePath))
                 {
                     var fileStream = Crestron.SimplSharp.CrestronIO.File.OpenText(_setpointFilePath);
                     var lines = new List<string>();

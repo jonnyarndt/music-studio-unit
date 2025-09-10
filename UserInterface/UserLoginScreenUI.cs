@@ -200,6 +200,38 @@ namespace musicStudioUnit.UserInterface
         }
 
         /// <summary>
+        /// Handle successful user login
+        /// </summary>
+        private void HandleUserLogin(int userId, string userName)
+        {
+            try
+            {
+                Debug.Console(1, "UserLoginScreenUI", "Handling login for user: {0} ({1})", userId, userName);
+                
+                // Set user data
+                _isLoggedIn = true;
+                _currentUserId = userId;
+                _currentUserName = userName;
+                _currentUserBirthdate = string.Empty; // Would be set from actual user data
+                _userIdBuilder.Clear();
+
+                // Update UI
+                UpdateLoginDisplay();
+                UpdateLoginStatus($"Welcome, {userName}");
+
+                // Notify listeners
+                UserLoggedIn?.Invoke(this, new UserLoginEventArgs(userId, userName, ""));
+
+                Debug.Console(1, "UserLoginScreenUI", "User logged in successfully");
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, "UserLoginScreenUI", "Error handling user login: {0}", ex.Message);
+                UpdateLoginStatus("Login error occurred");
+            }
+        }
+
+        /// <summary>
         /// Handle logout button press
         /// </summary>
         private void OnLogoutButtonPressed()

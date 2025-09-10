@@ -250,7 +250,7 @@ namespace musicStudioUnit.Services
         /// <summary>
         /// Event handler for HTTP configuration loading
         /// </summary>
-        private void OnHttpConfigurationLoaded(object sender, HttpConfigLoadedEventArgs args)
+        private void OnHttpConfigurationLoaded(object sender, JsonConfigurationLoadedEventArgs args)
         {
             Debug.Console(1, this, "HTTP configuration loaded via client");
             _remoteConfig = args.Configuration;
@@ -259,7 +259,7 @@ namespace musicStudioUnit.Services
         /// <summary>
         /// Event handler for HTTP configuration errors
         /// </summary>
-        private void OnHttpConfigurationError(object sender, HttpConfigErrorEventArgs args)
+        private void OnHttpConfigurationError(object sender, JsonConfigurationErrorEventArgs args)
         {
             Debug.Console(0, this, "HTTP configuration error: {0}", args.ErrorMessage);
         }

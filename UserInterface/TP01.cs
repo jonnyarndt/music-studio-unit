@@ -1,10 +1,8 @@
-using System;
 using core_tools;
 using System.Text;
 using System.Collections.Concurrent;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
-using Crestron.SimplSharp.CrestronIO;
 using Crestron.SimplSharpPro.DeviceSupport;
 using musicStudioUnit.Services;
 
@@ -156,8 +154,8 @@ namespace musicStudioUnit
                 if (_msuController != null)
                 {
                     // Subscribe to MSU events for UI updates
-                    _msuController.StatusChanged += OnMSUStatusChanged;
-                    _msuController.ConfigurationChanged += OnMSUConfigurationChanged;
+                    _msuController.MSUInitialized += OnMSUInitialized;
+                    _msuController.MSUError += OnMSUError;
                     
                     // Update initial UI state based on MSU status
                     UpdateMSUStatusDisplay();
@@ -170,34 +168,34 @@ namespace musicStudioUnit
         }
 
         /// <summary>
-        /// Event handler for MSU status changes
+        /// Event handler for MSU initialization
         /// </summary>
-        private void OnMSUStatusChanged(object sender, MSUStatusEventArgs args)
+        private void OnMSUInitialized(object sender, MSUInitializedEventArgs args)
         {
             try
             {
-                Debug.Console(1, this, "MSU Status changed: {0}", args.Status);
+                Debug.Console(1, this, "MSU Initialized: {0}", args.MSUConfig.MSU_NAME);
                 UpdateMSUStatusDisplay();
             }
             catch (Exception ex)
             {
-                Debug.Console(0, this, "Error handling MSU status change: {0}", ex.Message);
+                Debug.Console(0, this, "Error handling MSU initialization: {0}", ex.Message);
             }
         }
 
         /// <summary>
-        /// Event handler for MSU configuration changes
+        /// Event handler for MSU errors
         /// </summary>
-        private void OnMSUConfigurationChanged(object sender, MSUConfigEventArgs args)
+        private void OnMSUError(object sender, MSUErrorEventArgs args)
         {
             try
             {
-                Debug.Console(1, this, "MSU Configuration changed");
-                UpdateMSUConfigurationDisplay();
+                Debug.Console(0, this, "MSU Error: {0}", args.ErrorMessage);
+                // Update UI to show error state
             }
             catch (Exception ex)
             {
-                Debug.Console(0, this, "Error handling MSU configuration change: {0}", ex.Message);
+                Debug.Console(0, this, "Error handling MSU error: {0}", ex.Message);
             }
         }
 
@@ -212,15 +210,11 @@ namespace musicStudioUnit
 
                 // Update status indicators on the touch panel
                 // This would map to specific joins in your SGD file
-                var status = _msuController.GetCurrentStatus();
+                var systemInfo = _msuController.GetSystemInfo();
                 
-                // Example: Update HVAC status
-                Panel.BooleanInput[5001].BoolValue = status.HVACConnected;
-                Panel.StringInput[5001].StringValue = status.HVACStatus;
-                
-                // Example: Update Music status
-                Panel.BooleanInput[5002].BoolValue = status.MusicConnected;
-                Panel.StringInput[5002].StringValue = status.MusicStatus;
+                // Example: Update system status
+                Panel.StringInput[5001].StringValue = systemInfo.MSUName;
+                Panel.StringInput[5002].StringValue = systemInfo.IPAddress;
                 
                 Debug.Console(2, this, "MSU status display updated");
             }

@@ -273,9 +273,9 @@ namespace musicStudioUnit.Configuration
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(LocalConfiguration));
-                using (Crestron.SimplSharp.CrestronIO.StringReader reader = new Crestron.SimplSharp.CrestronIO.StringReader(xmlContent))
+                using (var memoryStream = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xmlContent)))
                 {
-                    LocalConfiguration config = (LocalConfiguration)serializer.Deserialize(reader);
+                    LocalConfiguration config = (LocalConfiguration)serializer.Deserialize(memoryStream);
                     return config;
                 }
             }

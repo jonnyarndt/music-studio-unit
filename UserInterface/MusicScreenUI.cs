@@ -7,7 +7,7 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using musicStudioUnit.Devices;
 using musicStudioUnit.UserInterface;
-using musicStudioUnit.MusicSystemController;
+using MusicSystemControllerNS = musicStudioUnit.MusicSystemController;
 namespace musicStudioUnit.UserInterface
 {
     /// <summary>
@@ -29,8 +29,8 @@ namespace musicStudioUnit.UserInterface
 
         // Browse state management
         private BrowseState _currentState = BrowseState.ArtistSelection;
-        private List<musicStudioUnit.MusicSystemController.MusicArtist> _currentArtists = new List<musicStudioUnit.MusicSystemController.MusicArtist>();
-        private List<musicStudioUnit.MusicSystemController.MusicTrack> _currentTracks = new List<musicStudioUnit.MusicSystemController.MusicTrack>();
+    private List<musicStudioUnit.Devices.MusicArtist> _currentArtists = new List<musicStudioUnit.Devices.MusicArtist>();
+    private List<musicStudioUnit.Devices.MusicTrack> _currentTracks = new List<musicStudioUnit.Devices.MusicTrack>();
         private int _selectedArtistId = 0;
         private int _selectedTrackId = 0;
         private string _selectedArtistName = string.Empty;
@@ -113,7 +113,7 @@ namespace musicStudioUnit.UserInterface
                 try
                 {
                     SetupEventHandlers();
-                    RefreshCatalog();
+                    RefreshCatalogFromServer();
                     UpdateConnectionStatus();
                     ShowArtistSelection();
                     _isInitialized = true;
@@ -175,7 +175,7 @@ namespace musicStudioUnit.UserInterface
             try
             {
                 Debug.Console(1, "MusicScreenUI", "Refreshing music catalog");
-                _musicController?.RefreshCatalog();
+                _musicController?.LoadMusicCatalog();
             }
             catch (Exception ex)
             {
@@ -384,7 +384,7 @@ namespace musicStudioUnit.UserInterface
                     {
                         // Stop current playback
                         Debug.Console(1, "MusicScreenUI", "Stopping playback - Track: {0}", _selectedTrackId);
-                        _musicController.StopPlayback();
+                        _musicController.StopTrack();
                     }
                     else if (_selectedTrackId > 0)
                     {
@@ -831,7 +831,7 @@ namespace musicStudioUnit.UserInterface
             }
         }
 
-        private void OnPlaybackStatusChanged(object sender, PlaybackStatusEventArgs e)
+        private void OnPlaybackStatusChanged(object sender, PlaybackStatusChangedEventArgs e)
         {
             Debug.Console(1, "MusicScreenUI", "Playback status changed - Playing: {0}", e.IsPlaying);
 
@@ -851,17 +851,18 @@ namespace musicStudioUnit.UserInterface
             PlaybackStateChanged?.Invoke(this, new MusicPlaybackStateEventArgs
             {
                 IsPlaying = e.IsPlaying,
-                TrackName = e.TrackName,
-                ArtistName = e.ArtistName
+                TrackName = e.TrackName ?? "",
+                ArtistName = e.ArtistName ?? ""
             });
         }
 
-        private void OnTrackTimeUpdated(object sender, TrackTimeEventArgs e)
+        private void OnTrackTimeUpdated(object sender, TrackTimeUpdatedEventArgs e)
         {
             // Update time display if in now playing view
             if (_currentState == BrowseState.NowPlaying)
             {
-                _panel.StringInput[MSUTouchPanelJoins.Music.RemainingTime].StringValue = e.FormattedTime;
+                // Use the formatted remaining time from the event args
+                _panel.StringInput[MSUTouchPanelJoins.Music.RemainingTime].StringValue = e.FormattedRemainingTime;
             }
         }
 
@@ -878,7 +879,7 @@ namespace musicStudioUnit.UserInterface
             ShowError("Music system disconnected");
         }
 
-        private void OnMusicSystemError(object sender, musicStudioUnit.MusicSystemController.MusicSystemErrorEventArgs e)
+        private void OnMusicSystemError(object sender, MusicSystemErrorEventArgs e)
         {
             Debug.Console(0, "MusicScreenUI", "Music system error: {0}", e.ErrorMessage);
             ShowError(e.ErrorMessage);

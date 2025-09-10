@@ -6,6 +6,8 @@ using core_tools;
 using musicStudioUnit.Configuration;
 using musicStudioUnit.Services;
 using musicStudioUnit.Devices;
+using MusicSystemControllerNS = musicStudioUnit.MusicSystemController;
+using HvacControllerNS = musicStudioUnit.HvacController;
 
 namespace musicStudioUnit.Services
 {
@@ -208,14 +210,32 @@ namespace musicStudioUnit.Services
             // User Manager
             _userManager = new UserManager(_key + "UserMgr");
 
+            // Convert MSUConfiguration list to MusicStudioUnit dictionary
+            var allMSUs = new Dictionary<string, MusicStudioUnit>();
+            foreach (var msuConfig in _remoteConfig.MSUUnits)
+            {
+                allMSUs[msuConfig.MSU_UID] = new MusicStudioUnit
+                {
+                    UID = msuConfig.MSU_UID,
+                    Name = msuConfig.MSU_NAME,
+                    MAC = msuConfig.MSU_MAC,
+                    XCoord = msuConfig.X_COORD,
+                    YCoord = msuConfig.Y_COORD,
+                    HVACZoneId = (byte)msuConfig.HVAC_ID,
+                    IsInUse = false,
+                    IsCombined = false,
+                    IsMaster = false
+                };
+            }
+
             // Studio Combination Manager
             _combinationManager = new StudioCombinationManager(
                 _key + "StudioComboMgr",
                 _currentMSUConfig.MSU_UID,
                 _currentMSUConfig.X_COORD,
                 _currentMSUConfig.Y_COORD,
-                _currentMSUConfig.HVACZoneId,
-                _remoteConfig.MSUUnits // Assuming this is a Dictionary<string, MusicStudioUnit>
+                (byte)_currentMSUConfig.HVAC_ID,
+                allMSUs
             );
             _combinationManager.CombinationChanged += OnStudioCombinationChanged;
         }
@@ -229,11 +249,20 @@ namespace musicStudioUnit.Services
             _hvacController.StatusUpdated += OnHVACStatusUpdated;
             _hvacController.SetpointChanged += OnHVACSetpointChanged;
 
+            // Convert Configuration.DMSInfo to Devices.DMSInfo
+            var devicesDmsInfo = new musicStudioUnit.Devices.DMSInfo
+            {
+                IP = _localConfig.DMS.IP,
+                Port = _localConfig.DMS.Port,
+                ListenPort = _localConfig.DMS.ListenPort,
+                ConnectionTimeoutMs = 5000 // Default value
+            };
+
             // Music System Controller
-            _musicController = new EnhancedMusicSystemController(_key + "Music", _localConfig.DMS, _currentMSUConfig.MSU_UID);
+            _musicController = new EnhancedMusicSystemController(_key + "Music", devicesDmsInfo, _currentMSUConfig.MSU_UID);
             _musicController.CatalogUpdated += OnMusicCatalogUpdated;
-            _musicController.PlaybackUpdated += OnPlaybackStatusUpdated;
-            _musicController.TimeUpdated += OnTrackTimeUpdated;
+            _musicController.PlaybackStatusChanged += OnPlaybackStatusUpdated;
+            _musicController.TrackTimeUpdated += OnTrackTimeUpdated;
         }
 
         private void StartServices()
@@ -275,22 +304,23 @@ namespace musicStudioUnit.Services
             }
         }
 
-        private void OnHVACStatusUpdated(object sender, musicStudioUnit.HvacController.HVACStatusUpdatedEventArgs e)
+        private void OnHVACStatusUpdated(object sender, HVACStatusUpdatedEventArgs e)
         {
-            core_tools.Debug.Console(2, "MSUController", "HVAC status updated: Connected={0}", e.Status?.IsConnected);
+            core_tools.Debug.Console(2, "MSUController", "HVAC status updated: Ext Temp={0:F2}°C, OverTemp={1}, Pressure={2}, Voltage={3}, Airflow={4}", 
+                e.ExternalTemperature, e.OverTemp, e.PressureFault, e.VoltageFault, e.AirflowBlocked);
         }
 
-        private void OnHVACSetpointChanged(object sender, musicStudioUnit.HvacController.HVACSetpointChangedEventArgs e)
+        private void OnHVACSetpointChanged(object sender, HVACSetpointChangedEventArgs e)
         {
-            core_tools.Debug.Console(1, "MSUController", "HVAC setpoint changed: Zone {0} = {1:F1}°C", e.ZoneId, e.Setpoint);
+            core_tools.Debug.Console(1, "MSUController", "HVAC setpoint changed: Zone {0} = {1:F1}°C", e.ZoneId, e.Temperature);
         }
 
         private void OnMusicCatalogUpdated(object sender, MusicCatalogUpdatedEventArgs e)
         {
-            core_tools.Debug.Console(1, "MSUController", "Music catalog updated: {0} artists", e.ArtistCount);
+            core_tools.Debug.Console(1, "MSUController", "Music catalog updated: {0} artists loaded, {1} total", e.LoadedArtists, e.TotalArtists);
         }
 
-        private void OnPlaybackStatusUpdated(object sender, musicStudioUnit.MusicSystemController.PlaybackStatusUpdatedEventArgs e)
+        private void OnPlaybackStatusUpdated(object sender, PlaybackStatusChangedEventArgs e)
         {
             core_tools.Debug.Console(1, "MSUController", "Playback status: {0} - {1} by {2}", 
                 e.IsPlaying ? "Playing" : "Stopped", e.TrackName, e.ArtistName);

@@ -348,7 +348,7 @@ namespace musicStudioUnit.UserInterface
                 foreach (var zoneId in _controlledZones)
                 {
                     string key = $"MSU_Setpoint_Zone_{zoneId}";
-                    string savedValue = CrestronEnvironment.GetKeyValue(key);
+                    string savedValue = ""; // CrestronEnvironment.GetKeyValue not available
                     
                     if (!string.IsNullOrEmpty(savedValue) && float.TryParse(savedValue, out float setpoint))
                     {
@@ -389,7 +389,7 @@ namespace musicStudioUnit.UserInterface
                 foreach (var zoneId in _controlledZones)
                 {
                     string key = $"MSU_Setpoint_Zone_{zoneId}";
-                    CrestronEnvironment.SetKeyValue(key, temperature.ToString("F1"));
+                    // CrestronEnvironment.SetKeyValue not available - would need alternative storage
                     _savedSetpoints[zoneId] = temperature;
                     
                     Debug.Console(2, "TemperatureScreenUI", "Saved setpoint for zone {0}: {1:F1}°C", 

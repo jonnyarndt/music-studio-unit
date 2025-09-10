@@ -1,4 +1,3 @@
-using System;
 using core_tools;
 using Crestron.SimplSharp;                          	// For Basic SIMPL# Classes
 using Crestron.SimplSharpPro;                       	// For Basic SIMPL#Pro classes
@@ -439,11 +438,10 @@ namespace musicStudioUnit
                 string msuUID = macAddress; // Use MAC as MSU UID per spec
 
                 // Create DMS configuration
-                var dmsConfig = new musicStudioUnit.Configuration.DMSInfo
+                var dmsConfig = new musicStudioUnit.Devices.DMSInfo
                 {
                     IP = "10.0.0.200", // TODO: Read from configuration file
                     Port = 4010, // TODO: Read from configuration file
-                    ListenPort = 4011, // TODO: Read from configuration file
                 };
 
                 // Create music controller
@@ -609,7 +607,7 @@ namespace musicStudioUnit
         /// <summary>
         /// Initialize MSU TouchPanel with all integrated screen handlers
         /// </summary>
-        private void InitializeMSUTouchPanel(BasicTriList panel)
+        private void InitializeMSUTouchPanel(BasicTriListWithSmartObject panel)
         {
             try
             {

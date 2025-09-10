@@ -25,33 +25,33 @@ namespace musicStudioUnit.Interfaces
     public class PlaybackStatusChangedEventArgs : EventArgs
     {
         public bool IsPlaying { get; set; }
-        public string TrackName { get; set; }
-        public string ArtistName { get; set; }
+        public string? TrackName { get; set; }
+        public string? ArtistName { get; set; }
     }
 
     public class TrackTimeChangedEventArgs : EventArgs
     {
         public int RemainingTimeSeconds { get; set; }
-        public string FormattedTime { get; set; }
+        public string? FormattedTime { get; set; }
     }
 
     public class CombinationChangedEventArgs : EventArgs
     {
         public StudioCombinationType OldCombination { get; set; }
         public StudioCombinationType NewCombination { get; set; }
-        public List<string> CombinedMSUNames { get; set; }
+        public List<string>? CombinedMSUNames { get; set; }
     }
 
     public class UserLoginChangedEventArgs : EventArgs
     {
         public bool IsLoggedIn { get; set; }
-        public UserInfo User { get; set; }
+        public UserInfo? User { get; set; }
         public bool IsBirthday { get; set; }
     }
 
     public class SystemStatusChangedEventArgs : EventArgs
     {
-        public string StatusMessage { get; set; }
+        public string? StatusMessage { get; set; }
         public bool IsOnline { get; set; }
     }
 

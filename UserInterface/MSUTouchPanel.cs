@@ -1,20 +1,9 @@
 using core_tools;
 using System.Collections.Concurrent;
-using Crestron.SimplSharp;
-using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using musicStudioUnit.Services;
-using musicStudioUnit.Configuration;
 using musicStudioUnit.Devices;
 
-using System;
-using System.Collections.Concurrent;
-using Crestron.SimplSharp;
-using Crestron.SimplSharpPro;
-using Crestron.SimplSharpPro.DeviceSupport;
-using musicStudioUnit.Services;
-using musicStudioUnit.Configuration;
-using musicStudioUnit.Devices;
 namespace musicStudioUnit.UserInterface
 {
     /// <summary>
@@ -257,8 +246,9 @@ namespace musicStudioUnit.UserInterface
             try
             {
                 // Update building location from configuration
-                var config = _msuController?.MSUConfig;
-                string cityName = config?.LocalConfig?.Address?.City ?? "Unknown Location";
+                var config = _msuController?.CurrentMSUConfig;
+                // TODO: Fix configuration access - MSUConfiguration doesn't have Address property
+                string cityName = "Unknown Location";
                 Panel.StringInput[(uint)MSUTouchPanelJoins.MenuBar.BuildingLocationText].StringValue = cityName;
 
                 // Update music info if playing

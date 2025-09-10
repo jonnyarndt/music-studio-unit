@@ -52,10 +52,13 @@ namespace musicStudioUnit.Services
 
     // Models - Forward references to classes defined in other files
 
+    // MusicStudioUnit class moved to avoid duplicate definition - use the one in StudioCombinationManager.cs
+
     public class BuildingConfiguration
     {
         public string BuildingId { get; set; } = "";
         public string Name { get; set; } = "";
+        public List<musicStudioUnit.Services.MusicStudioUnit> MusicStudioUnits { get; set; } = new List<musicStudioUnit.Services.MusicStudioUnit>();
     }
 
     public class StudioManager
