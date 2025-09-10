@@ -186,21 +186,18 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         private void UpdateMSUInformation()
         {
+
             try
             {
-                var config = _msuController?.GetCurrentConfiguration();
+                var config = _msuController?.MSUConfig;
                 if (config?.LocalConfig != null)
                 {
-                    
-                    // MSU Name from remote configuration
-                    var remoteConfig = _msuController.GetRemoteConfiguration();
-                    var msuInfo = remoteConfig?.GetMSUByMAC(InitializationManager.ProcessorMAC);
-                    
-                    string msuName = msuInfo?.MSU_NAME ?? "Unknown MSU";
+                    // MSU Name from local configuration
+                    string msuName = config.LocalConfig?.MSU_NAME ?? "Unknown MSU";
                     _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.MSUNameText].StringValue = msuName;
 
                     // MSU UID (processor MAC address)
-                    string msuUID = InitializationManager.ProcessorMAC ?? "Unknown";
+                    string msuUID = config.LocalConfig?.MSU_UID ?? "Unknown";
                     _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.MSUUIDText].StringValue = msuUID;
                 }
                 else
@@ -220,23 +217,25 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         private void UpdateProcessorInformation()
         {
+
+
+
             try
             {
                 // Processor model (should be RMC4 per Client-Scope.md)
-                var processorInfo = InitializationManager.ProcessorInformation;
-                string processorModel = processorInfo?.Series ?? "RMC4";
+                string processorModel = CrestronEnvironment.DevicePlatform.ToString();
                 _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.ProcessorModelText].StringValue = processorModel;
 
                 // Firmware version
-                string firmwareVersion = processorInfo?.Version ?? CrestronEnvironment.OSVersion.ToString();
+                string firmwareVersion = CrestronEnvironment.OSVersion.ToString();
                 _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.FirmwareVersionText].StringValue = firmwareVersion;
 
                 // Processor MAC address
-                string processorMAC = InitializationManager.ProcessorMAC ?? "Unknown";
+                string processorMAC = CrestronEnvironment.DeviceMACAddress ?? "Unknown";
                 _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.ProcessorMACText].StringValue = processorMAC;
 
                 // Current IP address
-                string currentIP = InitializationManager.GetCurrentIPAddress() ?? "DHCP Pending";
+                string currentIP = CrestronEnvironment.DeviceIpAddress ?? "DHCP Pending";
                 _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.ProcessorIPText].StringValue = currentIP;
             }
             catch (Exception ex)
@@ -250,9 +249,10 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         private void UpdateBuildingInformation()
         {
+
             try
             {
-                var config = _msuController?.GetCurrentConfiguration();
+                var config = _msuController?.MSUConfig;
                 if (config?.LocalConfig?.Address != null)
                 {
                     // Building address
@@ -266,8 +266,7 @@ namespace musicStudioUnit.UserInterface
                 }
 
                 // Number of MSUs in building
-                var remoteConfig = _msuController?.GetRemoteConfiguration();
-                int msuCount = remoteConfig?.MSUUnits?.Count ?? 0;
+                int msuCount = config?.RemoteConfig?.MSUUnits?.Count ?? 0;
                 string msuCountText = msuCount > 0 ? $"{msuCount} MSUs" : "MSU count unknown";
                 _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.MSUCountText].StringValue = msuCountText;
             }

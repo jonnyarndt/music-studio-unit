@@ -25,7 +25,6 @@ namespace musicStudioUnit.UserInterface
     public class MSUTouchPanel : TouchPanelBase, IDisposable
     {
         #region Private Fields
-        private bool _disposed = false;
         private readonly MSUController _msuController;
         private readonly SystemInitializationService _initService;
         private readonly EnhancedHVACController _hvacController;
@@ -63,6 +62,8 @@ namespace musicStudioUnit.UserInterface
         #endregion
 
         #region Constructor
+    private bool _disposed = false;
+    private bool _isMusicPlaying = false;
         public MSUTouchPanel(string keyId, string friendlyId, BasicTriListWithSmartObject panel,
                            MSUController msuController, SystemInitializationService initService,
                            EnhancedHVACController hvacController, EnhancedMusicSystemController musicController,
@@ -251,10 +252,12 @@ namespace musicStudioUnit.UserInterface
         #region Menu Bar Updates
         private void UpdateMenuBar()
         {
+
+
             try
             {
                 // Update building location from configuration
-                var config = _msuController?.GetCurrentConfiguration();
+                var config = _msuController?.MSUConfig;
                 string cityName = config?.LocalConfig?.Address?.City ?? "Unknown Location";
                 Panel.StringInput[(uint)MSUTouchPanelJoins.MenuBar.BuildingLocationText].StringValue = cityName;
 
@@ -334,9 +337,7 @@ namespace musicStudioUnit.UserInterface
             _isMusicPlaying = args.IsPlaying;
             _currentTrackInfo = args.IsPlaying ? $"{args.ArtistName}|{args.TrackName}" : string.Empty;
             UpdateMusicInfo();
-            
-            Debug.Console(1, this, "Music playback state changed - Playing: {0}, Track: {1}", 
-                args.IsPlaying, args.TrackName ?? "None");
+            Debug.Console(1, this, "Music playback state changed - Playing: {0}, Track: {1}", args.IsPlaying, args.TrackName ?? "None");
         }
 
         private void OnMusicNavigateBackRequested(object sender, EventArgs args)
