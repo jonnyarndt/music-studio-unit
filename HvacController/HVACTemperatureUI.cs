@@ -48,7 +48,7 @@ namespace musicStudioUnit.UserInterface
         public bool IsConnected => _hvacController?.IsConnected == true;
 
         public HVACTemperatureUI(EnhancedHVACController hvacController, BasicTriList panel, 
-                                List<TemperaturePreset> presets = null)
+                                List<TemperaturePreset>? presets = null)
         {
             _hvacController = hvacController ?? throw new ArgumentNullException(nameof(hvacController));
             _panel = panel ?? throw new ArgumentNullException(nameof(panel));

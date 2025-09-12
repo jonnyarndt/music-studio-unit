@@ -11,7 +11,7 @@ namespace musicStudioUnit.Configuration
         /// <summary>
         /// IP address of HVAC controller
         /// </summary>
-        public string IP { get; set; }
+        public string? IP { get; set; }
 
         /// <summary>
         /// TCP port for HVAC communication (default 4001 per Client-Scope.md)
@@ -82,7 +82,7 @@ namespace musicStudioUnit.Configuration
         /// <summary>
         /// Studio identifier (e.g., "Studio1", "Studio2+3")
         /// </summary>
-        public string StudioId { get; set; }
+        public string? StudioId { get; set; }
 
         /// <summary>
         /// List of HVAC zone IDs for this studio/combination
@@ -108,7 +108,7 @@ namespace musicStudioUnit.Configuration
         /// <summary>
         /// Preset name (e.g., "Recording", "Mixing", "Idle")
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Target temperature for this preset
@@ -118,11 +118,11 @@ namespace musicStudioUnit.Configuration
         /// <summary>
         /// Description of the preset
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Icon or image for UI display
         /// </summary>
-        public string Icon { get; set; }
+        public string? Icon { get; set; }
     }
 }

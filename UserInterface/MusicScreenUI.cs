@@ -813,11 +813,8 @@ namespace musicStudioUnit.UserInterface
             _panel.StringInput[MSUTouchPanelJoins.Music.PlayStopText].StringValue = "Play";
         }
 
-        #endregion
-
-        #region Event Handlers
-
-        private void OnCatalogUpdated(object sender, EventArgs e)
+        // Change the OnCatalogUpdated method signature to match the delegate EventHandler<MusicCatalogUpdatedEventArgs>
+        private void OnCatalogUpdated(object? sender, MusicCatalogUpdatedEventArgs e)
         {
             Debug.Console(1, "MusicScreenUI", "Catalog updated - refreshing display");
 
@@ -831,7 +828,7 @@ namespace musicStudioUnit.UserInterface
             }
         }
 
-        private void OnPlaybackStatusChanged(object sender, PlaybackStatusChangedEventArgs e)
+        private void OnPlaybackStatusChanged(object? sender, PlaybackStatusChangedEventArgs e)
         {
             Debug.Console(1, "MusicScreenUI", "Playback status changed - Playing: {0}", e.IsPlaying);
 
@@ -856,7 +853,7 @@ namespace musicStudioUnit.UserInterface
             });
         }
 
-        private void OnTrackTimeUpdated(object sender, TrackTimeUpdatedEventArgs e)
+        private void OnTrackTimeUpdated(object? sender, TrackTimeUpdatedEventArgs e)
         {
             // Update time display if in now playing view
             if (_currentState == BrowseState.NowPlaying)
@@ -866,20 +863,20 @@ namespace musicStudioUnit.UserInterface
             }
         }
 
-        private void OnMusicSystemConnected(object sender, EventArgs e)
+        private void OnMusicSystemConnected(object? sender, EventArgs e)
         {
             Debug.Console(1, "MusicScreenUI", "Music system connected");
             UpdateConnectionStatus();
         }
 
-        private void OnMusicSystemDisconnected(object sender, EventArgs e)
+        private void OnMusicSystemDisconnected(object? sender, EventArgs e)
         {
             Debug.Console(1, "MusicScreenUI", "Music system disconnected");
             UpdateConnectionStatus();
             ShowError("Music system disconnected");
         }
 
-        private void OnMusicSystemError(object sender, MusicSystemErrorEventArgs e)
+        private void OnMusicSystemError(object? sender, MusicSystemErrorEventArgs e)
         {
             Debug.Console(0, "MusicScreenUI", "Music system error: {0}", e.ErrorMessage);
             ShowError(e.ErrorMessage);

@@ -16,18 +16,18 @@ namespace musicStudioUnit.Services
     public class ConfigurationManager : IKeyName, IDisposable
     {
         private readonly string _key;
-        private LocalConfiguration _localConfig;
-        private RemoteConfiguration _remoteConfig;
+        private LocalConfiguration? _localConfig;
+        private RemoteConfiguration? _remoteConfig;
         private XmlConfigParser _xmlParser;
         private HttpConfigClient _httpClient;
 
         public string Key => _key;
         public string Name => "Configuration Manager";
 
-        public LocalConfiguration LocalConfig => _localConfig;
-        public RemoteConfiguration RemoteConfig => _remoteConfig;
+        public LocalConfiguration? LocalConfig => _localConfig;
+        public RemoteConfiguration? RemoteConfig => _remoteConfig;
 
-        public event EventHandler<ConfigurationLoadedEventArgs> ConfigurationLoaded;
+        public event EventHandler<ConfigurationLoadedEventArgs>? ConfigurationLoaded;
 
         public ConfigurationManager(string key)
         {
@@ -233,7 +233,7 @@ namespace musicStudioUnit.Services
         /// <summary>
         /// Event handler for XML configuration loading
         /// </summary>
-        private void OnXmlConfigurationLoaded(object sender, XmlConfigurationLoadedEventArgs args)
+        private void OnXmlConfigurationLoaded(object? sender, XmlConfigurationLoadedEventArgs args)
         {
             Debug.Console(1, this, "XML configuration loaded via parser");
             _localConfig = args.Configuration;
@@ -242,7 +242,7 @@ namespace musicStudioUnit.Services
         /// <summary>
         /// Event handler for XML configuration errors
         /// </summary>
-        private void OnXmlConfigurationError(object sender, XmlConfigurationErrorEventArgs args)
+        private void OnXmlConfigurationError(object? sender, XmlConfigurationErrorEventArgs args)
         {
             Debug.Console(0, this, "XML configuration error: {0}", args.ErrorMessage);
         }
@@ -250,7 +250,7 @@ namespace musicStudioUnit.Services
         /// <summary>
         /// Event handler for HTTP configuration loading
         /// </summary>
-        private void OnHttpConfigurationLoaded(object sender, JsonConfigurationLoadedEventArgs args)
+        private void OnHttpConfigurationLoaded(object? sender, JsonConfigurationLoadedEventArgs args)
         {
             Debug.Console(1, this, "HTTP configuration loaded via client");
             _remoteConfig = args.Configuration;
@@ -259,7 +259,7 @@ namespace musicStudioUnit.Services
         /// <summary>
         /// Event handler for HTTP configuration errors
         /// </summary>
-        private void OnHttpConfigurationError(object sender, JsonConfigurationErrorEventArgs args)
+        private void OnHttpConfigurationError(object? sender, JsonConfigurationErrorEventArgs args)
         {
             Debug.Console(0, this, "HTTP configuration error: {0}", args.ErrorMessage);
         }
@@ -284,7 +284,7 @@ namespace musicStudioUnit.Services
     /// </summary>
     public class ConfigurationLoadedEventArgs : EventArgs
     {
-        public LocalConfiguration LocalConfig { get; set; }
-        public RemoteConfiguration RemoteConfig { get; set; }
+        public LocalConfiguration? LocalConfig { get; set; }
+        public RemoteConfiguration? RemoteConfig { get; set; }
     }
 }

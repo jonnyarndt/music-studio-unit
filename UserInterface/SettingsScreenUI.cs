@@ -129,7 +129,7 @@ namespace musicStudioUnit.UserInterface
         /// <summary>
         /// Update time and date display (called by timer)
         /// </summary>
-        private void UpdateTimeDisplay(object state = null)
+        private void UpdateTimeDisplay(object? state = null)
         {
             try
             {

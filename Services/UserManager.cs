@@ -138,21 +138,21 @@ namespace musicStudioUnit.Services
         /// <summary>
         /// Lookup user information by ID using SIMPL# library
         /// </summary>
-        private UserInfo LookupUser(int userId)
+        private UserInfo? LookupUser(int userId)
         {
             try
             {
                 // TODO: Implement actual SIMPL# library call
                 // This is where you would call the USER library LookupUID function
                 // and register for the UserName delegate callback
-                
+
                 // Placeholder implementation for now
                 // In real implementation, this would be async with callback
-                
+
                 // Example of what the real implementation might look like:
                 // _userLibrary.LookupUID(userId);
                 // Wait for callback or use event-based pattern
-                
+
                 // For now, return a placeholder
                 return new UserInfo
                 {
@@ -164,7 +164,7 @@ namespace musicStudioUnit.Services
             catch (Exception ex)
             {
                 Debug.Console(0, this, "Error looking up user {0}: {1}", userId, ex.Message);
-                return null;
+                return default;
             }
         }
 
@@ -180,7 +180,7 @@ namespace musicStudioUnit.Services
     public class UserInfo
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public DateTime? BirthDate { get; set; }
     }
 
@@ -189,7 +189,7 @@ namespace musicStudioUnit.Services
     /// </summary>
     public class UserLoginEventArgs : EventArgs
     {
-        public UserInfo User { get; set; }
+        public UserInfo? User { get; set; }
         public bool IsBirthday { get; set; }
     }
 }

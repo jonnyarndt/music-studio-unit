@@ -59,7 +59,7 @@ namespace musicStudioUnit.UserInterface
         public bool IsCombinedMode => _isCombinedMode;
 
     public TemperatureScreenUI(BasicTriList panel, EnhancedHVACController hvacController, 
-                  MSUController msuController, StudioCombinationManager combinationManager, List<TemperaturePreset> presets = null)
+                  MSUController msuController, StudioCombinationManager combinationManager, List<TemperaturePreset>? presets = null)
         {
             _panel = panel ?? throw new ArgumentNullException(nameof(panel));
             _hvacController = hvacController ?? throw new ArgumentNullException(nameof(hvacController));

@@ -59,8 +59,8 @@ namespace musicStudioUnit.MusicSystemController
     public class MusicSystemErrorEventArgs : EventArgs
     {
         public string ErrorMessage { get; set; }
-        public Exception Exception { get; set; }
-        public MusicSystemErrorEventArgs(string errorMessage, Exception ex = null)
+        public Exception? Exception { get; set; }
+        public MusicSystemErrorEventArgs(string errorMessage, Exception? ex = null)
         {
             ErrorMessage = errorMessage;
             Exception = ex;

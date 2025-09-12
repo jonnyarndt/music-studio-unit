@@ -19,9 +19,15 @@ namespace musicStudioUnit
         /// </summary>
         internal DigitalIO()
         {
+            // Ensure ControlSystem and DigitalInputPorts are not null before accessing
+            if (Global.ControlSystem == null)
+                throw new InvalidOperationException("Global.ControlSystem is not initialized.");
+            if (Global.ControlSystem.DigitalInputPorts == null)
+                throw new InvalidOperationException("DigitalInputPorts is not initialized.");
+
             // Initialize the DigitalInputPorts collection for ports
-            digitalInput01 = Global.ControlSystem.DigitalInputPorts[1];
-            digitalInput02 = Global.ControlSystem.DigitalInputPorts[2];
+            digitalInput01 = Global.ControlSystem.DigitalInputPorts[1] ?? throw new InvalidOperationException("DigitalInputPort 1 is not available.");
+            digitalInput02 = Global.ControlSystem.DigitalInputPorts[2] ?? throw new InvalidOperationException("DigitalInputPort 2 is not available.");
 
             // Subscribe to the Digital input events to know when the state has changed
             digitalInput01.StateChange += new DigitalInputEventHandler(InputPort_StateChange);

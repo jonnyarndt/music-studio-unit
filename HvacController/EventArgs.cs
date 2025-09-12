@@ -45,9 +45,10 @@ namespace musicStudioUnit.HvacController
 
     public class HVACErrorEventArgs : EventArgs
     {
-        public string ErrorMessage { get; set; }
-        public Exception Exception { get; set; }
-        public HVACErrorEventArgs(string errorMessage, Exception ex = null)
+        public string ErrorMessage { get; }
+        public Exception? Exception { get; }
+
+        public HVACErrorEventArgs(string errorMessage, Exception? ex = null)
         {
             ErrorMessage = errorMessage;
             Exception = ex;

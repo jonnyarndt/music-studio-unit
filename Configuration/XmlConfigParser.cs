@@ -53,7 +53,6 @@ namespace musicStudioUnit.Configuration
                     var error = string.Format("Configuration file not found: {0}", configPath);
                     Debug.Console(0, this, error);
                     OnConfigurationError(error);
-                    return null;
                 }
 
                 // Read file content
@@ -63,7 +62,6 @@ namespace musicStudioUnit.Configuration
                     var error = "Configuration file is empty or could not be read";
                     Debug.Console(0, this, error);
                     OnConfigurationError(error);
-                    return null;
                 }
 
                 // Validate XML structure
@@ -72,7 +70,6 @@ namespace musicStudioUnit.Configuration
                     var error = "Configuration file contains invalid XML structure";
                     Debug.Console(0, this, error);
                     OnConfigurationError(error);
-                    return null;
                 }
 
                 // Parse XML to object
@@ -268,14 +265,14 @@ namespace musicStudioUnit.Configuration
             }
         }
 
-        private LocalConfiguration ParseXmlContent(string xmlContent)
+        private LocalConfiguration? ParseXmlContent(string xmlContent)
         {
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(LocalConfiguration));
                 using (var memoryStream = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xmlContent)))
                 {
-                    LocalConfiguration config = (LocalConfiguration)serializer.Deserialize(memoryStream);
+                    LocalConfiguration? config = (LocalConfiguration?)serializer.Deserialize(memoryStream);
                     return config;
                 }
             }

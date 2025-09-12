@@ -15,8 +15,8 @@ namespace musicStudioUnit.Configuration
     public class XmlConfigErrorEventArgs : EventArgs
     {
         public string ErrorMessage { get; set; }
-        public Exception Exception { get; set; }
-        public XmlConfigErrorEventArgs(string errorMessage, Exception ex = null)
+        public Exception? Exception { get; set; }
+        public XmlConfigErrorEventArgs(string errorMessage, Exception? ex = null)
         {
             ErrorMessage = errorMessage;
             Exception = ex;
@@ -35,8 +35,8 @@ namespace musicStudioUnit.Configuration
     public class HttpConfigErrorEventArgs : EventArgs
     {
         public string ErrorMessage { get; set; }
-        public Exception Exception { get; set; }
-        public HttpConfigErrorEventArgs(string errorMessage, Exception ex = null)
+        public Exception? Exception { get; set; }
+        public HttpConfigErrorEventArgs(string errorMessage, Exception? ex = null)
         {
             ErrorMessage = errorMessage;
             Exception = ex;
@@ -46,8 +46,8 @@ namespace musicStudioUnit.Configuration
     public class ConfigurationErrorEventArgs : EventArgs
     {
         public string ErrorMessage { get; set; }
-        public Exception Exception { get; set; }
-        public ConfigurationErrorEventArgs(string errorMessage, Exception ex = null)
+        public Exception? Exception { get; set; }
+        public ConfigurationErrorEventArgs(string errorMessage, Exception? ex = null)
         {
             ErrorMessage = errorMessage;
             Exception = ex;
