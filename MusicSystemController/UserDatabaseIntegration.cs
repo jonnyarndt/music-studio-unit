@@ -68,7 +68,7 @@ namespace musicStudioUnit
             
             _isLoggedIn = false;
             _currentUserId = 0;
-            _currentUserName = null;
+            _currentUserName = "";
             _currentUserBirthday = DateTime.MinValue;
             _isBirthday = false;
             

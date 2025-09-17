@@ -15,7 +15,7 @@ namespace musicStudioUnit
     {      
         private readonly uint _touchPanelOneIPID = 0x2a;
         private SystemInitializationService _initializationService;
-        private TP01 _touchPanel;
+        private readonly TP01 tp01;
         private MSUTouchPanel _msuTouchPanel;
         private MSUController _msuController;
         private EnhancedHVACController _hvacController;
@@ -86,6 +86,8 @@ namespace musicStudioUnit
 
                 CrestronConsole.AddNewConsoleCommand(PrintDevMon, "printDevMon", "Print all Device Monitor devices", ConsoleAccessLevelEnum.AccessOperator);
 
+                // Initialize touch panel first
+                Debug.Console(0, "INIT: Initializing Touch Panel Interface");
                 var tp01 = new TP01("tp01", "TP01", panel);
                 var sysInfo = new SystemInformationMethods();
                 Debug.Console(2, "INIT: InitializeSystem().sysInfo - Check");
@@ -108,11 +110,7 @@ namespace musicStudioUnit
                 Debug.Console(0, "INIT: Processor Subnet Mask:    {0}", sysInfo.Adapter.Subnet);
                 Debug.Console(0, "INIT: Processor Gateway:        {0}", sysInfo.Adapter.Gateway);
                 Debug.Console(0, "INIT: Processor Hostname:       {0}", sysInfo.Adapter.Hostname);
-                Debug.Console(0, "*********************************************************\n");
-                
-                // Initialize touch panel first
-                Debug.Console(0, "INIT: Initializing Touch Panel Interface");
-                _touchPanel = new TP01("tp01", "TP01", panel);
+                Debug.Console(0, "*********************************************************\n");                
                 
                 // Initialize User Database
                 Debug.Console(0, "INIT: Initializing User Database");
@@ -147,9 +145,9 @@ namespace musicStudioUnit
                     InitializeMSUTouchPanel(panel);
                     
                     // Connect MSU controller to original touch panel if available
-                    if (_msuController != null && _touchPanel != null)
+                    if (_msuController != null && tp01 != null)
                     {
-                        _touchPanel.SetMSUController(_msuController);
+                        tp01.SetMSUController(_msuController);
                         Debug.Console(1, "INIT: Original touch panel connected to MSU controller");
                     }
                 }
@@ -175,7 +173,6 @@ namespace musicStudioUnit
             catch (Exception e)
             {
                 ErrorLog.Error("Error in InitializeSystem: {0}", e.Message);
-                ErrorLog.Error("Error in InitializeSystem: {0}", e.StackTrace);
             }
         }
 
@@ -184,7 +181,7 @@ namespace musicStudioUnit
         /// </summary>
         /// <param name="ipId"></param>
         /// <returns></returns>
-        private BasicTriListWithSmartObject GetPanelForType (uint ipId)
+        private static BasicTriListWithSmartObject GetPanelForType (uint ipId)
         {
             var tsw1070 = new Tsw1070(ipId, Global.ControlSystem);
             tsw1070.Register();

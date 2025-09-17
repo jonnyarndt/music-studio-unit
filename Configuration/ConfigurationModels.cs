@@ -12,19 +12,19 @@ namespace musicStudioUnit.Configuration
     public class LocalConfiguration
     {
         [XmlElement("processorMAC")]
-        public string ProcessorMAC { get; set; }
+        public string? ProcessorMAC { get; set; }
 
         [XmlElement("address")]
-        public AddressInfo Address { get; set; }
+        public AddressInfo? Address { get; set; }
 
         [XmlElement("remote")]
-        public RemoteInfo Remote { get; set; }
+        public RemoteInfo? Remote { get; set; }
 
         [XmlElement("hvac")]
-        public HVACInfo HVAC { get; set; }
+        public HVACInfo? HVAC { get; set; }
 
         [XmlElement("dms")]
-        public DMSInfo DMS { get; set; }
+        public DMSInfo? DMS { get; set; }
     }
 
     /// <summary>
@@ -33,10 +33,10 @@ namespace musicStudioUnit.Configuration
     public class AddressInfo
     {
         [XmlElement("street")]
-        public string Street { get; set; }
+        public string? Street { get; set; }
 
         [XmlElement("city")]
-        public string City { get; set; }
+        public string? City { get; set; }
     }
 
     /// <summary>
@@ -45,13 +45,13 @@ namespace musicStudioUnit.Configuration
     public class RemoteInfo
     {
         [XmlElement("ip")]
-        public string IP { get; set; }
+        public string? IP { get; set; }
 
         [XmlElement("port")]
         public int Port { get; set; }
 
         [XmlElement("file")]
-        public string File { get; set; }
+        public string? File { get; set; }
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ namespace musicStudioUnit.Configuration
     public class DMSInfo
     {
         [XmlElement("ip")]
-        public string IP { get; set; }
+        public string? IP { get; set; }
 
         [XmlElement("port")]
         public int Port { get; set; }
@@ -86,7 +86,7 @@ namespace musicStudioUnit.Configuration
         // Handle direct array deserialization
         public static List<MSUConfiguration> FromJsonArray(string json)
         {
-            return JsonConvert.DeserializeObject<List<MSUConfiguration>>(json);
+            return JsonConvert.DeserializeObject<List<MSUConfiguration>>(json) ?? new List<MSUConfiguration>();
         }
     }
 
@@ -96,13 +96,13 @@ namespace musicStudioUnit.Configuration
     public class MSUConfiguration
     {
         [JsonProperty("MSU_UID")]
-        public string MSU_UID { get; set; }
+        public string? MSU_UID { get; set; }
 
         [JsonProperty("MSU_NAME")]
-        public string MSU_NAME { get; set; }
+        public string? MSU_NAME { get; set; }
 
         [JsonProperty("MSU_MAC")]
-        public string MSU_MAC { get; set; }
+        public string? MSU_MAC { get; set; }
 
         [JsonProperty("X_COORD")]
         public int X_COORD { get; set; }
