@@ -10,7 +10,7 @@ namespace musicStudioUnit.Services
     {
         private readonly string _key;
         private readonly object _userLibrary; // SIMPL# User Library instance
-        private UserInfo _currentUser;
+        private UserInfo? _currentUser;
         private bool _isUserLoggedIn;
 
         public string Key => _key;
@@ -18,7 +18,7 @@ namespace musicStudioUnit.Services
 
         // Properties
         public bool IsUserLoggedIn => _isUserLoggedIn;
-        public UserInfo CurrentUser => _currentUser;
+        public UserInfo? CurrentUser => _currentUser;
 
         // Events
         public event EventHandler<UserLoginEventArgs> UserLoggedIn;
