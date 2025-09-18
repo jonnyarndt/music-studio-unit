@@ -15,13 +15,11 @@ namespace musicStudioUnit
     {      
         private readonly uint _touchPanelOneIPID = 0x2a;
         private SystemInitializationService _initializationService;
-        private readonly TP01 tp01;
+        private TP01 _touchPanel;
         private MSUTouchPanel _msuTouchPanel;
         private MSUController _msuController;
         private EnhancedHVACController _hvacController;
-        private HVACTemperatureUI _hvacTemperatureUI;
         private EnhancedMusicSystemController _musicController;
-        private MusicBrowseUI _musicBrowseUI;
 
         /// <summary>
         /// ControlSystem Constructor. Starting point for the SIMPL#Pro program.
@@ -82,13 +80,31 @@ namespace musicStudioUnit
                 // After this class, unless events happen, nothing else automation wise will happen
 
                 var panel = GetPanelForType(_touchPanelOneIPID);
+                
+                if (panel == null)
+                {
+                    Debug.Console(0, "ERROR: Failed to create touch panel - system initialization will continue but touch panel will not be available");
+                    ErrorLog.Error("Touch panel creation failed - IP ID may be in use or invalid");
+                }
+                else
+                {
+                    Debug.Console(1, "Touch panel created successfully");
+                }
+                
                 var dIO = Global.DIO;
 
                 CrestronConsole.AddNewConsoleCommand(PrintDevMon, "printDevMon", "Print all Device Monitor devices", ConsoleAccessLevelEnum.AccessOperator);
 
-                // Initialize touch panel first
-                Debug.Console(0, "INIT: Initializing Touch Panel Interface");
-                var tp01 = new TP01("tp01", "TP01", panel);
+                // Initialize touch panel first (only if panel creation succeeded)
+                if (panel != null)
+                {
+                    Debug.Console(0, "INIT: Initializing Touch Panel Interface");
+                    _touchPanel = new TP01("tp01", "TP01", panel);
+                }
+                else
+                {
+                    Debug.Console(0, "INIT: Skipping Touch Panel Interface initialization due to panel creation failure");
+                }
                 var sysInfo = new SystemInformationMethods();
                 Debug.Console(2, "INIT: InitializeSystem().sysInfo - Check");
                 var sysProcessorInfo = new ProcessorInfo();
@@ -145,9 +161,9 @@ namespace musicStudioUnit
                     InitializeMSUTouchPanel(panel);
                     
                     // Connect MSU controller to original touch panel if available
-                    if (_msuController != null && tp01 != null)
+                    if (_msuController != null && _touchPanel != null)
                     {
-                        tp01.SetMSUController(_msuController);
+                        _touchPanel.SetMSUController(_msuController);
                         Debug.Console(1, "INIT: Original touch panel connected to MSU controller");
                     }
                 }
@@ -183,9 +199,27 @@ namespace musicStudioUnit
         /// <returns></returns>
         private static BasicTriListWithSmartObject GetPanelForType (uint ipId)
         {
-            var tsw1070 = new Tsw1070(ipId, Global.ControlSystem);
-            tsw1070.Register();
-            return tsw1070;
+            try
+            {
+                Debug.Console(1, "Creating touch panel with IP ID: 0x{0:X2} ({1})", ipId, ipId);
+                var tsw1070 = new Tsw1070(ipId, Global.ControlSystem);
+                
+                if (tsw1070.Register() != eDeviceRegistrationUnRegistrationResponse.Success)
+                {
+                    Debug.Console(0, "ERROR: Failed to register touch panel at IP ID 0x{0:X2}", ipId);
+                    ErrorLog.Error("Touch panel registration failed for IP ID 0x{0:X2}", ipId);
+                    return null;
+                }
+                
+                Debug.Console(1, "Touch panel registered successfully at IP ID: 0x{0:X2}", ipId);
+                return tsw1070;
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, "ERROR: Exception creating touch panel: {0}", ex.Message);
+                ErrorLog.Error("Touch panel creation error: {0}", ex.Message);
+                return null;
+            }
         }
 
         /// <summary>
@@ -288,7 +322,7 @@ namespace musicStudioUnit
                     IP = "10.0.0.100", // TODO: Read from configuration file
                     Port = 4001, // Default port per Client-Scope.md
                     IdleSetpoint = 21.0f,
-                    ZoneIds = new System.Collections.Generic.List<byte> { 1, 2, 3 }, // TODO: Configure per studio zones
+                    ZoneIds = new List<byte> { 1, 2, 3 }, // TODO: Configure per studio zones
                     DebugMode = true
                 };
 
@@ -296,16 +330,13 @@ namespace musicStudioUnit
                 _hvacController = new EnhancedHVACController("MainHVAC", hvacConfig);
 
                 // Create temperature presets
-                var presets = new System.Collections.Generic.List<TemperaturePreset>
+                var presets = new List<TemperaturePreset>
                 {
                     new TemperaturePreset { Name = "Cool Recording", Temperature = 18.0f, Description = "Cool for intense recording sessions" },
                     new TemperaturePreset { Name = "Comfortable", Temperature = 21.0f, Description = "Standard comfortable temperature" },
                     new TemperaturePreset { Name = "Warm Vocals", Temperature = 24.0f, Description = "Warmer for vocal sessions" },
                     new TemperaturePreset { Name = "Idle", Temperature = 19.0f, Description = "Energy saving when not in use" }
                 };
-
-                // Create UI interface for touch panel
-                _hvacTemperatureUI = new HVACTemperatureUI(_hvacController, panel, presets);
 
                 // Initialize HVAC controller
                 if (_hvacController.Initialize())
@@ -443,9 +474,6 @@ namespace musicStudioUnit
 
                 // Create music controller
                 _musicController = new EnhancedMusicSystemController("MainMusic", dmsConfig, msuUID);
-
-                // Create UI interface for touch panel
-                _musicBrowseUI = new MusicBrowseUI(_musicController, panel);
 
                 // Initialize music controller
                 if (_musicController.Initialize())

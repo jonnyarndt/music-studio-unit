@@ -497,16 +497,24 @@ namespace musicStudioUnit.Services
                 switch (message.MessageType)
                 {
                     case MSUMessageType.StateUpdate:
-                        HandleStateUpdate(message as StateUpdateMessage);
+                        var stateUpdateMsg = message as StateUpdateMessage;
+                        if (stateUpdateMsg != null)
+                            HandleStateUpdate(stateUpdateMsg);
                         break;
                     case MSUMessageType.CombinationCoordination:
-                        HandleCombinationCoordination(message as CombinationCoordinationMessage);
+                        var combinationCoordMsg = message as CombinationCoordinationMessage;
+                        if (combinationCoordMsg != null)
+                            HandleCombinationCoordination(combinationCoordMsg);
                         break;
                     case MSUMessageType.Heartbeat:
-                        HandleHeartbeat(message as HeartbeatMessage);
+                        var heartbeatMsg = message as HeartbeatMessage;
+                        if (heartbeatMsg != null)
+                            HandleHeartbeat(heartbeatMsg);
                         break;
                     case MSUMessageType.Discovery:
-                        HandleDiscovery(message as DiscoveryMessage, clientIndex);
+                        var discoveryMsg = message as DiscoveryMessage;
+                        if (discoveryMsg != null)
+                            HandleDiscovery(discoveryMsg, clientIndex);
                         break;
                 }
             }
@@ -516,7 +524,7 @@ namespace musicStudioUnit.Services
             }
         }
 
-        private MSUMessage ParseMessage(string messageJson)
+        private MSUMessage? ParseMessage(string messageJson)
         {
             try
             {
