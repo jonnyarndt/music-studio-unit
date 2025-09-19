@@ -25,7 +25,7 @@ namespace musicStudioUnit.UserInterface
         private TemperatureScreenUI _temperatureScreen;
         private MusicScreenUI _musicScreen;
         private CombineScreenUI _combineScreen;
-    private StudioCombinationManager _combinationManager;
+        private StudioCombinationManager _combinationManager;
 
         // State tracking
         private MSUTouchPanelJoins.Pages _currentPage = MSUTouchPanelJoins.Pages.Settings;
@@ -51,8 +51,8 @@ namespace musicStudioUnit.UserInterface
         #endregion
 
         #region Constructor
-    private bool _disposed = false;
-    private bool _isMusicPlaying = false;
+        private bool _disposed = false;
+        private bool _isMusicPlaying = false;
         public MSUTouchPanel(string keyId, string friendlyId, BasicTriListWithSmartObject panel,
                            MSUController msuController, SystemInitializationService initService,
                            EnhancedHVACController hvacController, EnhancedMusicSystemController musicController,
@@ -78,8 +78,14 @@ namespace musicStudioUnit.UserInterface
             // Setup menu bar events
             SetupMenuBarEvents();
 
+            _settingsScreen = new SettingsScreenUI(Panel, _msuController, _initService);
+            _userLoginScreen = new UserLoginScreenUI(Panel);
+            _temperatureScreen = new TemperatureScreenUI(Panel, _hvacController, _msuController, _combinationManager);
+            _musicScreen = new MusicScreenUI(Panel, _musicController);
+            _combineScreen = new CombineScreenUI(Panel, _combinationManager);
+
             // Initialize screen handlers
-            InitializeScreenHandlers();
+            InitializeScreenEventHandlers();
 
             // Set initial page to Settings per Client-Scope.md requirement
             NavigateToPage(MSUTouchPanelJoins.Pages.Settings);
@@ -131,40 +137,35 @@ namespace musicStudioUnit.UserInterface
             Debug.Console(2, this, "Menu bar events configured");
         }
 
-        private void InitializeScreenHandlers()
+        private void InitializeScreenEventHandlers()
         {
             try
             {
                 // Settings Screen
-                _settingsScreen = new SettingsScreenUI(Panel, _msuController, _initService);
                 _settingsScreen.ConfigurationReloadRequested += OnConfigurationReloadRequested;
 
                 // User Login Screen
-                _userLoginScreen = new UserLoginScreenUI(Panel);
                 _userLoginScreen.UserLoggedIn += OnUserLoggedIn;
                 _userLoginScreen.UserLoggedOut += OnUserLoggedOut;
                 _userLoginScreen.GuestModeActivated += OnGuestModeActivated;
 
                 // Temperature Screen
-                _temperatureScreen = new TemperatureScreenUI(Panel, _hvacController, _msuController, _combinationManager);
                 _temperatureScreen.TemperatureChanged += OnTemperatureChanged;
                 _temperatureScreen.TemperatureFault += OnTemperatureFault;
 
                 // Enhanced Music Screen
-                _musicScreen = new MusicScreenUI(Panel, _musicController);
                 _musicScreen.PlaybackStateChanged += OnMusicPlaybackStateChanged;
                 _musicScreen.NavigateBackRequested += OnMusicNavigateBackRequested;
 
                 // Combine Screen
-                _combineScreen = new CombineScreenUI(Panel, _combinationManager);
                 _combineScreen.CombinationChanged += OnCombinationChanged;
                 _combineScreen.NavigateBackRequested += OnCombineNavigateBackRequested;
 
-                Debug.Console(1, this, "Screen handlers initialized successfully");
+                Debug.Console(1, this, "Screen event handlers initialized successfully");
             }
             catch (Exception ex)
             {
-                Debug.Console(0, this, "Error initializing screen handlers: {0}", ex.Message);
+                Debug.Console(0, this, "Error initializing screen event handlers: {0}", ex.Message);
             }
         }
         #endregion
@@ -286,43 +287,43 @@ namespace musicStudioUnit.UserInterface
 
         #region Event Handlers
 
-        private void OnConfigurationReloadRequested(object sender, ConfigurationReloadEventArgs args)
+        private void OnConfigurationReloadRequested(object? sender, ConfigurationReloadEventArgs args)
         {
             Debug.Console(1, this, "Configuration reload requested: {0}", args.Reason);
             // The initialization service will handle the actual reload
         }
 
-        private void OnUserLoggedIn(object sender, UserLoginEventArgs args)
+        private void OnUserLoggedIn(object? sender, UserLoginEventArgs args)
         {
             _isUserLoggedIn = true;
             _currentUserName = args.UserName;
             Debug.Console(1, this, "User logged in: {0} (ID: {1})", args.UserName, args.UserId);
         }
 
-        private void OnUserLoggedOut(object sender, UserLogoutEventArgs args)
+        private void OnUserLoggedOut(object? sender, UserLogoutEventArgs args)
         {
             _isUserLoggedIn = false;
             _currentUserName = string.Empty;
             Debug.Console(1, this, "User logged out at: {0}", args.LogoutTime);
         }
 
-        private void OnGuestModeActivated(object sender, EventArgs args)
+        private void OnGuestModeActivated(object? sender, EventArgs args)
         {
             Debug.Console(1, this, "Guest mode activated");
         }
 
-        private void OnTemperatureChanged(object sender, TemperatureChangedEventArgs args)
+        private void OnTemperatureChanged(object? sender, TemperatureChangedEventArgs args)
         {
             Debug.Console(1, this, "Temperature changed to {0:F1}°C for zones: {1}", 
                 args.Temperature, string.Join(",", args.ZoneIds));
         }
 
-        private void OnTemperatureFault(object sender, TemperatureFaultEventArgs args)
+        private void OnTemperatureFault(object? sender, TemperatureFaultEventArgs args)
         {
             Debug.Console(0, this, "Temperature fault: {0}", args.FaultMessage);
         }
 
-        private void OnMusicPlaybackStateChanged(object sender, MusicPlaybackStateEventArgs args)
+        private void OnMusicPlaybackStateChanged(object? sender, MusicPlaybackStateEventArgs args)
         {
             _isMusicPlaying = args.IsPlaying;
             _currentTrackInfo = args.IsPlaying ? $"{args.ArtistName}|{args.TrackName}" : string.Empty;
@@ -330,14 +331,14 @@ namespace musicStudioUnit.UserInterface
             Debug.Console(1, this, "Music playback state changed - Playing: {0}, Track: {1}", args.IsPlaying, args.TrackName ?? "None");
         }
 
-        private void OnMusicNavigateBackRequested(object sender, EventArgs args)
+        private void OnMusicNavigateBackRequested(object? sender, EventArgs args)
         {
             // Navigate back to appropriate main menu or previous screen
             NavigateToPage(MSUTouchPanelJoins.Pages.Settings);
             Debug.Console(1, this, "Music screen requested navigation back");
         }
 
-        private void OnCombinationChanged(object sender, StudioCombinationChangedEventArgs args)
+        private void OnCombinationChanged(object? sender, StudioCombinationChangedEventArgs args)
         {
             Debug.Console(1, this, "Studio combination changed - Type: {0}, Units: {1}", 
                 args.CombinationType, args.CombinedMSUs?.Count ?? 0);
@@ -346,7 +347,7 @@ namespace musicStudioUnit.UserInterface
             UpdateMenuBar();
         }
 
-        private void OnCombineNavigateBackRequested(object sender, EventArgs args)
+        private void OnCombineNavigateBackRequested(object? sender, EventArgs args)
         {
             // Navigate back to appropriate main menu or previous screen
             NavigateToPage(MSUTouchPanelJoins.Pages.Settings);

@@ -152,10 +152,6 @@ namespace musicStudioUnit
             }
         }
 
-        // Update the OnMSUInitialized method signature to match the nullability of the EventHandler delegate.
-        // The EventHandler<T> delegate expects 'object? sender' (nullable object) as the first parameter.
-        // Change 'object sender' to 'object? sender' in the method signature.
-
         private void OnMSUInitialized(object? sender, MSUInitializedEventArgs args)
         {
             try
