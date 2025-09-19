@@ -49,7 +49,7 @@ namespace musicStudioUnit
                 }
             }
         }
-        public static char DirectorySeparator { get { return System.IO.Path.DirectorySeparatorChar; } } // Returns the directory separator character based on the running OS
+        public static char DirectorySeparator { get { return Path.DirectorySeparatorChar; } } // Returns the directory separator character based on the running OS
         public static string ApplicationDirectoryPathPrefix { get { return Crestron.SimplSharp.CrestronIO.Directory.GetApplicationDirectory(); } } // The file path prefix to the applciation directory
 
         static string _AssemblyVersion = string.Empty;
