@@ -78,9 +78,9 @@ namespace musicStudioUnit
                 // Read config
                 // Build your touch screen
                 // UI print-outs: Step 1-Config Read
-                // Build lighting clients
+                // Build TCP/IP and/or UDP clients
                 // Build comm clients
-                // After this class, unless events happen, nothing else automation wise will happen
+                // Unless events happen, nothing else after this class, automation wise, will occur
 
                 var panel = GetPanelForType(_touchPanelOneIPID);
                 
@@ -91,7 +91,7 @@ namespace musicStudioUnit
                 }
                 else
                 {
-                    Debug.Console(1, "Touch panel created successfully");
+                    Debug.Console(0, "INIT: Touch panel created successfully");
                 }
                 
                 var dIO = Global.DIO;
@@ -103,24 +103,25 @@ namespace musicStudioUnit
                 {
                     Debug.Console(0, "INIT: Initializing Touch Panel Interface");
                     _touchPanel = new TP01("tp01", "TP01", panel);
+                    Debug.Console(0, "INIT: Initializing Touch Panel Interface -> Complete");
                 }
                 else
                 {
                     Debug.Console(0, "INIT: Skipping Touch Panel Interface initialization due to panel creation failure");
                 }
                 var sysInfo = new SystemInformationMethods();
-                Debug.Console(2, "INIT: InitializeSystem().sysInfo - Check");
+                Debug.Console(2, "INIT: InitializeSystem().SystemInformationMethods -> Complete");
                 var sysProcessorInfo = new ProcessorInfo();
-                Debug.Console(2, "INIT: InitializeSystem().sysProcessorInfo - Check");
+                Debug.Console(2, "INIT: InitializeSystem().ProcessorInfo -> Complete");
                 var sysEthernetInfo = new EthernetInfo();
-                Debug.Console(2, "INIT: InitializeSystem().sysEthernetInfo - Check");
+                Debug.Console(2, "INIT: InitializeSystem().EthernetInfo -> Complete");
                 var sysConstants = new SystemInfoConstants();
-                Debug.Console(2, "INIT: InitializeSystem().sysConstants - Check");
+                Debug.Console(2, "INIT: InitializeSystem().SystemInfoConstants -> Complete");
 
                 sysInfo.GetProcessorInfo();
-                Debug.Console(2, "INIT: InitializeSystem().sysInfo.GetProcessorInfo() - Check");
+                Debug.Console(2, "INIT: InitializeSystem().sysInfo.GetProcessorInfo() -> Complete");
                 sysInfo.GetEthernetInfo();
-                Debug.Console(2, "INIT: InitializeSystem().sysInfo.GetEthernetInfo() - Check");
+                Debug.Console(2, "INIT: InitializeSystem().sysInfo.GetEthernetInfo() -> Complete");
 
                 Debug.Console(0, "*********************************************************\n");
                 Debug.Console(0, "INIT: Processor Firmware:       {0}", sysInfo.Processor.Firmware);
@@ -134,18 +135,20 @@ namespace musicStudioUnit
                 // Initialize User Database
                 Debug.Console(0, "INIT: Initializing User Database");
                 InitializeUserDatabase();
-                
+                Debug.Console(0, "INIT: Initializing User Database -> Complete");
+
                 // Initialize HVAC controller
                 Debug.Console(0, "INIT: Initializing HVAC Temperature Controller");
                 if (panel != null) InitializeHVACController(panel);
-       
+                Debug.Console(0, "INIT: Initializing HVAC Temperature Controller - Complete");
+
                 // Initialize Music System controller
                 Debug.Console(0, "INIT: Initializing Music System Controller");
                 if (panel != null) InitializeMusicController(panel);
-                
+                Debug.Console(0, "INIT: Initializing Music System Controller -> Complete");
+
                 // Initialize comprehensive MSU system using new initialization service
-                Debug.Console(0, "INIT: Starting Masters of Karaoke MSU System Initialization");
-                
+                Debug.Console(0, "INIT: MSU System Initialization Starting...");
                 _initializationService = new SystemInitializationService("SystemInit");
                 _initializationService.InitializationComplete += OnSystemInitializationComplete;
                 _initializationService.InitializationError += OnSystemInitializationError;
@@ -154,7 +157,7 @@ namespace musicStudioUnit
                 // Execute complete initialization sequence
                 if (_initializationService.Initialize())
                 {
-                    Debug.Console(1, "INIT: MSU System initialization completed successfully");
+                    Debug.Console(0, "INIT: MSU System Initialization -> Complete");
                     
                     // Get MSU controller
                     _msuController = _initializationService.MSUController;
@@ -162,17 +165,18 @@ namespace musicStudioUnit
                     // Initialize MSU TouchPanel with all components
                     Debug.Console(0, "INIT: Initializing MSU TouchPanel with integrated screens");
                     if(panel != null) InitializeMSUTouchPanel(panel);
-                    
+                    Debug.Console(0, "INIT: Initializing MSU TouchPanel with integrated screens -> Complete");
+
                     // Connect MSU controller to original touch panel if available
                     if (_msuController != null && _touchPanel != null)
                     {
                         _touchPanel.SetMSUController(_msuController);
-                        Debug.Console(1, "INIT: Original touch panel connected to MSU controller");
+                        Debug.Console(0, "INIT: Original touch panel connected to MSU controller");
                     }
                 }
                 else
                 {
-                    Debug.Console(0, "INIT: MSU System initialization failed - see errors above");
+                    Debug.Console(0, "INIT: MSU System initialization failed! -> See errors above ^^^");
                 }
                 
                 // Add console command for configuration reload
