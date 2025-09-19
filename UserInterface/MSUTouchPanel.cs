@@ -89,7 +89,6 @@ namespace musicStudioUnit.UserInterface
 
             // Set initial page to Settings per Client-Scope.md requirement
             NavigateToPage(MSUTouchPanelJoins.Pages.Settings);
-                    NavigateToPage(MSUTouchPanelJoins.Pages.Settings);
 
             // Initialize menu bar display
             UpdateMenuBar();
