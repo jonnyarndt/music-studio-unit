@@ -15,12 +15,12 @@ namespace musicStudioUnit
     public class ControlSystem : CrestronControlSystem
     {      
         private readonly uint _touchPanelOneIPID = 0x2a;
-        private SystemInitializationService _initializationService;
-        private TP01 _touchPanel;
-        private MSUTouchPanel _msuTouchPanel;
-        private MSUController _msuController;
-        private EnhancedHVACController _hvacController;
-        private EnhancedMusicSystemController _musicController;
+        private SystemInitializationService? _initializationService;
+        private TP01? _touchPanel;
+        private MSUTouchPanel? _msuTouchPanel;
+        private MSUController? _msuController;
+        private EnhancedHVACController? _hvacController;
+        private EnhancedMusicSystemController? _musicController;
 
         /// <summary>
         /// ControlSystem Constructor. Starting point for the SIMPL#Pro program.
@@ -44,6 +44,10 @@ namespace musicStudioUnit
                 Global.DIO = new DigitalIO();
 
                 //Subscribe to the controller events (System, Program, and Ethernet)
+                CrestronEnvironment.SystemEventHandler -= new SystemEventHandler(ControllerSystemEventHandler);
+                CrestronEnvironment.ProgramStatusEventHandler -= new ProgramStatusEventHandler(ControllerProgramEventHandler);
+                CrestronEnvironment.EthernetEventHandler -= new EthernetEventHandler(ControllerEthernetEventHandler);
+
                 CrestronEnvironment.SystemEventHandler += new SystemEventHandler(ControllerSystemEventHandler);
                 CrestronEnvironment.ProgramStatusEventHandler += new ProgramStatusEventHandler(ControllerProgramEventHandler);
                 CrestronEnvironment.EthernetEventHandler += new EthernetEventHandler(ControllerEthernetEventHandler);
