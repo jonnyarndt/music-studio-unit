@@ -132,11 +132,18 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Show()
         {
+            Debug.Console(0, "MusicScreenUI", "[DEBUG] Setting page joins: Settings=FALSE, User=FALSE, Music=TRUE, Temperature=FALSE, Combine=FALSE");
+
             if (!_isInitialized)
             {
                 Initialize();
             }
-
+            // Show Music PAGE, hide others
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Settings].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.User].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Music].BoolValue = true;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Temperature].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Combine].BoolValue = false;
             // Show appropriate view based on current state
             switch (_currentState)
             {
@@ -150,8 +157,7 @@ namespace musicStudioUnit.UserInterface
                     ShowNowPlaying();
                     break;
             }
-
-            Debug.Console(1, "MusicScreenUI", "Music screen shown - State: {0}", _currentState);
+            Debug.Console(1, "MusicScreenUI", "Music page shown - State: {0}", _currentState);
         }
 
         /// <summary>
@@ -159,10 +165,13 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Hide()
         {
-            // Clear any temporary display states
+            Debug.Console(0, "MusicScreenUI", "[DEBUG] Setting page join Music=FALSE");
+            // Hide Music PAGE
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Music].BoolValue = false;
             _panel.BooleanInput[MSUTouchPanelJoins.Music.ArtistListVisible].BoolValue = false;
             _panel.BooleanInput[MSUTouchPanelJoins.Music.TrackListVisible].BoolValue = false;
             _panel.BooleanInput[MSUTouchPanelJoins.Music.NowPlayingVisible].BoolValue = false;
+            Debug.Console(0, "MusicScreenUI", "Music page hidden");
         }
 
         /// <summary>

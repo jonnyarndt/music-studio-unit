@@ -122,17 +122,23 @@ namespace musicStudioUnit.UserInterface
         /// <summary>
         /// Show the combine screen (entry point from MSU TouchPanel)
         /// </summary>
-        public void Show()
+        public void Show()   
         {
+            Debug.Console(0, "CombineScreenUI", "[DEBUG] Setting page joins: Settings=FALSE, User=FALSE, Music=FALSE, Temperature=FALSE, Combine=TRUE");
+
             if (!_isInitialized)
             {
                 Initialize();
             }
-
+            // Show Combine PAGE, hide others
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Settings].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.User].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Music].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Temperature].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Combine].BoolValue = true;
             RefreshAdjacentUnits();
             UpdateCombinationDisplay();
-
-            core_tools.Debug.Console(1, "CombineScreenUI", "Combine screen shown - Current: {0}", _currentCombination);
+            core_tools.Debug.Console(0, "CombineScreenUI", "Combine page shown - Current: {0}", _currentCombination);
         }
 
         /// <summary>
@@ -140,7 +146,11 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Hide()
         {
-            // No specific hiding logic needed for combine screen
+            Debug.Console(0, "CombineScreenUI", "[DEBUG] Setting page join Combine=FALSE");
+
+            // Hide Combine PAGE
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Combine].BoolValue = false;
+            core_tools.Debug.Console(0, "CombineScreenUI", "Combine page hidden");
         }
 
         /// <summary>

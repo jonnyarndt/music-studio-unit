@@ -22,8 +22,15 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Show()
         {
+            Debug.Console(0, "TemperatureScreenUI", "[DEBUG] Setting page joins: Settings=FALSE, User=FALSE, Music=FALSE, Temperature=TRUE, Combine=FALSE");
+            // Show Temperature PAGE, hide others
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Settings].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.User].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Music].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Temperature].BoolValue = true;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Combine].BoolValue = false;
             UpdateUI();
-            Debug.Console(1, "TemperatureScreenUI", "Temperature screen shown");
+            Debug.Console(0, "TemperatureScreenUI", "Temperature page shown");
         }
 
         /// <summary>
@@ -31,7 +38,10 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Hide()
         {
-            Debug.Console(1, "TemperatureScreenUI", "Temperature screen hidden");
+            Debug.Console(0, "TemperatureScreenUI", "[DEBUG] Setting page join Temperature=FALSE");
+            // Hide Temperature PAGE
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Temperature].BoolValue = false;
+            Debug.Console(0, "TemperatureScreenUI", "Temperature page hidden");
         }
         private readonly BasicTriList _panel;
         private readonly EnhancedHVACController _hvacController;

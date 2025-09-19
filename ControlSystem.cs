@@ -157,7 +157,7 @@ namespace musicStudioUnit
                 // Execute complete initialization sequence
                 if (_initializationService.Initialize())
                 {
-                    Debug.Console(0, "INIT: MSU System Initialization -> Complete");
+                    Debug.Console(0, "INIT: MSU System Initialization -> _initializationService.Initialize()-> Started...");
                     
                     // Get MSU controller
                     _msuController = _initializationService.MSUController;
@@ -739,7 +739,7 @@ namespace musicStudioUnit
         {
             try
             {
-                Debug.Console(1, "Initializing MSU TouchPanel with integrated screens...");
+                Debug.Console(0, "INIT: Initializing MSU TouchPanel with integrated screens...");
                 
                 if (_msuController == null)
                 {
@@ -764,12 +764,11 @@ namespace musicStudioUnit
                     "studioCombination", _msuController?.Key ?? "default_msu", 0, 0, 1, new Dictionary<string, musicStudioUnit.Services.MusicStudioUnit>());
 
                 // Create MSU TouchPanel with all components
-                _msuTouchPanel = new MSUTouchPanel("msuTouchPanel", "MSU TouchPanel", panel,
-                    _msuController, _initializationService, _hvacController, _musicController, combinationManager);
+                if(_msuController != null)
+                    _msuTouchPanel = new MSUTouchPanel("msuTouchPanel", "MSU TouchPanel", panel,
+                        _msuController, _initializationService, _hvacController, _musicController, combinationManager);
 
-                Debug.Console(1, "MSU TouchPanel initialized successfully with all screen handlers");
-                Debug.Console(1, "Available screens: Settings, User, Music, Temperature, Combine");
-                Debug.Console(1, "Default screen: Settings (per Client-Scope.md requirement)");
+                Debug.Console(0, "INIT: MSU TP Initialization w/ Screen Handlers");
             }
             catch (Exception ex)
             {

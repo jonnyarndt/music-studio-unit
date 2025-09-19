@@ -18,9 +18,15 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Show()
         {
-            // Optionally update display or make visible
+            Debug.Console(0, "SettingsScreenUI", "[DEBUG] Setting page joins: Settings=TRUE, User=FALSE, Music=FALSE, Temperature=FALSE, Combine=FALSE");
+            // Show Settings PAGE, hide others
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Settings].BoolValue = true;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.User].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Music].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Temperature].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Combine].BoolValue = false;
             UpdateSettingsDisplay();
-            Debug.Console(1, "SettingsScreenUI", "Settings screen shown");
+            Debug.Console(0, "SettingsScreenUI", "Settings page shown");
         }
 
         /// <summary>
@@ -28,8 +34,10 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Hide()
         {
-            // Optionally clear display or make invisible
-            Debug.Console(1, "SettingsScreenUI", "Settings screen hidden");
+            Debug.Console(0, "SettingsScreenUI", "[DEBUG] Setting page join Settings=FALSE");
+            // Hide Settings PAGE
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Settings].BoolValue = false;
+            Debug.Console(0, "SettingsScreenUI", "Settings page hidden");
         }
         private readonly BasicTriList _panel;
         private readonly MSUController _msuController;

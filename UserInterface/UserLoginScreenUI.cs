@@ -20,8 +20,14 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Show()
         {
-            // Optionally update display or make visible
-            Debug.Console(1, "UserLoginScreenUI", "User login screen shown");
+            Debug.Console(0, "UserLoginScreenUI", "[DEBUG] Setting page joins: Settings=FALSE, User=TRUE, Music=FALSE, Temperature=FALSE, Combine=FALSE");
+            // Show User PAGE, hide others
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Settings].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.User].BoolValue = true;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Music].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Temperature].BoolValue = false;
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Combine].BoolValue = false;
+            Debug.Console(1, "UserLoginScreenUI", "User login page shown");
         }
 
         /// <summary>
@@ -29,8 +35,10 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Hide()
         {
-            // Optionally clear display or make invisible
-            Debug.Console(1, "UserLoginScreenUI", "User login screen hidden");
+            Debug.Console(0, "UserLoginScreenUI", "[DEBUG] Setting page join User=FALSE");
+            // Hide User PAGE
+            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.User].BoolValue = false;
+            Debug.Console(0, "UserLoginScreenUI", "User login page hidden");
         }
         private readonly BasicTriList _panel;
         private readonly StringBuilder _userIdBuilder = new StringBuilder(5); // Max 5 digits for user IDs up to 60,000

@@ -65,7 +65,7 @@ namespace musicStudioUnit.UserInterface
             _musicController = musicController ?? throw new ArgumentNullException(nameof(musicController));
             _combinationManager = combinationManager ?? throw new ArgumentNullException(nameof(combinationManager));
 
-            Debug.Console(1, this, "Initializing MSU TouchPanel");
+            Debug.Console(0, this, "INIT: Initializing MSU TouchPanel");
 
             // Initialize dictionaries
             PageDictionary = new ConcurrentDictionary<uint, bool>();
@@ -93,7 +93,7 @@ namespace musicStudioUnit.UserInterface
             // Initialize menu bar display
             UpdateMenuBar();
 
-            Debug.Console(1, this, "MSU TouchPanel initialized successfully");
+            Debug.Console(0, this, "INIT: MSU TouchPanel initialization -> Complete");
         }
         #endregion
 
@@ -111,24 +111,33 @@ namespace musicStudioUnit.UserInterface
         {
             Panel.SigChange += (device, args) =>
             {
+                Debug.Console(1, this, "[DEBUG] SigChange event: Join={0}, Value={1}", args.Sig.Number, args.Sig.BoolValue);
                 if (!args.Sig.BoolValue) return; // Only handle button press
 
                 switch (args.Sig.Number)
                 {
                     case (uint)MSUTouchPanelJoins.MenuBar.SettingsButton:
+                        Debug.Console(1, this, "[DEBUG] SettingsButton pressed (Join {0})", args.Sig.Number);
                         NavigateToPage(MSUTouchPanelJoins.Pages.Settings);
                         break;
                     case (uint)MSUTouchPanelJoins.MenuBar.UserButton:
+                        Debug.Console(1, this, "[DEBUG] UserButton pressed (Join {0})", args.Sig.Number);
                         NavigateToPage(MSUTouchPanelJoins.Pages.User);
                         break;
                     case (uint)MSUTouchPanelJoins.MenuBar.MusicButton:
+                        Debug.Console(1, this, "[DEBUG] MusicButton pressed (Join {0})", args.Sig.Number);
                         NavigateToPage(MSUTouchPanelJoins.Pages.Music);
                         break;
                     case (uint)MSUTouchPanelJoins.MenuBar.TemperatureButton:
+                        Debug.Console(1, this, "[DEBUG] TemperatureButton pressed (Join {0})", args.Sig.Number);
                         NavigateToPage(MSUTouchPanelJoins.Pages.Temperature);
                         break;
                     case (uint)MSUTouchPanelJoins.MenuBar.CombineButton:
+                        Debug.Console(1, this, "[DEBUG] CombineButton pressed (Join {0})", args.Sig.Number);
                         NavigateToPage(MSUTouchPanelJoins.Pages.Combine);
+                        break;
+                    default:
+                        Debug.Console(1, this, "[DEBUG] Unhandled menu button join: {0}", args.Sig.Number);
                         break;
                 }
             };
@@ -174,27 +183,30 @@ namespace musicStudioUnit.UserInterface
         {
             try
             {
-                Debug.Console(1, this, "Navigating to page: {0}", page);
+                Debug.Console(1, this, "[DEBUG] NavigateToPage called: {0}", page);
 
                 // Clear current page
                 if (PageDictionary.ContainsKey((uint)_currentPage))
                 {
+                    Debug.Console(1, this, "[DEBUG] Clearing previous page: {0}", _currentPage);
                     PageDictionary[(uint)_currentPage] = false;
                 }
 
                 // Set new page
                 _currentPage = page;
+                Debug.Console(1, this, "[DEBUG] Setting new page: {0}", page);
                 SetPage((uint)page);
                 PageDictionary[(uint)page] = true;
 
                 // Handle page-specific logic
+                Debug.Console(1, this, "[DEBUG] Calling OnPageChanged for page: {0}", page);
                 OnPageChanged(page);
 
-                Debug.Console(1, this, "Navigation completed to page: {0}", page);
+                Debug.Console(1, this, "[DEBUG] Navigation completed to page: {0}", page);
             }
             catch (Exception ex)
             {
-                Debug.Console(0, this, "Error navigating to page {0}: {1}", page, ex.Message);
+                Debug.Console(0, this, "[DEBUG] Error navigating to page {0}: {1}", page, ex.Message);
             }
         }
 
@@ -202,7 +214,9 @@ namespace musicStudioUnit.UserInterface
         {
             try
             {
+                Debug.Console(1, this, "[DEBUG] OnPageChanged called for page: {0}", page);
                 // Hide all screens first
+                Debug.Console(1, this, "[DEBUG] Hiding all screens");
                 _settingsScreen?.Hide();
                 _userLoginScreen?.Hide();
                 _temperatureScreen?.Hide();
@@ -210,6 +224,7 @@ namespace musicStudioUnit.UserInterface
                 _combineScreen?.Hide();
 
                 // Show and initialize the requested screen
+                Debug.Console(1, this, "[DEBUG] Showing requested screen: {0}", page);
                 switch (page)
                 {
                     case MSUTouchPanelJoins.Pages.Settings:
@@ -229,11 +244,11 @@ namespace musicStudioUnit.UserInterface
                         break;
                 }
 
-                Debug.Console(2, this, "Page changed to: {0}", page);
+                Debug.Console(2, this, "[DEBUG] Page changed to: {0}", page);
             }
             catch (Exception ex)
             {
-                Debug.Console(0, this, "Error changing page to {0}: {1}", page, ex.Message);
+                Debug.Console(0, this, "[DEBUG] Error changing page to {0}: {1}", page, ex.Message);
             }
         }
         #endregion
