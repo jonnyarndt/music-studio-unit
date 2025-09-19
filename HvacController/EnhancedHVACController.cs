@@ -1,13 +1,7 @@
 
-using System;
 using core_tools;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using System.Threading;
 using Crestron.SimplSharp;
-using Crestron.SimplSharp.CrestronIO;
 using musicStudioUnit.Configuration;
-using musicStudioUnit.HvacController;
 
 namespace musicStudioUnit.Devices
 {
@@ -66,7 +60,7 @@ namespace musicStudioUnit.Devices
         {
             _key = key;
             _config = config;
-            _setpointFilePath = string.Format(@"\USER\hvac_setpoints_{0}.dat", key);
+            _setpointFilePath = GetSetpointFilePath(key);
 
             Debug.Console(1, this, "Initializing HVAC Controller for {0}:{1}", config.IP, config.Port);
 
@@ -84,6 +78,33 @@ namespace musicStudioUnit.Devices
 
             DeviceManager.AddDevice(key, this);
             Debug.Console(1, this, "HVAC Controller created successfully");
+        }
+
+        /// <summary>
+        /// Get the file path for HVAC setpoint persistence using Crestron-compatible path format
+        /// </summary>
+        private string GetSetpointFilePath(string key)
+        {
+            try
+            {
+                // Try to get the application root directory using Crestron API
+                var rootDir = Crestron.SimplSharp.CrestronIO.Directory.GetApplicationRootDirectory();
+                if (!string.IsNullOrEmpty(rootDir))
+                {
+                    Debug.Console($"[{Key}] Using GetApplicationRootDirectory: '{rootDir}'");
+                    var settingsDir = Crestron.SimplSharp.CrestronIO.Path.Combine(rootDir, "hvac_setpoints");
+                    var path = Crestron.SimplSharp.CrestronIO.Path.Combine(settingsDir, $"hvac_setpoints_{key}.dat");
+                    return path;
+                }
+                // Fallback to Crestron internal format
+                Debug.Console($"[{Key}] GetApplicationRootDirectory returned null/empty, using fallback");
+                return $@"USER\hvac_setpoints_{key}.dat";
+            }
+            catch (Exception ex)
+            {
+                Debug.Console($"[{Key}] Error in GetSetpointFilePath: {ex.Message}");
+                return $@"USER\hvac_setpoints_{key}.dat";
+            }
         }
 
         /// <summary>
@@ -208,7 +229,7 @@ namespace musicStudioUnit.Devices
 
                     if (zoneIds.Count > 10)
                     {
-                        Debug.Console(0, this, "Cannot set more than 10 zones at once (Client-Scope.md limit)");
+                        Debug.Console(0, this, "Cannot set more than 10 zones at once");
                         return false;
                     }
 
@@ -330,7 +351,7 @@ namespace musicStudioUnit.Devices
         /// <summary>
         /// Process received HVAC response data per Client-Scope.md return protocol
         /// </summary>
-        private void OnDataReceived(object sender, HVACDataReceivedEventArgs args)
+        private void OnDataReceived(object? sender, HVACDataReceivedEventArgs args)
         {
             lock (_lockObject)
             {
@@ -410,7 +431,7 @@ namespace musicStudioUnit.Devices
         /// <summary>
         /// Handle response timeout
         /// </summary>
-        private void OnResponseTimeout(object obj)
+        private void OnResponseTimeout(object? obj)
         {
             lock (_lockObject)
             {
@@ -433,40 +454,135 @@ namespace musicStudioUnit.Devices
         {
             try
             {
-                if (Crestron.SimplSharp.CrestronIO.File.Exists(_setpointFilePath))
+                // Log GetApplicationRootDirectory value
+                var appRoot = Crestron.SimplSharp.CrestronIO.Directory.GetApplicationRootDirectory();
+                core_tools.Debug.Console($"[{Key}] GetApplicationRootDirectory: '{appRoot}'");
+
+                // Try using appRoot as prefix if available
+                string appRootPath = null;
+                if (!string.IsNullOrEmpty(appRoot))
                 {
-                    var fileStream = Crestron.SimplSharp.CrestronIO.File.OpenText(_setpointFilePath);
-                    var lines = new List<string>();
-                    string line;
-                    while ((line = fileStream.ReadLine()) != null)
+                    appRootPath = Crestron.SimplSharp.CrestronIO.Path.Combine(appRoot, $"hvac_setpoints_{Key}.dat");
+                    try
                     {
-                        lines.Add(line);
-                    }
-                    fileStream.Close();
-                    foreach (string lineContent in lines)
-                    {
-                        string[] parts = lineContent.Split(',');
-                        if (parts.Length == 2)
+                        if (Crestron.SimplSharp.CrestronIO.File.Exists(appRootPath))
                         {
-                            byte zoneId = byte.Parse(parts[0]);
-                            float temp = float.Parse(parts[1]);
-                            _zoneSetpoints[zoneId] = temp;
-                            _currentSetpoint = temp; // Use last loaded as current
+                            core_tools.Debug.Console($"[{Key}] Found setpoint file using appRoot: {appRootPath}");
+                            var fileStream = Crestron.SimplSharp.CrestronIO.File.OpenText(appRootPath);
+                            var lines = new List<string>();
+                            string? line;
+                            while ((line = fileStream.ReadLine()) != null)
+                            {
+                                lines.Add(line);
+                            }
+                            fileStream.Close();
+                            foreach (string lineContent in lines)
+                            {
+                                string[] parts = lineContent.Split(',');
+                                if (parts.Length == 2)
+                                {
+                                    byte zoneId = byte.Parse(parts[0]);
+                                    float temp = float.Parse(parts[1]);
+                                    _zoneSetpoints[zoneId] = temp;
+                                    _currentSetpoint = temp;
+                                }
+                            }
+                            Debug.Console(1, this, $"Loaded {lines.Count} persisted setpoints from {appRootPath}");
+                            return;
+                        }
+                        else
+                        {
+                            core_tools.Debug.Console($"[{Key}] appRoot path not found: {appRootPath}");
                         }
                     }
-                    Debug.Console(1, this, "Loaded {0} persisted setpoints", _zoneSetpoints.Count);
+                    catch (Exception ex)
+                    {
+                        core_tools.Debug.Console($"[{Key}] Exception checking appRoot path {appRootPath}: {ex.Message}");
+                    }
+                }
+
+                // Enumerate available directories for diagnostics
+                try
+                {
+                    var dirs = Crestron.SimplSharp.CrestronIO.Directory.GetDirectories("");
+                    core_tools.Debug.Console($"[{Key}] Available directories:");
+                    foreach (var dir in dirs)
+                    {
+                        core_tools.Debug.Console($"[{Key}] Dir: {dir}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    core_tools.Debug.Console($"[{Key}] Exception enumerating directories: {ex.Message}");
+                }
+
+                // Try well-known Crestron system folders
+                string[] crestronFolders = new[] {
+                    $@"\\NVRAM\\hvac_setpoints_{Key}.dat",
+                    $@"\\USER\\hvac_setpoints_{Key}.dat"
+                };
+                string pathToLoad = string.Empty;
+                foreach (var path in crestronFolders)
+                {
+                    try
+                    {
+                        if (Crestron.SimplSharp.CrestronIO.File.Exists(path))
+                        {
+                            pathToLoad = path;
+                            core_tools.Debug.Console($"[{Key}] Found setpoint file in system folder: {path}");
+                            break;
+                        }
+                        else
+                        {
+                            core_tools.Debug.Console($"[{Key}] System folder path not found: {path}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        core_tools.Debug.Console($"[{Key}] Exception checking system folder path {path}: {ex.Message}");
+                    }
+                }
+                if (pathToLoad != null)
+                {
+                    try
+                    {
+                        var fileStream = Crestron.SimplSharp.CrestronIO.File.OpenText(pathToLoad);
+                        var lines = new List<string>();
+                        string? line;
+                        while ((line = fileStream.ReadLine()) != null)
+                        {
+                            lines.Add(line);
+                        }
+                        fileStream.Close();
+                        foreach (string lineContent in lines)
+                        {
+                            string[] parts = lineContent.Split(',');
+                            if (parts.Length == 2)
+                            {
+                                byte zoneId = byte.Parse(parts[0]);
+                                float temp = float.Parse(parts[1]);
+                                _zoneSetpoints[zoneId] = temp;
+                                _currentSetpoint = temp; // Use last loaded as current
+                            }
+                        }
+                        Debug.Console(1, this, $"Loaded {lines.Count} persisted setpoints from {pathToLoad}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Console(0, this, $"Error reading setpoints from {pathToLoad}: {ex.Message}");
+                        _currentSetpoint = _config.IdleSetpoint;
+                    }
                 }
                 else
                 {
                     // Use idle setpoint from configuration
                     _currentSetpoint = _config.IdleSetpoint;
-                    Debug.Console(1, this, "No persisted setpoints found, using idle setpoint: {0:F1}°C", 
-                        _currentSetpoint);
+                    Debug.Console(1, this, $"No persisted setpoints found in system folders, using idle setpoint: {_currentSetpoint:F1}°C");
                 }
             }
             catch (Exception ex)
             {
-                Debug.Console(0, this, "Error loading persisted setpoints: {0}", ex.Message);
+                Debug.Console(0, this, $"Error loading persisted setpoints: {ex.Message}");
                 _currentSetpoint = _config.IdleSetpoint;
             }
         }
@@ -478,33 +594,48 @@ namespace musicStudioUnit.Devices
         {
             try
             {
-                var lines = new List<string>();
-                foreach (var kvp in _zoneSetpoints)
+                string[] formats = new[] {
+                    $@"USER\hvac_setpoints_{Key}.dat",
+                    $@"NVRAM\hvac_setpoints_{Key}.dat",
+                    $@"\\USER\\hvac_setpoints_{Key}.dat",
+                    $@"\\NVRAM\\hvac_setpoints_{Key}.dat",
+                    $@"user\\hvac_setpoints_{Key}.dat",
+                    $@"nvram\\hvac_setpoints_{Key}.dat",
+                    $@"C:\\USER\\hvac_setpoints_{Key}.dat",
+                    $@"C:\\NVRAM\\hvac_setpoints_{Key}.dat"
+                };
+                foreach (var path in formats)
                 {
-                    lines.Add(string.Format("{0},{1:F1}", kvp.Key, kvp.Value));
+                    try
+                    {
+                        var fileStream = Crestron.SimplSharp.CrestronIO.File.CreateText(path);
+                        foreach (var kvp in _zoneSetpoints)
+                        {
+                            fileStream.WriteLine($"{kvp.Key},{kvp.Value}");
+                        }
+                        fileStream.Close();
+                        Debug.Console(1, this, $"Persisted {_zoneSetpoints.Count} setpoints to {path}");
+                        break; // Only write to the first format that works
+                    }
+                    catch (Exception ex2)
+                    {
+                        Debug.Console(0, this, $"Error saving setpoints to {path}: {ex2.Message}");
+                    }
                 }
-                
-                var fileStream = Crestron.SimplSharp.CrestronIO.File.CreateText(_setpointFilePath);
-                foreach (string line in lines)
-                {
-                    fileStream.WriteLine(line);
-                }
-                fileStream.Close();
-                Debug.Console(2, this, "Persisted {0} setpoints to file", _zoneSetpoints.Count);
             }
             catch (Exception ex)
             {
-                Debug.Console(0, this, "Error saving persisted setpoints: {0}", ex.Message);
+                Debug.Console(0, this, $"Error saving persisted setpoints: {ex.Message}");
             }
         }
 
-        private void OnConnected(object sender, EventArgs args)
+        private void OnConnected(object? sender, EventArgs args)
         {
             Debug.Console(1, this, "HVAC TCP connection established");
             Connected?.Invoke(this, new HVACConnectedEventArgs());
         }
 
-        private void OnDisconnected(object sender, EventArgs args)
+        private void OnDisconnected(object? sender, EventArgs args)
         {
             Debug.Console(1, this, "HVAC TCP connection lost");
             _waitingForResponse = false;

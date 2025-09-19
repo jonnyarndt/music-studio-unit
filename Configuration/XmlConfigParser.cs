@@ -289,21 +289,21 @@ namespace musicStudioUnit.Configuration
             string currentDir = Crestron.SimplSharp.CrestronIO.Directory.GetApplicationDirectory();
             
             // Try user subdirectory first (standard for RMC4)
-            string userDir = System.IO.Path.Combine(currentDir, "user");
+            string userDir = Crestron.SimplSharp.CrestronIO.Path.Combine(currentDir, "user");
             if (Crestron.SimplSharp.CrestronIO.Directory.Exists(userDir))
             {
-                Debug.Console(2, this, "Using user directory: {0}", userDir);
+                Debug.Console(1, this, "Using user directory: {0}", userDir);
                 return userDir;
             }
 
             // Fall back to current directory (VC-4 and other scenarios)
-            Debug.Console(2, this, "Using current directory: {0}", currentDir);
+            Debug.Console(1, this, "Using current directory: {0}", currentDir);
             return currentDir;
         }
 
         private string GetConfigFilePath()
         {
-            return System.IO.Path.Combine(_configDirectory, _configFileName);
+            return Crestron.SimplSharp.CrestronIO.Path.Combine(_configDirectory, _configFileName);
         }
 
         private void LogConfigurationSummary(LocalConfiguration config)
@@ -336,7 +336,7 @@ namespace musicStudioUnit.Configuration
     /// </summary>
     public class XmlConfigurationLoadedEventArgs : EventArgs
     {
-        public LocalConfiguration Configuration { get; set; }
+        public required LocalConfiguration Configuration { get; set; }
     }
 
     /// <summary>
@@ -344,6 +344,6 @@ namespace musicStudioUnit.Configuration
     /// </summary>
     public class XmlConfigurationErrorEventArgs : EventArgs
     {
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
     }
 }

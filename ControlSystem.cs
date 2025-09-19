@@ -1,13 +1,14 @@
 using core_tools;
 using Crestron.SimplSharp;                          	// For Basic SIMPL# Classes
 using Crestron.SimplSharpPro;                       	// For Basic SIMPL#Pro classes
-using Crestron.SimplSharpPro.Diagnostics;		    	// For System Monitor Access
 using Crestron.SimplSharpPro.DeviceSupport;         	// For Generic Device Support
+using Crestron.SimplSharpPro.Diagnostics;		    	// For System Monitor Access
 using Crestron.SimplSharpPro.UI;
-using musicStudioUnit.Services;
 using musicStudioUnit.Configuration;
-using musicStudioUnit.UserInterface;
 using musicStudioUnit.Devices;
+using musicStudioUnit.Services;
+using musicStudioUnit.UserInterface;
+using System.Reflection;
 
 namespace musicStudioUnit
 {
@@ -68,6 +69,8 @@ namespace musicStudioUnit
         /// </summary>
         public override void InitializeSystem()
         {
+            DeterminePlatform();
+
             try
             {
                 Debug.Console(0, "******************* InitializeSystem() **********************");
@@ -134,11 +137,11 @@ namespace musicStudioUnit
                 
                 // Initialize HVAC controller
                 Debug.Console(0, "INIT: Initializing HVAC Temperature Controller");
-                InitializeHVACController(panel);
-                
+                if (panel != null) InitializeHVACController(panel);
+       
                 // Initialize Music System controller
                 Debug.Console(0, "INIT: Initializing Music System Controller");
-                InitializeMusicController(panel);
+                if (panel != null) InitializeMusicController(panel);
                 
                 // Initialize comprehensive MSU system using new initialization service
                 Debug.Console(0, "INIT: Starting Masters of Karaoke MSU System Initialization");
@@ -158,7 +161,7 @@ namespace musicStudioUnit
                     
                     // Initialize MSU TouchPanel with all components
                     Debug.Console(0, "INIT: Initializing MSU TouchPanel with integrated screens");
-                    InitializeMSUTouchPanel(panel);
+                    if(panel != null) InitializeMSUTouchPanel(panel);
                     
                     // Connect MSU controller to original touch panel if available
                     if (_msuController != null && _touchPanel != null)
@@ -193,11 +196,101 @@ namespace musicStudioUnit
         }
 
         /// <summary>
+        /// DeterminePlatform method
+        /// </summary>
+        public void DeterminePlatform()
+        {
+            try
+            {
+                Debug.Console(0, "Determining Platform...");
+
+                string filePathPrefix;
+
+                var dirSeparator = Global.DirectorySeparator;
+
+                string directoryPrefix;
+
+                directoryPrefix = Crestron.SimplSharp.CrestronIO.Directory.GetApplicationRootDirectory();
+
+                var executingAssembly = Assembly.GetExecutingAssembly();
+                var assemblyName = executingAssembly?.GetName();
+                var version = assemblyName?.Version?.ToString() ?? "unknown";
+                Global.SetAssemblyVersion(version);
+
+                if (CrestronEnvironment.DevicePlatform != eDevicePlatform.Server)   // Handles 3-series running Windows CE OS
+                {
+                    string userFolder;
+                    string nvramFolder;
+                    bool is4series = false;
+
+                    if (eCrestronSeries.Series4 == (Global.ProcessorSeries & eCrestronSeries.Series4)) // Handle 4-series
+                    {
+                        is4series = true;
+                        // Set path to user/
+                        userFolder = "user";
+                        nvramFolder = "nvram";
+                    }
+                    else
+                    {
+                        userFolder = "User";
+                        nvramFolder = "Nvram";
+                    }
+
+                    var ts = string.Format("Starting App v{0} on {1} Appliance", Global.AssemblyVersion, is4series ? "4-series" : "3-series");
+                    Debug.Console(0, ts);
+
+                    // Check if User/ProgramX exists
+                    if (Directory.Exists(Global.ApplicationDirectoryPathPrefix + dirSeparator + userFolder
+                        + dirSeparator + string.Format("program{0}", InitialParametersClass.ApplicationNumber)))
+                    {
+                        var tempString = string.Format("{0}/program{1} directory found", userFolder, InitialParametersClass.ApplicationNumber);
+                        Debug.Console(0, tempString);
+                        filePathPrefix = directoryPrefix + dirSeparator + userFolder
+                        + dirSeparator + string.Format("program{0}", InitialParametersClass.ApplicationNumber) + dirSeparator;
+                    }
+                    // Check if Nvram/Programx exists
+                    else if (Directory.Exists(directoryPrefix + dirSeparator + nvramFolder
+                        + dirSeparator + string.Format("program{0}", InitialParametersClass.ApplicationNumber)))
+                    {
+                        var tempString = string.Format("{0}/program{1} directory found", nvramFolder, InitialParametersClass.ApplicationNumber);
+                        Debug.Console(0, tempString);
+
+                        filePathPrefix = directoryPrefix + dirSeparator + nvramFolder
+                        + dirSeparator + string.Format("program{0}", InitialParametersClass.ApplicationNumber) + dirSeparator;
+                    }
+                    // If neither exists, set path to User/ProgramX
+                    else
+                    {
+                        var tempString = string.Format("{0}/program{1} directory found", userFolder, InitialParametersClass.ApplicationNumber);
+                        Debug.Console(0, tempString);
+
+                        filePathPrefix = directoryPrefix + dirSeparator + userFolder
+                        + dirSeparator + string.Format("program{0}", InitialParametersClass.ApplicationNumber) + dirSeparator;
+                    }
+                }
+                else   // Handles Linux OS (Virtual Control)
+                {
+                    //Debug.SetDebugLevel(2);
+                    Debug.Console(0, "Starting Essentials v{version:l} on Virtual Control Server", Global.AssemblyVersion);
+
+                    // Set path to User/
+                    filePathPrefix = directoryPrefix + dirSeparator + "User" + dirSeparator;
+                }
+
+                Global.SetFilePathPrefix(filePathPrefix);
+            }
+            catch (Exception e)
+            {
+                Debug.Console(0, "Unable to determine platform due to exception: {0}", e.StackTrace);
+            }
+        }
+
+        /// <summary>
         /// Returns a BasicTriListWithSmartObject panel
         /// </summary>
         /// <param name="ipId"></param>
         /// <returns></returns>
-        private static BasicTriListWithSmartObject GetPanelForType (uint ipId)
+        private static BasicTriListWithSmartObject? GetPanelForType (uint ipId)
         {
             try
             {
@@ -208,7 +301,6 @@ namespace musicStudioUnit
                 {
                     Debug.Console(0, "ERROR: Failed to register touch panel at IP ID 0x{0:X2}", ipId);
                     ErrorLog.Error("Touch panel registration failed for IP ID 0x{0:X2}", ipId);
-                    return null;
                 }
                 
                 Debug.Console(1, "Touch panel registered successfully at IP ID: 0x{0:X2}", ipId);
@@ -238,13 +330,20 @@ namespace musicStudioUnit
             if (args.LocalConfig != null)
             {
                 Debug.Console(1, "Local Config - Processor MAC: {0}", args.LocalConfig.ProcessorMAC);
-                Debug.Console(1, "Local Config - Remote Server: {0}:{1}", 
-                    args.LocalConfig.Remote.IP, args.LocalConfig.Remote.Port);
+                if (args.LocalConfig.Remote != null)
+                {
+                    Debug.Console(1, "Local Config - Remote Server: {0}:{1}",
+                        args.LocalConfig.Remote.IP, args.LocalConfig.Remote.Port);
+                }
+                else
+                {
+                    Debug.Console(1, "Local Config - Remote Server: <not configured>");
+                }
             }
-            
+
             if (args.RemoteConfig != null)
             {
-                Debug.Console(1, "Remote Config - Found {0} MSU units configured", 
+                Debug.Console(1, "Remote Config - Found {0} MSU units configured",
                     args.RemoteConfig.MSUUnits?.Count ?? 0);
             }
         }
@@ -252,7 +351,7 @@ namespace musicStudioUnit
         /// <summary>
         /// Event handler for system initialization completion
         /// </summary>
-        private void OnSystemInitializationComplete(object sender, InitializationCompleteEventArgs args)
+        private void OnSystemInitializationComplete(object? sender, InitializationCompleteEventArgs args)
         {
             Debug.Console(1, "System initialization completed in {0:F1} seconds", args.InitializationTime.TotalSeconds);
             
@@ -270,7 +369,7 @@ namespace musicStudioUnit
         /// <summary>
         /// Event handler for system initialization errors
         /// </summary>
-        private void OnSystemInitializationError(object sender, InitializationErrorEventArgs args)
+        private void OnSystemInitializationError(object? sender, InitializationErrorEventArgs args)
         {
             Debug.Console(0, "System initialization error: {0}", args.ErrorMessage);
             ErrorLog.Error("MSU System Initialization Error: {0}", args.ErrorMessage);
@@ -279,7 +378,7 @@ namespace musicStudioUnit
         /// <summary>
         /// Event handler for initialization phase changes
         /// </summary>
-        private void OnInitializationPhaseChanged(object sender, InitializationPhaseEventArgs args)
+        private void OnInitializationPhaseChanged(object? sender, InitializationPhaseEventArgs args)
         {
             Debug.Console(2, "Initialization phase changed to: {0}", args.Phase);
         }

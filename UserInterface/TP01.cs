@@ -14,7 +14,9 @@ namespace musicStudioUnit
         
         private bool alreadyDisposed = false;
         private uint maxPageCount = 10;
-        private CTimer onlinePageTransitionTimer;
+        // Fix CS8618 by making fields/properties nullable where they are not initialized in the constructor
+
+        private CTimer? onlinePageTransitionTimer;
 
         internal override uint SubPage { get; set; }
         internal override uint MaxNumItems
@@ -22,15 +24,14 @@ namespace musicStudioUnit
             get { return maxPageCount; }
             set { maxPageCount = value; }
         }
-        internal override ConcurrentDictionary<uint, bool> PageDictionary { get; set; }
-        internal override ConcurrentDictionary<uint, bool> PopupPageDictionary { get; set; }
-        internal override ConcurrentDictionary<uint, bool> PanelWidePopupPageDictionary { get; set; }
+        // Change from nullable to non-nullable to match base class signature
+        internal override ConcurrentDictionary<uint, bool>? PageDictionary { get; set; }
+        internal override ConcurrentDictionary<uint, bool>? PopupPageDictionary { get; set; }
+        internal override ConcurrentDictionary<uint, bool>? PanelWidePopupPageDictionary { get; set; }
         private uint currentPageKey;
-        private readonly string sgdFileNamePattern = "_flex*.sgd*";
         readonly StringBuilder PinEntryBuilder = new StringBuilder(5);
         readonly StringBuilder PinEntryStarBuilder = new StringBuilder(5);
-        internal SmartObjectNumeric PinKeypad;
-        private MSUController _msuController;
+        private MSUController? _msuController;
         #endregion
 
         #region Global Constants
@@ -118,21 +119,6 @@ namespace musicStudioUnit
                 CrestronConsole.AddNewConsoleCommand(SetTp01PanelWidePopupPage, "setTp01WarningPage", "Single uint value to set the Warning Page", ConsoleAccessLevelEnum.AccessOperator);
 
                 CreateSubPageMap();
-      
-                string[] matchingFiles = System.IO.Directory.GetFiles(Global.ApplicationDirectoryPathPrefix, sgdFileNamePattern);
-
-                if (matchingFiles.Length == 0)
-                {   
-                        Debug.Console(0, this, "Unable to find matching SGD file in User or application SGD folder. Exiting touchpanel load.");
-                        return;                    
-                }
-
-                var sgdName = matchingFiles[0];
-                Debug.Console(0, this, "Loading Smart Object file: {0}...", sgdName);
-                Panel.LoadSmartObjects(sgdName);
-
-                if(Panel.SmartObjects.Contains((uint)TouchPanelJoins.SmartObject.Keypad)) { PinKeypad = new SmartObjectNumeric(Panel.SmartObjects[(uint)TouchPanelJoins.SmartObject.Keypad], true); }
-                SetupPinModal();
             }
             catch (Exception e)
             {
@@ -167,14 +153,16 @@ namespace musicStudioUnit
             }
         }
 
-        /// <summary>
-        /// Event handler for MSU initialization
-        /// </summary>
-        private void OnMSUInitialized(object sender, MSUInitializedEventArgs args)
+        // Update the OnMSUInitialized method signature to match the nullability of the EventHandler delegate.
+        // The EventHandler<T> delegate expects 'object? sender' (nullable object) as the first parameter.
+        // Change 'object sender' to 'object? sender' in the method signature.
+
+        private void OnMSUInitialized(object? sender, MSUInitializedEventArgs args)
         {
             try
             {
-                Debug.Console(1, this, "MSU Initialized: {0}", args.MSUConfig.MSU_NAME);
+                var msuName = args.MSUConfig?.MSU_NAME ?? "Unknown";
+                Debug.Console(1, this, "MSU Initialized: {0}", msuName);
                 UpdateMSUStatusDisplay();
             }
             catch (Exception ex)
@@ -186,7 +174,7 @@ namespace musicStudioUnit
         /// <summary>
         /// Event handler for MSU errors
         /// </summary>
-        private void OnMSUError(object sender, MSUErrorEventArgs args)
+        private void OnMSUError(object? sender, MSUErrorEventArgs args)
         {
             try
             {
@@ -225,24 +213,6 @@ namespace musicStudioUnit
         }
 
         /// <summary>
-        /// Update the UI to reflect current MSU configuration
-        /// </summary>
-        private void UpdateMSUConfigurationDisplay()
-        {
-            try
-            {
-                if (_msuController == null || Panel == null) return;
-
-                // Update configuration information on the touch panel
-                Debug.Console(2, this, "MSU configuration display updated");
-            }
-            catch (Exception ex)
-            {
-                Debug.Console(0, this, "Error updating MSU configuration display: {0}", ex.Message);
-            }
-        }
-
-        /// <summary>
         /// Dispose of Class
         /// </summary>
         public void Dispose()
@@ -271,19 +241,11 @@ namespace musicStudioUnit
                     if (Panel != null)
                     {
                         Panel.Dispose();
-                        Panel = null;
                     }
                     if (onlinePageTransitionTimer != null)
                     {
                         onlinePageTransitionTimer.Stop();
                         onlinePageTransitionTimer.Dispose();
-                        onlinePageTransitionTimer = null;
-                    }
-
-                    if (PinKeypad != null)
-                    {
-                        //PinKeypad.Dispose();
-                        PinKeypad = null;
                     }
                 }
                 // Dispose unmanaged resources here, meaning Release them explicitly (e.g., close file handles, free memory)
@@ -456,25 +418,6 @@ namespace musicStudioUnit
             {
                 Debug.Console(2, this, "Error in SetPreviousPageDictionaryItem: {0}", e.Message);
             }
-        }
-
-        /// <summary>
-        /// Wire up the Smart Graphics Pin keypad and buttons
-        /// </summary>
-        internal void SetupPinModal()
-        {
-            Panel.SetSigFalseAction((uint)TouchPanelJoins.Digital.PanelWidePopUpClose, CancelPinDialog);
-            PinKeypad = new SmartObjectNumeric(Panel.SmartObjects[(uint)TouchPanelJoins.SmartObject.Keypad], true);
-            PinKeypad.Digit0.UserObject = new Action<bool>(b => { if (b) DialPinDigit('0'); });
-            PinKeypad.Digit1.UserObject = new Action<bool>(b => { if (b) DialPinDigit('1'); });
-            PinKeypad.Digit2.UserObject = new Action<bool>(b => { if (b) DialPinDigit('2'); });
-            PinKeypad.Digit3.UserObject = new Action<bool>(b => { if (b) DialPinDigit('3'); });
-            PinKeypad.Digit4.UserObject = new Action<bool>(b => { if (b) DialPinDigit('4'); });
-            PinKeypad.Digit5.UserObject = new Action<bool>(b => { if (b) DialPinDigit('5'); });
-            PinKeypad.Digit6.UserObject = new Action<bool>(b => { if (b) DialPinDigit('6'); });
-            PinKeypad.Digit7.UserObject = new Action<bool>(b => { if (b) DialPinDigit('7'); });
-            PinKeypad.Digit8.UserObject = new Action<bool>(b => { if (b) DialPinDigit('8'); });
-            PinKeypad.Digit9.UserObject = new Action<bool>(b => { if (b) DialPinDigit('9'); });
         }
 
         /// <summary>

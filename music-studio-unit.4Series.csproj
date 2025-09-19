@@ -8,12 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.133" />
+    <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.157" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\app01-lib-coreTools\core-tools\core-tools.csproj" />
+    <Reference Include="core-tools">
+      <HintPath>..\app01-lib-coreTools\core-tools\bin\Debug\core-tools.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

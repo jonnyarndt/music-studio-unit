@@ -349,14 +349,14 @@ namespace musicStudioUnit.Services
     /// </summary>
     public class MSUSystemInfo
     {
-        public string MSUName { get; set; }
-        public string MSU_UID { get; set; }
-        public string ProcessorModel { get; set; }
-        public string FirmwareVersion { get; set; }
-        public string MACAddress { get; set; }
-        public string IPAddress { get; set; }
-        public string Hostname { get; set; }
-        public string BuildingAddress { get; set; }
+        public string? MSUName { get; set; }
+        public string? MSU_UID { get; set; }
+        public string? ProcessorModel { get; set; }
+        public string? FirmwareVersion { get; set; }
+        public string? MACAddress { get; set; }
+        public string? IPAddress { get; set; }
+        public string? Hostname { get; set; }
+        public string? BuildingAddress { get; set; }
         public int TotalMSUCount { get; set; }
         public TimeSpan SystemUptime { get; set; }
     }
@@ -366,7 +366,7 @@ namespace musicStudioUnit.Services
     /// </summary>
     public class MSUInitializedEventArgs : EventArgs
     {
-        public MSUConfiguration MSUConfig { get; set; }
+        public MSUConfiguration? MSUConfig { get; set; }
         public TimeSpan InitializationTime { get; set; }
     }
 
@@ -375,7 +375,7 @@ namespace musicStudioUnit.Services
     /// </summary>
     public class MSUErrorEventArgs : EventArgs
     {
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
     }
 }
 
