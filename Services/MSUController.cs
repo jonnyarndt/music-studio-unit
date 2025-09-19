@@ -46,11 +46,9 @@ namespace musicStudioUnit.Services
         public ConfigurationManager ConfigManager => _configManager;
         public MSUIdentificationService IdentificationService => _identificationService;
         public UserManager UserManager => _userManager;
-    public StudioCombinationManager CombinationManager => _combinationManager;
+        public StudioCombinationManager CombinationManager => _combinationManager;
         public EnhancedHVACController HVACController => _hvacController;
-        public EnhancedMusicSystemController MusicController => _musicController;
-
-        // Events
+        public EnhancedMusicSystemController MusicController => _musicController;        // Events
         public event EventHandler<MSUInitializedEventArgs> MSUInitialized;
         public event EventHandler<MSUErrorEventArgs> MSUError;
 
@@ -86,52 +84,76 @@ namespace musicStudioUnit.Services
 
             try
             {
-                // Step 1: Initialize Configuration Manager
-                _configManager = new ConfigurationManager(_key + "Config");
-                _configManager.ConfigurationLoaded += OnConfigurationLoaded;
-
-                // Step 2: Load Local Configuration
-                if (!_configManager.LoadLocalConfiguration())
+                // Verify we have a valid ConfigurationManager (passed from SystemInitializationService)
+                if (_configManager == null)
                 {
-                    var error = "Failed to load local configuration file";
+                    var error = "Configuration Manager is null - cannot initialize MSU Controller";
                     core_tools.Debug.Console(0, "MSUController", error);
                     MSUError?.Invoke(this, new MSUErrorEventArgs { ErrorMessage = error });
                     return false;
                 }
 
-                _localConfig = _configManager.LocalConfig;
+                // Hook up event handler
+                _configManager.ConfigurationLoaded += OnConfigurationLoaded;
 
-                // Step 3: Load Remote Configuration
-                if (!_configManager.LoadRemoteConfiguration())
+                // Get configurations (should already be loaded by SystemInitializationService)
+                _localConfig = _configManager.LocalConfig;
+                if (_localConfig == null)
                 {
-                    var error = "Failed to load remote configuration file";
+                    var error = "Local configuration is null";
                     core_tools.Debug.Console(0, "MSUController", error);
                     MSUError?.Invoke(this, new MSUErrorEventArgs { ErrorMessage = error });
                     return false;
                 }
 
                 _remoteConfig = _configManager.RemoteConfig;
+                if (_remoteConfig == null)
+                {
+                    core_tools.Debug.Console(1, "MSUController", "Remote configuration is null - operating in standalone mode");
+                    // In standalone mode, we'll create a default/empty remote config
+                    _remoteConfig = new musicStudioUnit.Configuration.RemoteConfiguration
+                    {
+                        MSUUnits = new List<musicStudioUnit.Configuration.MSUConfiguration>()
+                    };
+                }
 
-                // Step 4: Find Current MSU Configuration
+                // Find Current MSU Configuration
                 _currentMSUConfig = _configManager.GetCurrentMSUConfiguration();
                 if (_currentMSUConfig == null)
                 {
-                    var error = "Could not find MSU configuration for this processor";
-                    core_tools.Debug.Console(0, "MSUController", error);
-                    MSUError?.Invoke(this, new MSUErrorEventArgs { ErrorMessage = error });
-                    return false;
+                    core_tools.Debug.Console(1, "MSUController", "Could not find MSU configuration - creating standalone MSU configuration");
+                    // Create a default MSU configuration for standalone operation
+                    var sysInfo = new core_tools.SystemInformationMethods();
+                    sysInfo.GetProcessorInfo();
+                    sysInfo.GetEthernetInfo();
+                    
+                    _currentMSUConfig = new musicStudioUnit.Configuration.MSUConfiguration
+                    {
+                        MSU_NAME = "Standalone MSU",
+                        MSU_UID = sysInfo.Adapter.MacAddress?.Replace(":", "").Replace("-", "") ?? "STANDALONE",
+                        MSU_MAC = sysInfo.Adapter.MacAddress ?? "00:00:00:00:00:00",
+                        X_COORD = 0,
+                        Y_COORD = 0,
+                        HVAC_ID = 1
+                    };
+                    
+                    core_tools.Debug.Console(1, "MSUController", "Created standalone MSU configuration: {0} (MAC: {1})", 
+                        _currentMSUConfig.MSU_NAME, _currentMSUConfig.MSU_MAC);
                 }
 
                 core_tools.Debug.Console(1, "MSUController", "Found MSU configuration: {0} at ({1},{2})",
                     _currentMSUConfig.MSU_NAME, _currentMSUConfig.X_COORD, _currentMSUConfig.Y_COORD);
 
-                // Step 5: Initialize Core Services
+                // Step 1: Initialize Core Services
+                core_tools.Debug.Console(1, "MSUController", "Starting Step 1: Initialize Core Services");
                 InitializeCoreServices();
 
-                // Step 6: Initialize Device Controllers
+                // Step 2: Initialize Device Controllers
+                core_tools.Debug.Console(1, "MSUController", "Starting Step 2: Initialize Device Controllers");
                 InitializeDeviceControllers();
 
-                // Step 7: Start all services
+                // Step 3: Start all services
+                core_tools.Debug.Console(1, "MSUController", "Starting Step 3: Start Services");
                 StartServices();
 
                 _isInitialized = true;
@@ -151,6 +173,7 @@ namespace musicStudioUnit.Services
             {
                 var error = string.Format("Error during MSU initialization: {0}", ex.Message);
                 core_tools.Debug.Console(0, "MSUController", error);
+                core_tools.Debug.Console(0, "MSUController", "Stack trace: {0}", ex.StackTrace);
                 MSUError?.Invoke(this, new MSUErrorEventArgs { ErrorMessage = error });
                 return false;
             }
@@ -208,36 +231,69 @@ namespace musicStudioUnit.Services
             core_tools.Debug.Console(1, "MSUController", "Initializing core services");
 
             // User Manager
+            core_tools.Debug.Console(1, "MSUController", "Creating User Manager");
             _userManager = new UserManager(_key + "UserMgr");
 
             // Convert MSUConfiguration list to MusicStudioUnit dictionary
+            var msuUnitCount = _remoteConfig?.MSUUnits?.Count ?? 0;
+            core_tools.Debug.Console(1, "MSUController", "Converting {0} MSU configurations", msuUnitCount);
             var allMSUs = new Dictionary<string, MusicStudioUnit>();
-            foreach (var msuConfig in _remoteConfig.MSUUnits)
+            
+            if (_remoteConfig?.MSUUnits != null)
             {
-                allMSUs[msuConfig.MSU_UID] = new MusicStudioUnit
+                foreach (var msuConfig in _remoteConfig.MSUUnits)
                 {
-                    UID = msuConfig.MSU_UID,
-                    Name = msuConfig.MSU_NAME,
-                    MAC = msuConfig.MSU_MAC,
-                    XCoord = msuConfig.X_COORD,
-                    YCoord = msuConfig.Y_COORD,
-                    HVACZoneId = (byte)msuConfig.HVAC_ID,
-                    IsInUse = false,
+                    allMSUs[msuConfig.MSU_UID] = new MusicStudioUnit
+                    {
+                        UID = msuConfig.MSU_UID,
+                        Name = msuConfig.MSU_NAME,
+                        MAC = msuConfig.MSU_MAC,
+                        XCoord = msuConfig.X_COORD,
+                        YCoord = msuConfig.Y_COORD,
+                        HVACZoneId = (byte)msuConfig.HVAC_ID,
+                        IsInUse = false,
+                        IsCombined = false,
+                        IsMaster = false
+                    };
+                }
+            }
+            
+            // Add current MSU to the dictionary if not already present
+            if (_currentMSUConfig != null && !allMSUs.ContainsKey(_currentMSUConfig.MSU_UID))
+            {
+                allMSUs[_currentMSUConfig.MSU_UID] = new MusicStudioUnit
+                {
+                    UID = _currentMSUConfig.MSU_UID,
+                    Name = _currentMSUConfig.MSU_NAME,
+                    MAC = _currentMSUConfig.MSU_MAC,
+                    XCoord = _currentMSUConfig.X_COORD,
+                    YCoord = _currentMSUConfig.Y_COORD,
+                    HVACZoneId = (byte)_currentMSUConfig.HVAC_ID,
+                    IsInUse = true,
                     IsCombined = false,
-                    IsMaster = false
+                    IsMaster = true
                 };
+                core_tools.Debug.Console(1, "MSUController", "Added current MSU to unit dictionary: {0}", _currentMSUConfig.MSU_UID);
             }
 
             // Studio Combination Manager
+            var msuUID = _currentMSUConfig?.MSU_UID ?? "STANDALONE";
+            var xCoord = _currentMSUConfig?.X_COORD ?? 0;
+            var yCoord = _currentMSUConfig?.Y_COORD ?? 0;
+            var hvacID = _currentMSUConfig?.HVAC_ID ?? 1;
+            
+            core_tools.Debug.Console(1, "MSUController", "Creating Studio Combination Manager for MSU {0}", msuUID);
             _combinationManager = new StudioCombinationManager(
                 _key + "StudioComboMgr",
-                _currentMSUConfig.MSU_UID,
-                _currentMSUConfig.X_COORD,
-                _currentMSUConfig.Y_COORD,
-                (byte)_currentMSUConfig.HVAC_ID,
+                msuUID,
+                xCoord,
+                yCoord,
+                (byte)hvacID,
                 allMSUs
             );
             _combinationManager.CombinationChanged += OnStudioCombinationChanged;
+            
+            core_tools.Debug.Console(1, "MSUController", "Core services initialization complete");
         }
 
         private void InitializeDeviceControllers()
@@ -245,6 +301,8 @@ namespace musicStudioUnit.Services
             core_tools.Debug.Console(1, "MSUController", "Initializing device controllers");
 
             // HVAC Controller
+            core_tools.Debug.Console(1, "MSUController", "Creating HVAC Controller with IP: {0}, Port: {1}", 
+                _localConfig.HVAC.IP, _localConfig.HVAC.Port);
             _hvacController = new EnhancedHVACController(_key + "HVAC", _localConfig.HVAC);
             _hvacController.StatusUpdated += OnHVACStatusUpdated;
             _hvacController.SetpointChanged += OnHVACSetpointChanged;
@@ -258,11 +316,22 @@ namespace musicStudioUnit.Services
                 ConnectionTimeoutMs = 5000 // Default value
             };
 
-            // Music System Controller
-            _musicController = new EnhancedMusicSystemController(_key + "Music", devicesDmsInfo, _currentMSUConfig.MSU_UID);
-            _musicController.CatalogUpdated += OnMusicCatalogUpdated;
-            _musicController.PlaybackStatusChanged += OnPlaybackStatusUpdated;
-            _musicController.TrackTimeUpdated += OnTrackTimeUpdated;
+            // Music System Controller - only if we have MSU configuration
+            if (_currentMSUConfig != null)
+            {
+                core_tools.Debug.Console(1, "MSUController", "Creating Music Controller with DMS IP: {0}, Port: {1}, MSU UID: {2}", 
+                    devicesDmsInfo.IP, devicesDmsInfo.Port, _currentMSUConfig.MSU_UID);
+                _musicController = new EnhancedMusicSystemController(_key + "Music", devicesDmsInfo, _currentMSUConfig.MSU_UID);
+                _musicController.CatalogUpdated += OnMusicCatalogUpdated;
+                _musicController.PlaybackStatusChanged += OnPlaybackStatusUpdated;
+                _musicController.TrackTimeUpdated += OnTrackTimeUpdated;
+            }
+            else
+            {
+                core_tools.Debug.Console(1, "MSUController", "WARNING: Cannot create Music Controller - no current MSU configuration");
+            }
+            
+            core_tools.Debug.Console(1, "MSUController", "Device controllers initialization complete");
         }
 
         private void StartServices()
@@ -273,8 +342,20 @@ namespace musicStudioUnit.Services
             // _combinationManager.Initialize(); // No Initialize() in StudioCombinationManager, so skip
 
             // Start Device Controllers
+            core_tools.Debug.Console(1, "MSUController", "Starting HVAC Controller");
             _hvacController.Initialize();
-            _musicController.Initialize();
+            
+            if (_musicController != null)
+            {
+                core_tools.Debug.Console(1, "MSUController", "Starting Music Controller");
+                _musicController.Initialize();
+            }
+            else
+            {
+                core_tools.Debug.Console(1, "MSUController", "Music Controller not available - skipping");
+            }
+            
+            core_tools.Debug.Console(1, "MSUController", "All available services started successfully");
         }
 
         private void OnConfigurationLoaded(object sender, ConfigurationLoadedEventArgs e)

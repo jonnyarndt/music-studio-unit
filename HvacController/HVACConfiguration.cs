@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace musicStudioUnit.Configuration
 {
@@ -11,16 +12,19 @@ namespace musicStudioUnit.Configuration
         /// <summary>
         /// IP address of HVAC controller
         /// </summary>
+        [XmlElement("ip")]
         public string? IP { get; set; }
 
         /// <summary>
         /// TCP port for HVAC communication (default 4001 per Client-Scope.md)
         /// </summary>
+        [XmlElement("port")]
         public int Port { get; set; } = 4001;
 
         /// <summary>
         /// Default setpoint when system is idle (in °C)
         /// </summary>
+        [XmlElement("idlesetpoint")]
         public float IdleSetpoint { get; set; } = 21.0f;
 
         /// <summary>

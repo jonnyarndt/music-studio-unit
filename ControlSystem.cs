@@ -155,18 +155,18 @@ namespace musicStudioUnit
                 _initializationService.PhaseChanged += OnInitializationPhaseChanged;
                 
                 // Execute complete initialization sequence
-                if (_initializationService.Initialize())
+                Debug.Console(0, "DEBUG: About to call _initializationService.Initialize()");
+                var initResult = _initializationService.Initialize();
+                Debug.Console(0, "DEBUG: _initializationService.Initialize() returned: {0}", initResult);
+                if (initResult)
                 {
                     Debug.Console(0, "INIT: MSU System Initialization -> _initializationService.Initialize()-> Started...");
-                    
                     // Get MSU controller
                     _msuController = _initializationService.MSUController;
-                    
                     // Initialize MSU TouchPanel with all components
                     Debug.Console(0, "INIT: Initializing MSU TouchPanel with integrated screens");
                     if(panel != null) InitializeMSUTouchPanel(panel);
                     Debug.Console(0, "INIT: Initializing MSU TouchPanel with integrated screens -> Complete");
-
                     // Connect MSU controller to original touch panel if available
                     if (_msuController != null && _touchPanel != null)
                     {
@@ -743,36 +743,55 @@ namespace musicStudioUnit
                 
                 if (_msuController == null)
                 {
-                    Debug.Console(0, "Cannot initialize MSU TouchPanel - MSU Controller not available");
+                    Debug.Console(0, "ERROR: Cannot initialize MSU TouchPanel - MSU Controller not available");
                     return;
                 }
+
+                Debug.Console(0, "INIT: MSU Controller is available, proceeding with TouchPanel initialization");
 
                 if (_hvacController == null)
                 {
-                    Debug.Console(0, "Cannot initialize MSU TouchPanel - HVAC Controller not available");
+                    Debug.Console(0, "ERROR: Cannot initialize MSU TouchPanel - HVAC Controller not available");
                     return;
                 }
+
+                Debug.Console(0, "INIT: HVAC Controller is available");
 
                 if (_musicController == null)
                 {
-                    Debug.Console(0, "Cannot initialize MSU TouchPanel - Music Controller not available");
+                    Debug.Console(0, "ERROR: Cannot initialize MSU TouchPanel - Music Controller not available");
                     return;
                 }
 
+                Debug.Console(0, "INIT: Music Controller is available");
+
                 // Create Studio Combination Manager
+                Debug.Console(0, "INIT: Creating Studio Combination Manager");
                 var combinationManager = new musicStudioUnit.Services.StudioCombinationManager(
                     "studioCombination", _msuController?.Key ?? "default_msu", 0, 0, 1, new Dictionary<string, musicStudioUnit.Services.MusicStudioUnit>());
 
+                Debug.Console(0, "INIT: Studio Combination Manager created successfully");
+
                 // Create MSU TouchPanel with all components
+                Debug.Console(0, "INIT: Creating MSU TouchPanel instance");
                 if(_msuController != null)
+                {
                     _msuTouchPanel = new MSUTouchPanel("msuTouchPanel", "MSU TouchPanel", panel,
                         _msuController, _initializationService, _hvacController, _musicController, combinationManager);
+                    
+                    Debug.Console(0, "INIT: MSU TouchPanel created successfully! Navigation should now work.");
+                }
+                else
+                {
+                    Debug.Console(0, "ERROR: MSU Controller became null during TouchPanel initialization");
+                }
 
-                Debug.Console(0, "INIT: MSU TP Initialization w/ Screen Handlers");
+                Debug.Console(0, "INIT: MSU TouchPanel initialization with screen handlers -> COMPLETE");
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "Error initializing MSU TouchPanel: {0}", ex.Message);
+                Debug.Console(0, "ERROR: Exception during MSU TouchPanel initialization: {0}", ex.Message);
+                Debug.Console(0, "ERROR: Stack trace: {0}", ex.StackTrace);
                 ErrorLog.Error("MSU TouchPanel Initialization Error: {0}", ex.Message);
             }
         }

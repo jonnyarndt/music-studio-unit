@@ -30,10 +30,17 @@ namespace musicStudioUnit.Configuration
         {
             _key = key;
             _configFileName = configFileName;
-            _configDirectory = GetConfigDirectory();
-
+            // Use Global.FilePathPrefix if set, otherwise use GetConfigDirectory()
+            string prefix = musicStudioUnit.Global.FilePathPrefix ?? string.Empty;
+            if (!string.IsNullOrEmpty(prefix)) {
+                Debug.Console(0, this, "DEBUG: Using Global.FilePathPrefix for config directory: {0}", prefix);
+                _configDirectory = prefix;
+            } else {
+                _configDirectory = GetConfigDirectory();
+            }
             DeviceManager.AddDevice(key, this);
             Debug.Console(1, this, "XML Configuration Parser initialized for file: {0}", configFileName);
+            Debug.Console(0, this, "DEBUG: Final config directory: {0}", _configDirectory);
         }
 
         /// <summary>
@@ -46,6 +53,8 @@ namespace musicStudioUnit.Configuration
             {
                 string configPath = GetConfigFilePath();
                 Debug.Console(1, this, "Loading XML configuration from: {0}", configPath);
+                Debug.Console(0, this, "DEBUG: Current working directory: {0}", Crestron.SimplSharp.CrestronIO.Directory.GetApplicationDirectory());
+                Debug.Console(0, this, "DEBUG: Global.FilePathPrefix: {0}", musicStudioUnit.Global.FilePathPrefix);
 
                 // Check if file exists
                 if (!Crestron.SimplSharp.CrestronIO.File.Exists(configPath))
@@ -269,8 +278,11 @@ namespace musicStudioUnit.Configuration
         {
             try
             {
+                // Normalize XML content to lowercase element names
+                string normalizedXmlContent = NormalizeXmlElementsToLowercase(xmlContent);
+                
                 XmlSerializer serializer = new XmlSerializer(typeof(LocalConfiguration));
-                using (var memoryStream = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xmlContent)))
+                using (var memoryStream = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(normalizedXmlContent)))
                 {
                     LocalConfiguration? config = (LocalConfiguration?)serializer.Deserialize(memoryStream);
                     return config;
@@ -280,6 +292,68 @@ namespace musicStudioUnit.Configuration
             {
                 Debug.Console(0, this, "Error parsing XML content: {0}", ex.Message);
                 return null;
+            }
+        }
+
+        private string NormalizeXmlElementsToLowercase(string xmlContent)
+        {
+            try
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(xmlContent);
+                
+                // Recursively normalize all element names to lowercase
+                NormalizeElementNames(doc.DocumentElement);
+                
+                string normalizedXml = doc.OuterXml;
+                Debug.Console(2, this, "Normalized XML content to lowercase element names");
+                return normalizedXml;
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, this, "Error normalizing XML content: {0}", ex.Message);
+                return xmlContent; // Return original if normalization fails
+            }
+        }
+
+        private void NormalizeElementNames(XmlNode node)
+        {
+            if (node == null) return;
+            
+            // Create a list of child nodes to avoid modification during iteration
+            var childNodes = new List<XmlNode>();
+            foreach (XmlNode child in node.ChildNodes)
+            {
+                if (child.NodeType == XmlNodeType.Element)
+                    childNodes.Add(child);
+            }
+            
+            // Process each child element
+            foreach (XmlNode child in childNodes)
+            {
+                // Recursively normalize child elements first
+                NormalizeElementNames(child);
+                
+                // Rename the element to lowercase if needed
+                if (child.Name != child.Name.ToLower())
+                {
+                    XmlElement newElement = node.OwnerDocument.CreateElement(child.Name.ToLower());
+                    
+                    // Copy all attributes
+                    foreach (XmlAttribute attr in child.Attributes)
+                    {
+                        newElement.SetAttribute(attr.Name, attr.Value);
+                    }
+                    
+                    // Copy all child nodes
+                    while (child.FirstChild != null)
+                    {
+                        newElement.AppendChild(child.FirstChild);
+                    }
+                    
+                    // Replace the old element with the new one
+                    node.ReplaceChild(newElement, child);
+                }
             }
         }
 

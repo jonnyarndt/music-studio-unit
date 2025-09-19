@@ -65,7 +65,7 @@ namespace musicStudioUnit.Configuration
         [XmlElement("port")]
         public int Port { get; set; }
 
-        [XmlElement("listen")]
+        [XmlElement("listenport")]
         public int ListenPort { get; set; }
     }
 
