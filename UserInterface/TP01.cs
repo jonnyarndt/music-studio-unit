@@ -14,7 +14,6 @@ namespace musicStudioUnit
         
         private bool alreadyDisposed = false;
         private uint maxPageCount = 10;
-        // Fix CS8618 by making fields/properties nullable where they are not initialized in the constructor
 
         private CTimer? onlinePageTransitionTimer;
 
@@ -83,7 +82,7 @@ namespace musicStudioUnit
         #endregion
 
         /// <summary>
-        /// Default Constructor for TP01
+        /// Default Constructor for touch panel
         /// </summary>
         internal TP01(string keyId, string friendlyId, BasicTriListWithSmartObject panel) : base(keyId, friendlyId, panel)
         {
@@ -293,16 +292,28 @@ namespace musicStudioUnit
         internal void CreateSubPageMap()
         {
             for (uint i = PopupPageJoinStart; i < PopupPageJoinEnd; i++)
-                { PopupPageDictionary.AddOrUpdate(i, false, (key, fakeBool) => false); }
+            { 
+                if(PopupPageDictionary == null) Debug.Console(0, this, "PopupPageDictionary is null");
+                else
+                    PopupPageDictionary.AddOrUpdate(i, false, (key, fakeBool) => false); 
+            }
 
             for (uint i = PanelWidePopupPageJoinStart; i < PanelWidePopupPageJoinEnd; i++)
-            { PanelWidePopupPageDictionary.AddOrUpdate(i, false, (key, fakeBool) => false); }
+            { 
+                if(PanelWidePopupPageDictionary == null) Debug.Console(0, this, "PanelWidePopupPageDictionary is null");
+                else
+                    PanelWidePopupPageDictionary.AddOrUpdate(i, false, (key, fakeBool) => false); 
+            }
             
-            PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.Telemetry, false, (key, fakeBool) => false);
-            PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.Lighting, false, (key, fakeBool) => false);
-            PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.MediaRouter, false, (key, fakeBool) => false);
-            PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.MediaPlayer, false, (key, fakeBool) => false);
-            PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.Game, false, (key, fakeBool) => false);
+            if(PageDictionary == null) Debug.Console(0, this, "PageDictionary is null");
+            else
+            {
+                PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.Telemetry, false, (key, fakeBool) => false);
+                PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.Lighting, false, (key, fakeBool) => false);
+                PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.MediaRouter, false, (key, fakeBool) => false);
+                PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.MediaPlayer, false, (key, fakeBool) => false);
+                PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.Game, false, (key, fakeBool) => false);
+            }   
         }
 
         /// <summary>
@@ -310,7 +321,14 @@ namespace musicStudioUnit
         /// </summary>
         internal void SetNextPageDictionaryItem()
         {
-            // Check if the dictionary is empty
+            // Check if the dictionary is null or empty
+            
+            if(PageDictionary == null)
+            {
+                Debug.Console(2, this, "PageDictionary is null. Next page cannot be set.");
+                return;
+            }
+
             if (PageDictionary.Count == 0)
             {
                 Debug.Console(2, this, "PageDictionary is empty. Previous page cannot be set.");
@@ -363,7 +381,12 @@ namespace musicStudioUnit
         {
             try
             {
-                // Check if the dictionary is empty
+                // Check if the dictionary is null or count is empty
+                if(PageDictionary == null)
+                {
+                    Debug.Console(2, this, "PageDictionary is null. Previous page cannot be set.");
+                    return;
+                }
                 if (PageDictionary.Count == 0)
                 {
                     Debug.Console(2, this, "PageDictionary is empty. Previous page cannot be set.");
