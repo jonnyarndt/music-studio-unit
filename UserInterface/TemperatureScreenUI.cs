@@ -22,7 +22,6 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Show()
         {
-            Debug.Console(0, "TemperatureScreenUI", "[DEBUG] Setting page joins: Settings=FALSE, User=FALSE, Music=FALSE, Temperature=TRUE, Combine=FALSE");
             // Show Temperature PAGE, hide others
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Settings].BoolValue = false;
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.User].BoolValue = false;
@@ -30,7 +29,6 @@ namespace musicStudioUnit.UserInterface
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Temperature].BoolValue = true;
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Combine].BoolValue = false;
             UpdateUI();
-            Debug.Console(0, "TemperatureScreenUI", "Temperature page shown");
         }
 
         /// <summary>
@@ -38,15 +36,13 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Hide()
         {
-            Debug.Console(0, "TemperatureScreenUI", "[DEBUG] Setting page join Temperature=FALSE");
             // Hide Temperature PAGE
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Temperature].BoolValue = false;
-            Debug.Console(0, "TemperatureScreenUI", "Temperature page hidden");
         }
         private readonly BasicTriList _panel;
         private readonly EnhancedHVACController _hvacController;
-    private readonly MSUController _msuController;
-    private readonly StudioCombinationManager _combinationManager;
+        private readonly MSUController _msuController;
+        private readonly StudioCombinationManager _combinationManager;
         private readonly Dictionary<byte, float> _currentSetpoints = new Dictionary<byte, float>();
         private readonly List<TemperaturePreset> _presets;
         
@@ -61,8 +57,8 @@ namespace musicStudioUnit.UserInterface
         private readonly Dictionary<byte, float> _savedSetpoints = new Dictionary<byte, float>();
 
         // Events
-        public event EventHandler<TemperatureChangedEventArgs> TemperatureChanged;
-        public event EventHandler<TemperatureFaultEventArgs> TemperatureFault;
+        public event EventHandler<TemperatureChangedEventArgs>? TemperatureChanged;
+        public event EventHandler<TemperatureFaultEventArgs>? TemperatureFault;
 
         public float CurrentSetpoint => _currentDisplayTemp;
         public bool IsConnected => _hvacController?.IsConnected == true;
@@ -71,39 +67,48 @@ namespace musicStudioUnit.UserInterface
     public TemperatureScreenUI(BasicTriList panel, EnhancedHVACController hvacController, 
                   MSUController msuController, StudioCombinationManager combinationManager, List<TemperaturePreset>? presets = null)
         {
-            _panel = panel ?? throw new ArgumentNullException(nameof(panel));
-            _hvacController = hvacController ?? throw new ArgumentNullException(nameof(hvacController));
-            _msuController = msuController ?? throw new ArgumentNullException(nameof(msuController));
-            _combinationManager = combinationManager ?? throw new ArgumentNullException(nameof(combinationManager));
-            _presets = presets ?? CreateDefaultPresets();
-
-            Debug.Console(1, "TemperatureScreenUI", "Initializing Temperature screen UI");
-
-            // Subscribe to HVAC events
-            _hvacController.StatusUpdated += OnHVACStatusUpdated;
-            _hvacController.SetpointChanged += OnSetpointChanged;
-            _hvacController.Connected += OnHVACConnected;
-            _hvacController.Disconnected += OnHVACDisconnected;
-            _hvacController.HVACError += OnHVACError;
-
-            if (_combinationManager != null)
+            try
             {
+                _panel = panel ?? throw new ArgumentNullException(nameof(panel));
+                _hvacController = hvacController ?? throw new ArgumentNullException(nameof(hvacController));
+                _msuController = msuController ?? throw new ArgumentNullException(nameof(msuController));          
+                _combinationManager = combinationManager ?? throw new ArgumentNullException(nameof(combinationManager));
+                _presets = presets ?? CreateDefaultPresets();
+
+                // Subscribe to HVAC events by first unsubscribing to avoid duplicates
+                _hvacController.StatusUpdated -= OnHVACStatusUpdated;
+                _hvacController.SetpointChanged -= OnSetpointChanged;
+                _hvacController.Connected -= OnHVACConnected;
+                _hvacController.Disconnected -= OnHVACDisconnected;
+                _hvacController.HVACError -= OnHVACError;
+
+                _hvacController.StatusUpdated += OnHVACStatusUpdated;
+                _hvacController.SetpointChanged += OnSetpointChanged;
+                _hvacController.Connected += OnHVACConnected;
+                _hvacController.Disconnected += OnHVACDisconnected;
+                _hvacController.HVACError += OnHVACError;
+
+                _combinationManager.CombinationChanged -= OnCombinationChanged;
                 _combinationManager.CombinationChanged += OnCombinationChanged;
+                
+
+                // Setup touch panel event handlers
+                SetupTouchPanelEvents();
+
+                // Load saved setpoints from nonvolatile storage
+                LoadSavedSetpoints();
+
+                // Initialize controlled zones
+                UpdateControlledZones();
+
+                // Initialize UI display
+                UpdateUI();
             }
-
-            // Setup touch panel event handlers
-            SetupTouchPanelEvents();
-
-            // Load saved setpoints from nonvolatile storage
-            LoadSavedSetpoints();
-
-            // Initialize controlled zones
-            UpdateControlledZones();
-
-            // Initialize UI display
-            UpdateUI();
-
-            Debug.Console(1, "TemperatureScreenUI", "Temperature screen UI initialized successfully");
+            catch (Exception ex)
+            {
+                Debug.Console(0, "TemperatureScreenUI", "Error initializing TemperatureScreenUI: {0}", ex.Message);
+                throw;
+            }
         }
 
         /// <summary>
@@ -551,12 +556,12 @@ namespace musicStudioUnit.UserInterface
 
         #region Event Handlers
 
-        private void OnHVACStatusUpdated(object sender, HVACStatusUpdatedEventArgs args)
+        private void OnHVACStatusUpdated(object? sender, HVACStatusUpdatedEventArgs args)
         {
             UpdateUI();
         }
 
-        private void OnSetpointChanged(object sender, HVACSetpointChangedEventArgs args)
+        private void OnSetpointChanged(object? sender, HVACSetpointChangedEventArgs args)
         {
             if (_controlledZones.Contains(args.ZoneId))
             {
@@ -566,25 +571,25 @@ namespace musicStudioUnit.UserInterface
             }
         }
 
-        private void OnHVACConnected(object sender, HVACConnectedEventArgs args)
+        private void OnHVACConnected(object? sender, HVACConnectedEventArgs args)
         {
             Debug.Console(1, "TemperatureScreenUI", "HVAC connected - updating UI");
             UpdateUI();
         }
 
-        private void OnHVACDisconnected(object sender, HVACDisconnectedEventArgs args)
+        private void OnHVACDisconnected(object? sender, HVACDisconnectedEventArgs args)
         {
             Debug.Console(1, "TemperatureScreenUI", "HVAC disconnected - updating UI");
             UpdateUI();
         }
 
-        private void OnHVACError(object sender, HVACErrorEventArgs args)
+        private void OnHVACError(object? sender, HVACErrorEventArgs args)
         {
             Debug.Console(0, "TemperatureScreenUI", "HVAC error: {0}", args.ErrorMessage);
             ShowTemperatureError(args.ErrorMessage);
         }
 
-        private void OnCombinationChanged(object sender, EventArgs args)
+        private void OnCombinationChanged(object? sender, EventArgs args)
         {
             Debug.Console(1, "TemperatureScreenUI", "Combination changed - updating controlled zones");
             _isCombinedMode = _combinationManager.IsCombined;

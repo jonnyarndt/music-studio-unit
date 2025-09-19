@@ -20,14 +20,12 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Show()
         {
-            Debug.Console(0, "UserLoginScreenUI", "[DEBUG] Setting page joins: Settings=FALSE, User=TRUE, Music=FALSE, Temperature=FALSE, Combine=FALSE");
             // Show User PAGE, hide others
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Settings].BoolValue = false;
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.User].BoolValue = true;
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Music].BoolValue = false;
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Temperature].BoolValue = false;
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Combine].BoolValue = false;
-            Debug.Console(1, "UserLoginScreenUI", "User login page shown");
         }
 
         /// <summary>
@@ -35,10 +33,8 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Hide()
         {
-            Debug.Console(0, "UserLoginScreenUI", "[DEBUG] Setting page join User=FALSE");
             // Hide User PAGE
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.User].BoolValue = false;
-            Debug.Console(0, "UserLoginScreenUI", "User login page hidden");
         }
         private readonly BasicTriList _panel;
         private readonly StringBuilder _userIdBuilder = new StringBuilder(5); // Max 5 digits for user IDs up to 60,000
@@ -50,9 +46,9 @@ namespace musicStudioUnit.UserInterface
         private bool _disposed = false;
 
         // Events
-        public event EventHandler<UserLoginEventArgs> UserLoggedIn;
-        public event EventHandler<UserLogoutEventArgs> UserLoggedOut;
-        public event EventHandler GuestModeActivated;
+        public event EventHandler<UserLoginEventArgs>? UserLoggedIn;
+        public event EventHandler<UserLogoutEventArgs>? UserLoggedOut;
+        public event EventHandler? GuestModeActivated;
 
         public bool IsLoggedIn => _isLoggedIn;
         public int CurrentUserId => _currentUserId;
@@ -62,15 +58,11 @@ namespace musicStudioUnit.UserInterface
         {
             _panel = panel ?? throw new ArgumentNullException(nameof(panel));
 
-            Debug.Console(1, "UserLoginScreenUI", "Initializing User Login screen UI");
-
             // Setup event handlers
             SetupTouchPanelEvents();
 
             // Initialize UI display
             UpdateLoginDisplay();
-
-            Debug.Console(1, "UserLoginScreenUI", "User Login screen UI initialized successfully");
         }
 
         /// <summary>

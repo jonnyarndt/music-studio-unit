@@ -5,6 +5,7 @@ using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using musicStudioUnit.Services;
+using musicStudioUnit.UserInterface;
 
 namespace musicStudioUnit
 {
@@ -109,8 +110,6 @@ namespace musicStudioUnit
                 Panel.SetSigTrueAction((uint)TouchPanelJoins.Digital.FooterPageNext, () => SetNextPageDictionaryItem());
                 Panel.SetSigTrueAction((uint)TouchPanelJoins.Digital.FooterPagePrevious, () => SetPreviousPageDictionaryItem());
                 Panel.SetSigTrueAction((uint)TouchPanelJoins.PanelWidePopUps.ResetAll, () => ResetAllPanelWidePopups());
-                Panel.SetSigTrueAction((uint)TouchPanelJoins.PanelWidePopUps.Signin, () => SetPanelWidePopupPage((uint)TouchPanelJoins.PanelWidePopUps.Signin));
-                Panel.SetSigTrueAction((uint)TouchPanelJoins.PanelWidePopUps.ReliefStation, () => SetPanelWidePopupPage((uint)TouchPanelJoins.PanelWidePopUps.ReliefStation));
 
                 CrestronConsole.AddNewConsoleCommand(SetTp01Page, "setTp01Page", "Single uint value to set the Page", ConsoleAccessLevelEnum.AccessOperator);
                 CrestronConsole.AddNewConsoleCommand(SetTp01SubPage, "setTp01SubPage", "Single uint value to set the Sub Page", ConsoleAccessLevelEnum.AccessOperator);
@@ -274,7 +273,7 @@ namespace musicStudioUnit
             {
                 Debug.Console(2, this, "Panel is Online");
                 SetPage((uint)TouchPanelJoins.Pages.Startup);
-                onlinePageTransitionTimer = new CTimer(_ => SetPage((uint)TouchPanelJoins.Pages.Telemetry), null, StartupTimeOut);
+                onlinePageTransitionTimer = new CTimer(_ => SetPage((uint)MSUTouchPanelJoins.Pages.Settings), new object(), StartupTimeOut);
             }
             else
             {
@@ -301,15 +300,7 @@ namespace musicStudioUnit
                     PanelWidePopupPageDictionary.AddOrUpdate(i, false, (key, fakeBool) => false); 
             }
             
-            if(PageDictionary == null) Debug.Console(0, this, "PageDictionary is null");
-            else
-            {
-                PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.Telemetry, false, (key, fakeBool) => false);
-                PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.Lighting, false, (key, fakeBool) => false);
-                PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.MediaRouter, false, (key, fakeBool) => false);
-                PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.MediaPlayer, false, (key, fakeBool) => false);
-                PageDictionary.AddOrUpdate((uint)TouchPanelJoins.Pages.Game, false, (key, fakeBool) => false);
-            }   
+            if(PageDictionary == null) Debug.Console(0, this, "PageDictionary is null");  
         }
 
         /// <summary>
@@ -479,7 +470,6 @@ namespace musicStudioUnit
             PinEntryBuilder.Remove(0, PinEntryBuilder.Length);
             PinEntryStarBuilder.Remove(0, PinEntryStarBuilder.Length);
             Panel.SetString((uint)TouchPanelJoins.Serial.PinKeypadEntryText, "");
-            Panel.SetBool((uint)TouchPanelJoins.PanelWidePopUps.Signin, false);
         }
     }
 }

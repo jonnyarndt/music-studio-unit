@@ -1,8 +1,0 @@
-// Optimization fixes for MusicSystemController\TcpCoreClient.cs
-// Apply these changes to improve performance
-
-// Line 68: Disposable resource without using statement
-// Current: _client = new TcpClient();
-// Fix: Use using statement or implement proper disposal pattern
-// Rationale: Unmanaged resources should be properly disposed
-

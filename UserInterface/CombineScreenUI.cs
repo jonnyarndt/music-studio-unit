@@ -45,12 +45,12 @@ namespace musicStudioUnit.UserInterface
         /// <summary>
         /// Fired when combination configuration changes
         /// </summary>
-        public event EventHandler<StudioCombinationChangedEventArgs> CombinationChanged;
+        public event EventHandler<StudioCombinationChangedEventArgs>? CombinationChanged;
 
         /// <summary>
         /// Fired when UI requires navigation back to menu
         /// </summary>
-        public event EventHandler NavigateBackRequested;
+        public event EventHandler? NavigateBackRequested;
 
         #endregion
 
@@ -85,7 +85,7 @@ namespace musicStudioUnit.UserInterface
             _panel = panel ?? throw new ArgumentNullException(nameof(panel));
             _combinationManager = combinationManager ?? throw new ArgumentNullException(nameof(combinationManager));
 
-            core_tools.Debug.Console(1, "CombineScreenUI", "Initializing combine screen UI");
+            Debug.Console(1, "CombineScreenUI", "Initializing combine screen UI");
 
             InitializeUI();
         }
@@ -109,12 +109,10 @@ namespace musicStudioUnit.UserInterface
                     RefreshAdjacentUnits();
                     UpdateCombinationStatus();
                     _isInitialized = true;
-
-                    core_tools.Debug.Console(1, "CombineScreenUI", "Combine screen initialized successfully");
                 }
                 catch (Exception ex)
                 {
-                    core_tools.Debug.Console(0, "CombineScreenUI", "Error initializing combine screen: {0}", ex.Message);
+                    Debug.Console(0, "CombineScreenUI", "Error initializing combine screen: {0}", ex.Message);
                 }
             }
         }
@@ -124,8 +122,6 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Show()   
         {
-            Debug.Console(0, "CombineScreenUI", "[DEBUG] Setting page joins: Settings=FALSE, User=FALSE, Music=FALSE, Temperature=FALSE, Combine=TRUE");
-
             if (!_isInitialized)
             {
                 Initialize();
@@ -138,7 +134,6 @@ namespace musicStudioUnit.UserInterface
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Combine].BoolValue = true;
             RefreshAdjacentUnits();
             UpdateCombinationDisplay();
-            core_tools.Debug.Console(0, "CombineScreenUI", "Combine page shown - Current: {0}", _currentCombination);
         }
 
         /// <summary>
@@ -146,11 +141,8 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Hide()
         {
-            Debug.Console(0, "CombineScreenUI", "[DEBUG] Setting page join Combine=FALSE");
-
             // Hide Combine PAGE
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Combine].BoolValue = false;
-            core_tools.Debug.Console(0, "CombineScreenUI", "Combine page hidden");
         }
 
         /// <summary>
@@ -162,8 +154,6 @@ namespace musicStudioUnit.UserInterface
 
             try
             {
-                core_tools.Debug.Console(1, "CombineScreenUI", "Refreshing adjacent units");
-
                 // Get current combination state from manager
                 _currentCombination = _combinationManager.CombinationType;
                 _combinedUnits = _combinationManager.CombinedMSUs.ToList();
@@ -171,11 +161,11 @@ namespace musicStudioUnit.UserInterface
                 // Check what combinations are available
                 CheckCombinationAvailability();
 
-                core_tools.Debug.Console(1, "CombineScreenUI", "Adjacent units refreshed - Available combinations updated");
+                Debug.Console(1, "CombineScreenUI", "Adjacent units refreshed - Available combinations updated");
             }
             catch (Exception ex)
             {
-                core_tools.Debug.Console(0, "CombineScreenUI", "Error refreshing adjacent units: {0}", ex.Message);
+                Debug.Console(0, "CombineScreenUI", "Error refreshing adjacent units: {0}", ex.Message);
                 ShowError("Failed to refresh adjacent units");
             }
         }
@@ -266,7 +256,7 @@ namespace musicStudioUnit.UserInterface
             {
                 try
                 {
-                    core_tools.Debug.Console(1, "CombineScreenUI", "Single studio selected");
+                    Debug.Console(1, "CombineScreenUI", "Single studio selected");
 
                     if (_currentCombination != StudioCombinationType.Single)
                     {
@@ -275,7 +265,7 @@ namespace musicStudioUnit.UserInterface
 
                         if (success)
                         {
-                            core_tools.Debug.Console(1, "CombineScreenUI", "Successfully uncombined studios");
+                            Debug.Console(1, "CombineScreenUI", "Successfully uncombined studios");
                             ShowStatus("Studios uncombined successfully");
                         }
                         else
@@ -290,7 +280,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    core_tools.Debug.Console(0, "CombineScreenUI", "Error selecting single studio: {0}", ex.Message);
+                    Debug.Console(0, "CombineScreenUI", "Error selecting single studio: {0}", ex.Message);
                     ShowError("Error changing to Single Studio");
                 }
             }
@@ -302,7 +292,7 @@ namespace musicStudioUnit.UserInterface
             {
                 try
                 {
-                    core_tools.Debug.Console(1, "CombineScreenUI", "Mega studio selected");
+                    Debug.Console(1, "CombineScreenUI", "Mega studio selected");
 
                     // Check if Mega combination is available
                     bool canCombine = _combinationManager.CanCombineWithAdjacentMSUs(StudioCombinationType.Mega);
@@ -318,7 +308,7 @@ namespace musicStudioUnit.UserInterface
 
                     if (success)
                     {
-                        core_tools.Debug.Console(1, "CombineScreenUI", "Successfully combined into Mega Studio");
+                        Debug.Console(1, "CombineScreenUI", "Successfully combined into Mega Studio");
                         ShowStatus("Mega Studio created successfully");
                     }
                     else
@@ -328,7 +318,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    core_tools.Debug.Console(0, "CombineScreenUI", "Error selecting mega studio: {0}", ex.Message);
+                    Debug.Console(0, "CombineScreenUI", "Error selecting mega studio: {0}", ex.Message);
                     ShowError("Error creating Mega Studio");
                 }
             }
@@ -340,7 +330,7 @@ namespace musicStudioUnit.UserInterface
             {
                 try
                 {
-                    core_tools.Debug.Console(1, "CombineScreenUI", "Monster studio selected");
+                    Debug.Console(1, "CombineScreenUI", "Monster studio selected");
 
                     // Check if Monster combination is available
                     bool canCombine = _combinationManager.CanCombineWithAdjacentMSUs(StudioCombinationType.Monster);
@@ -356,7 +346,7 @@ namespace musicStudioUnit.UserInterface
 
                     if (success)
                     {
-                        core_tools.Debug.Console(1, "CombineScreenUI", "Successfully combined into Monster Studio");
+                        Debug.Console(1, "CombineScreenUI", "Successfully combined into Monster Studio");
                         ShowStatus("Monster Studio created successfully");
                     }
                     else
@@ -366,7 +356,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    core_tools.Debug.Console(0, "CombineScreenUI", "Error selecting monster studio: {0}", ex.Message);
+                    Debug.Console(0, "CombineScreenUI", "Error selecting monster studio: {0}", ex.Message);
                     ShowError("Error creating Monster Studio");
                 }
             }
@@ -402,12 +392,10 @@ namespace musicStudioUnit.UserInterface
 
                 // Update status information
                 UpdateCombinationStatus();
-
-                core_tools.Debug.Console(2, "CombineScreenUI", "Combination display updated");
             }
             catch (Exception ex)
             {
-                core_tools.Debug.Console(0, "CombineScreenUI", "Error updating combination display: {0}", ex.Message);
+                Debug.Console(0, "CombineScreenUI", "Error updating combination display: {0}", ex.Message);
             }
         }
 
@@ -468,9 +456,6 @@ namespace musicStudioUnit.UserInterface
                 canMega ? "Mega Studio" : "Mega Studio (N/A)";
             _panel.StringInput[MSUTouchPanelJoins.Combine.MonsterStudioText].StringValue = 
                 canMonster ? "Monster Studio" : "Monster Studio (N/A)";
-
-            core_tools.Debug.Console(2, "CombineScreenUI", "Combination options - Single: {0}, Mega: {1}, Monster: {2}", 
-                canSingle, canMega, canMonster);
         }
 
         private void UpdateCombinedUnitsList()
@@ -503,7 +488,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                core_tools.Debug.Console(0, "CombineScreenUI", "Error updating combined units list: {0}", ex.Message);
+                Debug.Console(0, "CombineScreenUI", "Error updating combined units list: {0}", ex.Message);
             }
         }
 
@@ -516,15 +501,15 @@ namespace musicStudioUnit.UserInterface
             string statusText;
             if (!IsCombined)
             {
-                statusText = "Not combined - all functions available";
+                statusText = "Not Combined - All functions available";
             }
             else if (IsMaster)
             {
-                statusText = "Master unit - controls all combined functions";
+                statusText = "Master Unit - Controls all combined functions";
             }
             else
             {
-                statusText = "Combined unit - controlled by master";
+                statusText = "Combined Unit - Controlled by master";
             }
 
             _panel.StringInput[MSUTouchPanelJoins.Combine.CombinationStatus].StringValue = statusText;
@@ -533,7 +518,7 @@ namespace musicStudioUnit.UserInterface
             if (IsCombined && !IsMaster)
             {
                 _panel.StringInput[MSUTouchPanelJoins.Combine.ControlRestrictions].StringValue = 
-                    "Combination controls disabled - this unit is controlled by the master unit";
+                    "Combination controls disabled - This unit is controlled by the master unit";
                 _panel.BooleanInput[MSUTouchPanelJoins.Combine.ShowRestrictions].BoolValue = true;
             }
             else
@@ -623,7 +608,7 @@ namespace musicStudioUnit.UserInterface
 
         #region Event Handlers
 
-        private void OnCombinationChanged(object sender, StudioCombinationChangedEventArgs e)
+        private void OnCombinationChanged(object? sender, StudioCombinationChangedEventArgs e)
         {
             core_tools.Debug.Console(1, "CombineScreenUI", "Combination changed - Type: {0}, Units: {1}", 
                 e.CombinationType, e.CombinedMSUs?.Count ?? 0);
@@ -658,11 +643,10 @@ namespace musicStudioUnit.UserInterface
                 }
 
                 _disposed = true;
-                core_tools.Debug.Console(1, "CombineScreenUI", "Disposed");
             }
             catch (Exception ex)
             {
-                core_tools.Debug.Console(0, "CombineScreenUI", "Error during disposal: {0}", ex.Message);
+                Debug.Console(0, "CombineScreenUI", "Error during disposal: {0}", ex.Message);
             }
         }
 

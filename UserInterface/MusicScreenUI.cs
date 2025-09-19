@@ -29,8 +29,8 @@ namespace musicStudioUnit.UserInterface
 
         // Browse state management
         private BrowseState _currentState = BrowseState.ArtistSelection;
-    private List<musicStudioUnit.Devices.MusicArtist> _currentArtists = new List<musicStudioUnit.Devices.MusicArtist>();
-    private List<musicStudioUnit.Devices.MusicTrack> _currentTracks = new List<musicStudioUnit.Devices.MusicTrack>();
+        private List<musicStudioUnit.Devices.MusicArtist> _currentArtists = new List<musicStudioUnit.Devices.MusicArtist>();
+        private List<musicStudioUnit.Devices.MusicTrack> _currentTracks = new List<musicStudioUnit.Devices.MusicTrack>();
         private int _selectedArtistId = 0;
         private int _selectedTrackId = 0;
         private string _selectedArtistName = string.Empty;
@@ -52,12 +52,12 @@ namespace musicStudioUnit.UserInterface
         /// <summary>
         /// Fired when music playback state changes
         /// </summary>
-        public event EventHandler<MusicPlaybackStateEventArgs> PlaybackStateChanged;
+        public event EventHandler<MusicPlaybackStateEventArgs>? PlaybackStateChanged;
 
         /// <summary>
         /// Fired when UI requires navigation back to menu
         /// </summary>
-        public event EventHandler NavigateBackRequested;
+        public event EventHandler? NavigateBackRequested;
 
         #endregion
 
@@ -89,12 +89,18 @@ namespace musicStudioUnit.UserInterface
 
         public MusicScreenUI(BasicTriList panel, EnhancedMusicSystemController musicController)
         {
-            _panel = panel ?? throw new ArgumentNullException(nameof(panel));
-            _musicController = musicController ?? throw new ArgumentNullException(nameof(musicController));
+            try
+            {
+                _panel = panel ?? throw new ArgumentNullException(nameof(panel));
+                _musicController = musicController ?? throw new ArgumentNullException(nameof(musicController));
 
-            Debug.Console(1, "MusicScreenUI", "Initializing enhanced music screen UI");
-
-            InitializeUI();
+                InitializeUI();
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, "MusicScreenUI", "Error in constructor: {0}", ex.Message);
+                throw;
+            }
         }
 
         #endregion
@@ -117,8 +123,6 @@ namespace musicStudioUnit.UserInterface
                     UpdateConnectionStatus();
                     ShowArtistSelection();
                     _isInitialized = true;
-
-                    Debug.Console(1, "MusicScreenUI", "Music screen initialized successfully");
                 }
                 catch (Exception ex)
                 {
@@ -132,8 +136,6 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Show()
         {
-            Debug.Console(0, "MusicScreenUI", "[DEBUG] Setting page joins: Settings=FALSE, User=FALSE, Music=TRUE, Temperature=FALSE, Combine=FALSE");
-
             if (!_isInitialized)
             {
                 Initialize();
@@ -157,7 +159,6 @@ namespace musicStudioUnit.UserInterface
                     ShowNowPlaying();
                     break;
             }
-            Debug.Console(1, "MusicScreenUI", "Music page shown - State: {0}", _currentState);
         }
 
         /// <summary>
@@ -165,13 +166,18 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Hide()
         {
-            Debug.Console(0, "MusicScreenUI", "[DEBUG] Setting page join Music=FALSE");
-            // Hide Music PAGE
-            _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Music].BoolValue = false;
-            _panel.BooleanInput[MSUTouchPanelJoins.Music.ArtistListVisible].BoolValue = false;
-            _panel.BooleanInput[MSUTouchPanelJoins.Music.TrackListVisible].BoolValue = false;
-            _panel.BooleanInput[MSUTouchPanelJoins.Music.NowPlayingVisible].BoolValue = false;
-            Debug.Console(0, "MusicScreenUI", "Music page hidden");
+            try
+            {
+                // Hide Music PAGE
+                _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Music].BoolValue = false;
+                _panel.BooleanInput[MSUTouchPanelJoins.Music.ArtistListVisible].BoolValue = false;
+                _panel.BooleanInput[MSUTouchPanelJoins.Music.TrackListVisible].BoolValue = false;
+                _panel.BooleanInput[MSUTouchPanelJoins.Music.NowPlayingVisible].BoolValue = false;
+            }
+            catch (Exception ex)
+            {
+                Debug.Console(0, "MusicScreenUI", "Error hiding music page: {0}", ex.Message);
+            }
         }
 
         /// <summary>
@@ -210,8 +216,6 @@ namespace musicStudioUnit.UserInterface
                 SetupTouchPanelEvents();
                 // Initialize with disconnected state
                 UpdateConnectionStatus();
-
-                Debug.Console(2, "MusicScreenUI", "UI initialized");
             }
             catch (Exception ex)
             {
@@ -224,14 +228,20 @@ namespace musicStudioUnit.UserInterface
         {
             if (_musicController != null)
             {
+                //Unsubscribe first, then subscribe to avoid multiple subscriptions
+                _musicController.CatalogUpdated -= OnCatalogUpdated;
+                _musicController.PlaybackStatusChanged -= OnPlaybackStatusChanged;
+                _musicController.TrackTimeUpdated -= OnTrackTimeUpdated;
+                _musicController.Connected -= OnMusicSystemConnected;
+                _musicController.Disconnected -= OnMusicSystemDisconnected;
+                _musicController.MusicSystemError -= OnMusicSystemError;
+
                 _musicController.CatalogUpdated += OnCatalogUpdated;
                 _musicController.PlaybackStatusChanged += OnPlaybackStatusChanged;
                 _musicController.TrackTimeUpdated += OnTrackTimeUpdated;
                 _musicController.Connected += OnMusicSystemConnected;
                 _musicController.Disconnected += OnMusicSystemDisconnected;
                 _musicController.MusicSystemError += OnMusicSystemError;
-
-                Debug.Console(2, "MusicScreenUI", "Event handlers configured");
             }
         }
 

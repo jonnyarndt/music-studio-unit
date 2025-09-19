@@ -275,7 +275,7 @@ namespace musicStudioUnit
                 else   // Handles Linux OS (Virtual Control)
                 {
                     //Debug.SetDebugLevel(2);
-                    Debug.Console(0, "Starting Essentials v{version:l} on Virtual Control Server", Global.AssemblyVersion);
+                    Debug.Console(0, "Starting App v{version:l} on Virtual Control Server", Global.AssemblyVersion);
 
                     // Set path to User/
                     filePathPrefix = directoryPrefix + dirSeparator + "User" + dirSeparator;
@@ -285,7 +285,7 @@ namespace musicStudioUnit
             }
             catch (Exception e)
             {
-                Debug.Console(0, "Unable to determine platform due to exception: {0}", e.StackTrace);
+                Debug.Console(0, "Determine Platform: Unable to determine platform due to exception: {0}", e.StackTrace);
             }
         }
 

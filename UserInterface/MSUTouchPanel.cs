@@ -65,7 +65,7 @@ namespace musicStudioUnit.UserInterface
             _musicController = musicController ?? throw new ArgumentNullException(nameof(musicController));
             _combinationManager = combinationManager ?? throw new ArgumentNullException(nameof(combinationManager));
 
-            Debug.Console(0, this, "INIT: Initializing MSU TouchPanel");
+            Debug.Console(0, this, "MSUTouchPanel: Initializing In Progress...");
 
             // Initialize dictionaries
             PageDictionary = new ConcurrentDictionary<uint, bool>();
@@ -93,7 +93,7 @@ namespace musicStudioUnit.UserInterface
             // Initialize menu bar display
             UpdateMenuBar();
 
-            Debug.Console(0, this, "INIT: MSU TouchPanel initialization -> Complete");
+            Debug.Console(0, this, "MSUTouchPanel: Initialization -> Complete");
         }
         #endregion
 
@@ -183,26 +183,17 @@ namespace musicStudioUnit.UserInterface
         {
             try
             {
-                Debug.Console(1, this, "[DEBUG] NavigateToPage called: {0}", page);
-
                 // Clear current page
                 if (PageDictionary.ContainsKey((uint)_currentPage))
                 {
-                    Debug.Console(1, this, "[DEBUG] Clearing previous page: {0}", _currentPage);
                     PageDictionary[(uint)_currentPage] = false;
                 }
 
                 // Set new page
                 _currentPage = page;
-                Debug.Console(1, this, "[DEBUG] Setting new page: {0}", page);
                 SetPage((uint)page);
                 PageDictionary[(uint)page] = true;
-
-                // Handle page-specific logic
-                Debug.Console(1, this, "[DEBUG] Calling OnPageChanged for page: {0}", page);
                 OnPageChanged(page);
-
-                Debug.Console(1, this, "[DEBUG] Navigation completed to page: {0}", page);
             }
             catch (Exception ex)
             {
@@ -214,17 +205,12 @@ namespace musicStudioUnit.UserInterface
         {
             try
             {
-                Debug.Console(1, this, "[DEBUG] OnPageChanged called for page: {0}", page);
-                // Hide all screens first
-                Debug.Console(1, this, "[DEBUG] Hiding all screens");
                 _settingsScreen?.Hide();
                 _userLoginScreen?.Hide();
                 _temperatureScreen?.Hide();
                 _musicScreen?.Hide();
                 _combineScreen?.Hide();
 
-                // Show and initialize the requested screen
-                Debug.Console(1, this, "[DEBUG] Showing requested screen: {0}", page);
                 switch (page)
                 {
                     case MSUTouchPanelJoins.Pages.Settings:

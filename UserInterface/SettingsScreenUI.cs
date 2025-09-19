@@ -18,7 +18,6 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Show()
         {
-            Debug.Console(0, "SettingsScreenUI", "[DEBUG] Setting page joins: Settings=TRUE, User=FALSE, Music=FALSE, Temperature=FALSE, Combine=FALSE");
             // Show Settings PAGE, hide others
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Settings].BoolValue = true;
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.User].BoolValue = false;
@@ -26,7 +25,6 @@ namespace musicStudioUnit.UserInterface
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Temperature].BoolValue = false;
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Combine].BoolValue = false;
             UpdateSettingsDisplay();
-            Debug.Console(0, "SettingsScreenUI", "Settings page shown");
         }
 
         /// <summary>
@@ -34,21 +32,19 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         public void Hide()
         {
-            Debug.Console(0, "SettingsScreenUI", "[DEBUG] Setting page join Settings=FALSE");
             // Hide Settings PAGE
             _panel.BooleanInput[(uint)MSUTouchPanelJoins.Pages.Settings].BoolValue = false;
-            Debug.Console(0, "SettingsScreenUI", "Settings page hidden");
         }
         private readonly BasicTriList _panel;
         private readonly MSUController _msuController;
-        private readonly SystemInitializationService _initService;
+        private readonly SystemInitializationService? _initService;
         private CTimer? _timeUpdateTimer;
         private bool _disposed;
 
         // Update intervals
         private const int TimeUpdateInterval = 1000; // Update time every second
 
-        public event EventHandler<ConfigurationReloadEventArgs> ConfigurationReloadRequested;
+        public event EventHandler<ConfigurationReloadEventArgs>? ConfigurationReloadRequested;
 
         public SettingsScreenUI(BasicTriList panel, MSUController msuController, 
                                SystemInitializationService initService)
@@ -56,8 +52,6 @@ namespace musicStudioUnit.UserInterface
             _panel = panel ?? throw new ArgumentNullException(nameof(panel));
             _msuController = msuController ?? throw new ArgumentNullException(nameof(msuController));
             _initService = initService ?? throw new ArgumentNullException(nameof(initService));
-
-            Debug.Console(1, "SettingsScreenUI", "Initializing Settings screen UI");
 
             // Setup event handlers
             SetupTouchPanelEvents();
@@ -75,8 +69,6 @@ namespace musicStudioUnit.UserInterface
 
             // Initial UI update
             UpdateSettingsDisplay();
-
-            Debug.Console(1, "SettingsScreenUI", "Settings screen UI initialized successfully");
         }
 
         /// <summary>
@@ -93,8 +85,6 @@ namespace musicStudioUnit.UserInterface
                     OnReloadConfigurationPressed();
                 }
             };
-
-            Debug.Console(2, "SettingsScreenUI", "Touch panel events configured");
         }
 
         /// <summary>
@@ -164,8 +154,6 @@ namespace musicStudioUnit.UserInterface
         {
             try
             {
-                Debug.Console(2, "SettingsScreenUI", "Updating settings display");
-
                 // Time and date (updated by timer)
                 UpdateTimeDisplay();
 
@@ -180,8 +168,6 @@ namespace musicStudioUnit.UserInterface
 
                 // Configuration Status
                 UpdateConfigurationStatus("Configuration loaded successfully");
-
-                Debug.Console(2, "SettingsScreenUI", "Settings display updated successfully");
             }
             catch (Exception ex)
             {
@@ -278,7 +264,6 @@ namespace musicStudioUnit.UserInterface
         private void UpdateConfigurationStatus(string status)
         {
             _panel.StringInput[(uint)MSUTouchPanelJoins.SettingsScreen.ConfigStatusText].StringValue = status;
-            Debug.Console(1, "SettingsScreenUI", "Configuration status: {0}", status);
         }
 
         /// <summary>
