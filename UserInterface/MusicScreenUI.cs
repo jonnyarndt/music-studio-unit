@@ -98,7 +98,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "MusicScreenUI", "Error in constructor: {0}", ex.Message);
+                Debug.Console(0, "MusicScreenUI: Error in constructor: {0}", ex.Message);
                 throw;
             }
         }
@@ -126,7 +126,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "MusicScreenUI", "Error initializing music screen: {0}", ex.Message);
+                    Debug.Console(0, "MusicScreenUI: Error initializing music screen: {0}", ex.Message);
                 }
             }
         }
@@ -176,7 +176,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "MusicScreenUI", "Error hiding music page: {0}", ex.Message);
+                Debug.Console(0, "MusicScreenUI: Error hiding music page: {0}", ex.Message);
             }
         }
 
@@ -189,12 +189,12 @@ namespace musicStudioUnit.UserInterface
 
             try
             {
-                Debug.Console(1, "MusicScreenUI", "Refreshing music catalog");
+                Debug.Console(1, "MusicScreenUI: Refreshing music catalog");
                 _musicController?.LoadMusicCatalog();
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "MusicScreenUI", "Error refreshing catalog: {0}", ex.Message);
+                Debug.Console(0, "MusicScreenUI: Error refreshing catalog: {0}", ex.Message);
                 ShowError("Failed to refresh music catalog");
             }
         }
@@ -219,7 +219,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "MusicScreenUI", "Error initializing UI: {0}", ex.Message);
+                Debug.Console(0, "MusicScreenUI: Error initializing UI: {0}", ex.Message);
         
             }
         }
@@ -315,7 +315,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "MusicScreenUI", "Error handling button press for join {0}: {1}", join, ex.Message);
+                Debug.Console(0, "MusicScreenUI: Error handling button press for join {0}: {1}", join, ex.Message);
             }
         }
 
@@ -343,7 +343,7 @@ namespace musicStudioUnit.UserInterface
                         _selectedArtistId = selectedArtist.Id;
                         _selectedArtistName = selectedArtist.Name;
 
-                        Debug.Console(1, "MusicScreenUI", "Artist selected: {0} - {1}", selectedArtist.Id, selectedArtist.Name);
+                        Debug.Console(1, "MusicScreenUI: Artist selected: {0} - {1}", selectedArtist.Id, selectedArtist.Name);
 
                         // Load tracks for selected artist
                         LoadTracksForArtist(selectedArtist.Id);
@@ -351,7 +351,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "MusicScreenUI", "Error selecting artist: {0}", ex.Message);
+                    Debug.Console(0, "MusicScreenUI: Error selecting artist: {0}", ex.Message);
                     ShowError("Error selecting artist");
                 }
             }
@@ -377,7 +377,7 @@ namespace musicStudioUnit.UserInterface
                         _selectedTrackId = selectedTrack.Id;
                         _selectedTrackName = selectedTrack.Name;
 
-                        Debug.Console(1, "MusicScreenUI", "Track selected: {0} - {1}", selectedTrack.Id, selectedTrack.Name);
+                        Debug.Console(1, "MusicScreenUI: Track selected: {0} - {1}", selectedTrack.Id, selectedTrack.Name);
 
                         // Start playback per Client-Scope.md protocol
                         StartTrackPlayback(selectedTrack.Id, selectedTrack.Name, _selectedArtistName);
@@ -385,7 +385,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "MusicScreenUI", "Error selecting track: {0}", ex.Message);
+                    Debug.Console(0, "MusicScreenUI: Error selecting track: {0}", ex.Message);
                     ShowError("Error selecting track");
                 }
             }
@@ -402,13 +402,13 @@ namespace musicStudioUnit.UserInterface
                     if (status.IsPlaying)
                     {
                         // Stop current playback
-                        Debug.Console(1, "MusicScreenUI", "Stopping playback - Track: {0}", _selectedTrackId);
+                        Debug.Console(1, "MusicScreenUI: Stopping playback - Track: {0}", _selectedTrackId);
                         _musicController.StopTrack();
                     }
                     else if (_selectedTrackId > 0)
                     {
                         // Resume/start playback of selected track
-                        Debug.Console(1, "MusicScreenUI", "Starting playback - Track: {0}", _selectedTrackId);
+                        Debug.Console(1, "MusicScreenUI: Starting playback - Track: {0}", _selectedTrackId);
                         StartTrackPlayback(_selectedTrackId, _selectedTrackName, _selectedArtistName);
                     }
                     else
@@ -418,7 +418,7 @@ namespace musicStudioUnit.UserInterface
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "MusicScreenUI", "Error handling play/stop: {0}", ex.Message);
+                    Debug.Console(0, "MusicScreenUI: Error handling play/stop: {0}", ex.Message);
                     ShowError("Playback control error");
                 }
             }
@@ -437,7 +437,7 @@ namespace musicStudioUnit.UserInterface
             _currentTrackPage = 1;
             ShowArtistSelection();
 
-            Debug.Console(1, "MusicScreenUI", "Navigated back to artist selection");
+            Debug.Console(1, "MusicScreenUI: Navigated back to artist selection");
         }
 
         private void OnBackToBrowse()
@@ -454,7 +454,7 @@ namespace musicStudioUnit.UserInterface
                 ShowArtistSelection();
             }
 
-            Debug.Console(1, "MusicScreenUI", "Navigated back to browse - State: {0}", _currentState);
+            Debug.Console(1, "MusicScreenUI: Navigated back to browse - State: {0}", _currentState);
         }
 
         private void OnRefreshCatalog()
@@ -473,7 +473,7 @@ namespace musicStudioUnit.UserInterface
             {
                 _currentArtistPage--;
                 UpdateArtistList();
-                Debug.Console(2, "MusicScreenUI", "Artist page: {0}", _currentArtistPage);
+                Debug.Console(2, "MusicScreenUI: Artist page: {0}", _currentArtistPage);
             }
         }
 
@@ -484,7 +484,7 @@ namespace musicStudioUnit.UserInterface
             {
                 _currentArtistPage++;
                 UpdateArtistList();
-                Debug.Console(2, "MusicScreenUI", "Artist page: {0}", _currentArtistPage);
+                Debug.Console(2, "MusicScreenUI: Artist page: {0}", _currentArtistPage);
             }
         }
 
@@ -494,7 +494,7 @@ namespace musicStudioUnit.UserInterface
             {
                 _currentTrackPage--;
                 UpdateTrackList();
-                Debug.Console(2, "MusicScreenUI", "Track page: {0}", _currentTrackPage);
+                Debug.Console(2, "MusicScreenUI: Track page: {0}", _currentTrackPage);
             }
         }
 
@@ -505,7 +505,7 @@ namespace musicStudioUnit.UserInterface
             {
                 _currentTrackPage++;
                 UpdateTrackList();
-                Debug.Console(2, "MusicScreenUI", "Track page: {0}", _currentTrackPage);
+                Debug.Console(2, "MusicScreenUI: Track page: {0}", _currentTrackPage);
             }
         }
 
@@ -517,7 +517,7 @@ namespace musicStudioUnit.UserInterface
         {
             try
             {
-                Debug.Console(1, "MusicScreenUI", "Starting playback - Track: {0}, Artist: {1}", trackName, artistName);
+                Debug.Console(1, "MusicScreenUI: Starting playback - Track: {0}, Artist: {1}", trackName, artistName);
 
                 bool success = _musicController.PlayTrack(trackId, trackName, artistName);
 
@@ -541,7 +541,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "MusicScreenUI", "Error starting playback: {0}", ex.Message);
+                Debug.Console(0, "MusicScreenUI: Error starting playback: {0}", ex.Message);
                 ShowError("Playback start error");
             }
         }
@@ -550,7 +550,7 @@ namespace musicStudioUnit.UserInterface
         {
             try
             {
-                Debug.Console(1, "MusicScreenUI", "Loading tracks for artist {0}", artistId);
+                Debug.Console(1, "MusicScreenUI: Loading tracks for artist {0}", artistId);
 
                 _currentTracks = _musicController.GetTracksForArtist(artistId);
                 _currentTrackPage = 1;
@@ -558,11 +558,11 @@ namespace musicStudioUnit.UserInterface
 
                 ShowTrackSelection();
 
-                Debug.Console(1, "MusicScreenUI", "Loaded {0} tracks for artist {1}", _currentTracks.Count, artistId);
+                Debug.Console(1, "MusicScreenUI: Loaded {0} tracks for artist {1}", _currentTracks.Count, artistId);
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "MusicScreenUI", "Error loading tracks: {0}", ex.Message);
+                Debug.Console(0, "MusicScreenUI: Error loading tracks: {0}", ex.Message);
                 ShowError("Failed to load tracks");
             }
         }
@@ -586,7 +586,7 @@ namespace musicStudioUnit.UserInterface
             // Update screen title
             _panel.StringInput[MSUTouchPanelJoins.Music.ScreenTitle].StringValue = "Select Artist";
 
-            Debug.Console(2, "MusicScreenUI", "Showing artist selection");
+            Debug.Console(2, "MusicScreenUI: Showing artist selection");
         }
 
         private void ShowTrackSelection()
@@ -605,7 +605,7 @@ namespace musicStudioUnit.UserInterface
             _panel.StringInput[MSUTouchPanelJoins.Music.ScreenTitle].StringValue = 
                 string.Format("Select Track - {0}", _selectedArtistName);
 
-            Debug.Console(2, "MusicScreenUI", "Showing track selection for artist: {0}", _selectedArtistName);
+            Debug.Console(2, "MusicScreenUI: Showing track selection for artist: {0}", _selectedArtistName);
         }
 
         private void ShowNowPlaying()
@@ -623,7 +623,7 @@ namespace musicStudioUnit.UserInterface
             // Update screen title
             _panel.StringInput[MSUTouchPanelJoins.Music.ScreenTitle].StringValue = "Now Playing";
 
-            Debug.Console(2, "MusicScreenUI", "Showing now playing");
+            Debug.Console(2, "MusicScreenUI: Showing now playing");
         }
 
         private void UpdateArtistList()
@@ -662,12 +662,12 @@ namespace musicStudioUnit.UserInterface
                 // Update pagination
                 UpdateArtistPagination();
 
-                Debug.Console(2, "MusicScreenUI", "Updated artist list - page {0}, showing {1} artists", 
+                Debug.Console(2, "MusicScreenUI: Updated artist list - page {0}, showing {1} artists", 
                     _currentArtistPage, endIndex - startIndex);
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "MusicScreenUI", "Error updating artist list: {0}", ex.Message);
+                Debug.Console(0, "MusicScreenUI: Error updating artist list: {0}", ex.Message);
             }
         }
 
@@ -701,12 +701,12 @@ namespace musicStudioUnit.UserInterface
                 // Update pagination
                 UpdateTrackPagination();
 
-                Debug.Console(2, "MusicScreenUI", "Updated track list - page {0}, showing {1} tracks", 
+                Debug.Console(2, "MusicScreenUI: Updated track list - page {0}, showing {1} tracks", 
                     _currentTrackPage, endIndex - startIndex);
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "MusicScreenUI", "Error updating track list: {0}", ex.Message);
+                Debug.Console(0, "MusicScreenUI: Error updating track list: {0}", ex.Message);
             }
         }
 
@@ -761,11 +761,11 @@ namespace musicStudioUnit.UserInterface
                 string statusText = status.IsPlaying ? "Playing" : "Stopped";
                 _panel.StringInput[MSUTouchPanelJoins.Music.PlaybackStatus].StringValue = statusText;
 
-                Debug.Console(2, "MusicScreenUI", "Updated now playing display - Status: {0}", statusText);
+                Debug.Console(2, "MusicScreenUI: Updated now playing display - Status: {0}", statusText);
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "MusicScreenUI", "Error updating now playing display: {0}", ex.Message);
+                Debug.Console(0, "MusicScreenUI: Error updating now playing display: {0}", ex.Message);
             }
         }
 
@@ -781,7 +781,7 @@ namespace musicStudioUnit.UserInterface
             bool browsingEnabled = connected && IsBrowsingAllowed;
             _panel.BooleanInput[MSUTouchPanelJoins.Music.BrowsingEnabled].BoolValue = browsingEnabled;
 
-            Debug.Console(2, "MusicScreenUI", "Connection status updated - Connected: {0}, Browsing: {1}", 
+            Debug.Console(2, "MusicScreenUI: Connection status updated - Connected: {0}, Browsing: {1}", 
                 connected, browsingEnabled);
         }
 
@@ -796,7 +796,7 @@ namespace musicStudioUnit.UserInterface
                 _panel.BooleanInput[MSUTouchPanelJoins.Music.ErrorVisible].BoolValue = false;
             }, 3000);
 
-            Debug.Console(1, "MusicScreenUI", "Error displayed: {0}", message);
+            Debug.Console(1, "MusicScreenUI: Error displayed: {0}", message);
         }
 
         private void ClearArtistList()
@@ -835,7 +835,7 @@ namespace musicStudioUnit.UserInterface
         // Change the OnCatalogUpdated method signature to match the delegate EventHandler<MusicCatalogUpdatedEventArgs>
         private void OnCatalogUpdated(object? sender, MusicCatalogUpdatedEventArgs e)
         {
-            Debug.Console(1, "MusicScreenUI", "Catalog updated - refreshing display");
+            Debug.Console(1, "MusicScreenUI: Catalog updated - refreshing display");
 
             // Refresh current view
             _currentArtists.Clear();
@@ -849,7 +849,7 @@ namespace musicStudioUnit.UserInterface
 
         private void OnPlaybackStatusChanged(object? sender, PlaybackStatusChangedEventArgs e)
         {
-            Debug.Console(1, "MusicScreenUI", "Playback status changed - Playing: {0}", e.IsPlaying);
+            Debug.Console(1, "MusicScreenUI: Playback status changed - Playing: {0}", e.IsPlaying);
 
             // Update browsing availability per Client-Scope.md (only when stopped)
             UpdateConnectionStatus();
@@ -884,20 +884,20 @@ namespace musicStudioUnit.UserInterface
 
         private void OnMusicSystemConnected(object? sender, EventArgs e)
         {
-            Debug.Console(1, "MusicScreenUI", "Music system connected");
+            Debug.Console(1, "MusicScreenUI: Music system connected");
             UpdateConnectionStatus();
         }
 
         private void OnMusicSystemDisconnected(object? sender, EventArgs e)
         {
-            Debug.Console(1, "MusicScreenUI", "Music system disconnected");
+            Debug.Console(1, "MusicScreenUI: Music system disconnected");
             UpdateConnectionStatus();
             ShowError("Music system disconnected");
         }
 
         private void OnMusicSystemError(object? sender, MusicSystemErrorEventArgs e)
         {
-            Debug.Console(0, "MusicScreenUI", "Music system error: {0}", e.ErrorMessage);
+            Debug.Console(0, "MusicScreenUI: Music system error: {0}", e.ErrorMessage);
             ShowError(e.ErrorMessage);
         }
 
@@ -923,11 +923,11 @@ namespace musicStudioUnit.UserInterface
                 }
 
                 _disposed = true;
-                Debug.Console(1, "MusicScreenUI", "Disposed");
+                Debug.Console(1, "MusicScreenUI: Disposed");
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "MusicScreenUI", "Error during disposal: {0}", ex.Message);
+                Debug.Console(0, "MusicScreenUI: Error during disposal: {0}", ex.Message);
             }
         }
 

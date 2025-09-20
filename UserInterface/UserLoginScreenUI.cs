@@ -124,7 +124,7 @@ namespace musicStudioUnit.UserInterface
                 }
             };
 
-            Debug.Console(2, "UserLoginScreenUI", "Touch panel events configured");
+            Debug.Console(2, "UserLoginScreenUI: Touch panel events configured");
         }
 
         /// <summary>
@@ -141,18 +141,18 @@ namespace musicStudioUnit.UserInterface
                 {
                     _userIdBuilder.Append(digit);
                     UpdateUserIdDisplay();
-                    Debug.Console(2, "UserLoginScreenUI", "Digit entered: {0}, Current ID: {1}", 
+                    Debug.Console(2, "UserLoginScreenUI: Digit entered: {0}, Current ID: {1}", 
                         digit, _userIdBuilder.ToString());
                 }
                 else
                 {
-                    Debug.Console(1, "UserLoginScreenUI", "Maximum ID length reached");
+                    Debug.Console(1, "UserLoginScreenUI: Maximum ID length reached");
                     UpdateLoginStatus("Maximum 5 digits allowed");
                 }
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "UserLoginScreenUI", "Error handling keypad digit: {0}", ex.Message);
+                Debug.Console(0, "UserLoginScreenUI: Error handling keypad digit: {0}", ex.Message);
             }
         }
 
@@ -185,7 +185,7 @@ namespace musicStudioUnit.UserInterface
                     return;
                 }
 
-                Debug.Console(1, "UserLoginScreenUI", "Login requested for User ID: {0}", userId);
+                Debug.Console(1, "UserLoginScreenUI: Login requested for User ID: {0}", userId);
                 UpdateLoginStatus("Looking up user...");
 
                 // Simulate user lookup (removed loyalty system dependency)
@@ -194,7 +194,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "UserLoginScreenUI", "Error handling login: {0}", ex.Message);
+                Debug.Console(0, "UserLoginScreenUI: Error handling login: {0}", ex.Message);
                 UpdateLoginStatus("Login error occurred");
             }
         }
@@ -206,7 +206,7 @@ namespace musicStudioUnit.UserInterface
         {
             try
             {
-                Debug.Console(1, "UserLoginScreenUI", "Handling login for user: {0} ({1})", userId, userName);
+                Debug.Console(1, "UserLoginScreenUI: Handling login for user: {0} ({1})", userId, userName);
                 
                 // Set user data
                 _isLoggedIn = true;
@@ -222,11 +222,11 @@ namespace musicStudioUnit.UserInterface
                 // Notify listeners
                 UserLoggedIn?.Invoke(this, new UserLoginEventArgs(userId, userName, ""));
 
-                Debug.Console(1, "UserLoginScreenUI", "User logged in successfully");
+                Debug.Console(1, "UserLoginScreenUI: User logged in successfully");
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "UserLoginScreenUI", "Error handling user login: {0}", ex.Message);
+                Debug.Console(0, "UserLoginScreenUI: Error handling user login: {0}", ex.Message);
                 UpdateLoginStatus("Login error occurred");
             }
         }
@@ -240,7 +240,7 @@ namespace musicStudioUnit.UserInterface
 
             try
             {
-                Debug.Console(1, "UserLoginScreenUI", "User logout requested");
+                Debug.Console(1, "UserLoginScreenUI: User logout requested");
                 
                 // Clear user data
                 _isLoggedIn = false;
@@ -256,11 +256,11 @@ namespace musicStudioUnit.UserInterface
                 // Notify listeners
                 UserLoggedOut?.Invoke(this, new UserLogoutEventArgs());
 
-                Debug.Console(1, "UserLoginScreenUI", "User logged out successfully");
+                Debug.Console(1, "UserLoginScreenUI: User logged out successfully");
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "UserLoginScreenUI", "Error handling logout: {0}", ex.Message);
+                Debug.Console(0, "UserLoginScreenUI: Error handling logout: {0}", ex.Message);
             }
         }
 
@@ -271,7 +271,7 @@ namespace musicStudioUnit.UserInterface
         {
             try
             {
-                Debug.Console(1, "UserLoginScreenUI", "Guest mode activated");
+                Debug.Console(1, "UserLoginScreenUI: Guest mode activated");
                 
                 // Clear any entered data
                 _userIdBuilder.Clear();
@@ -283,7 +283,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "UserLoginScreenUI", "Error handling guest mode: {0}", ex.Message);
+                Debug.Console(0, "UserLoginScreenUI: Error handling guest mode: {0}", ex.Message);
             }
         }
 
@@ -297,11 +297,11 @@ namespace musicStudioUnit.UserInterface
                 _userIdBuilder.Clear();
                 UpdateUserIdDisplay();
                 UpdateLoginStatus("ID cleared");
-                Debug.Console(2, "UserLoginScreenUI", "User ID entry cleared");
+                Debug.Console(2, "UserLoginScreenUI: User ID entry cleared");
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "UserLoginScreenUI", "Error handling clear: {0}", ex.Message);
+                Debug.Console(0, "UserLoginScreenUI: Error handling clear: {0}", ex.Message);
             }
         }
 
@@ -312,7 +312,7 @@ namespace musicStudioUnit.UserInterface
         {
             try
             {
-                Debug.Console(2, "UserLoginScreenUI", "User database response: {0}", response);
+                Debug.Console(2, "UserLoginScreenUI: User database response: {0}", response);
 
                 // Parse response: "Douglas Fitzgerald||19670701"
                 if (string.IsNullOrEmpty(response))
@@ -324,7 +324,7 @@ namespace musicStudioUnit.UserInterface
                 string[] parts = response.Split(new string[] { "||" }, StringSplitOptions.None);
                 if (parts.Length != 2)
                 {
-                    Debug.Console(0, "UserLoginScreenUI", "Invalid database response format: {0}", response);
+                    Debug.Console(0, "UserLoginScreenUI: Invalid database response format: {0}", response);
                     UpdateLoginStatus("Invalid user data received");
                     return;
                 }
@@ -362,12 +362,12 @@ namespace musicStudioUnit.UserInterface
                 // Notify listeners
                 UserLoggedIn?.Invoke(this, new UserLoginEventArgs(_currentUserId, userName, birthdate));
 
-                Debug.Console(1, "UserLoginScreenUI", "User logged in successfully: {0} (ID: {1})", 
+                Debug.Console(1, "UserLoginScreenUI: User logged in successfully: {0} (ID: {1})", 
                     userName, _currentUserId);
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "UserLoginScreenUI", "Error handling user database response: {0}", ex.Message);
+                Debug.Console(0, "UserLoginScreenUI: Error handling user database response: {0}", ex.Message);
                 UpdateLoginStatus("Login processing error");
             }
         }
@@ -405,7 +405,7 @@ namespace musicStudioUnit.UserInterface
                     {
                         string birthdayMessage = "HAPPY BIRTHDAY";
                         _panel.StringInput[(uint)MSUTouchPanelJoins.UserScreen.BirthdayMessage].StringValue = birthdayMessage;
-                        Debug.Console(1, "UserLoginScreenUI", "Birthday detected for user: {0}", _currentUserName);
+                        Debug.Console(1, "UserLoginScreenUI: Birthday detected for user: {0}", _currentUserName);
                     }
                     else
                     {
@@ -415,7 +415,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "UserLoginScreenUI", "Error checking birthday: {0}", ex.Message);
+                Debug.Console(0, "UserLoginScreenUI: Error checking birthday: {0}", ex.Message);
             }
         }
 
@@ -461,7 +461,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "UserLoginScreenUI", "Error updating login display: {0}", ex.Message);
+                Debug.Console(0, "UserLoginScreenUI: Error updating login display: {0}", ex.Message);
             }
         }
 
@@ -471,7 +471,7 @@ namespace musicStudioUnit.UserInterface
         private void UpdateLoginStatus(string status)
         {
             _panel.StringInput[(uint)MSUTouchPanelJoins.UserScreen.LoginStatusText].StringValue = status;
-            Debug.Console(2, "UserLoginScreenUI", "Login status: {0}", status);
+            Debug.Console(2, "UserLoginScreenUI: Login status: {0}", status);
         }
 
         /// <summary>
@@ -483,11 +483,11 @@ namespace musicStudioUnit.UserInterface
 
             try
             {
-                Debug.Console(1, "UserLoginScreenUI", "User Login screen UI disposed");
+                Debug.Console(1, "UserLoginScreenUI: User Login screen UI disposed");
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "UserLoginScreenUI", "Error disposing: {0}", ex.Message);
+                Debug.Console(0, "UserLoginScreenUI: Error disposing: {0}", ex.Message);
             }
             finally
             {

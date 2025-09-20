@@ -40,6 +40,11 @@ namespace musicStudioUnit.Services
             _httpClient = new HttpConfigClient(key + "HttpClient");
 
             // Register for parser events
+            _xmlParser.ConfigurationLoaded -= OnXmlConfigurationLoaded;
+            _xmlParser.ConfigurationError -= OnXmlConfigurationError;
+            _httpClient.ConfigurationLoaded -= OnHttpConfigurationLoaded;
+            _httpClient.ConfigurationError -= OnHttpConfigurationError;
+
             _xmlParser.ConfigurationLoaded += OnXmlConfigurationLoaded;
             _xmlParser.ConfigurationError += OnXmlConfigurationError;
             _httpClient.ConfigurationLoaded += OnHttpConfigurationLoaded;

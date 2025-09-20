@@ -81,29 +81,24 @@ namespace musicStudioUnit.Devices
         }
 
         /// <summary>
-        /// Get the file path for HVAC setpoint persistence using Crestron-compatible path format
+        /// Get the file path for HVAC setpoint persistence using Global.FilePathPrefix
         /// </summary>
         private string GetSetpointFilePath(string key)
         {
             try
             {
-                // Try to get the application root directory using Crestron API
-                var rootDir = Crestron.SimplSharp.CrestronIO.Directory.GetApplicationRootDirectory();
-                if (!string.IsNullOrEmpty(rootDir))
-                {
-                    Debug.Console($"[{Key}] Using GetApplicationRootDirectory: '{rootDir}'");
-                    var settingsDir = Crestron.SimplSharp.CrestronIO.Path.Combine(rootDir, "hvac_setpoints");
-                    var path = Crestron.SimplSharp.CrestronIO.Path.Combine(settingsDir, $"hvac_setpoints_{key}.dat");
-                    return path;
-                }
-                // Fallback to Crestron internal format
-                Debug.Console($"[{Key}] GetApplicationRootDirectory returned null/empty, using fallback");
-                return $@"USER\hvac_setpoints_{key}.dat";
+                // Use Global.FilePathPrefix which is already working correctly
+                string basePath = Global.FilePathPrefix;
+                string filePath = System.IO.Path.Combine(basePath, $"hvac_setpoints_{key}.dat");
+                
+                Debug.Console(1, this, $"Using Global.FilePathPrefix for setpoint file: {filePath}");
+                return filePath;
             }
             catch (Exception ex)
             {
-                Debug.Console($"[{Key}] Error in GetSetpointFilePath: {ex.Message}");
-                return $@"USER\hvac_setpoints_{key}.dat";
+                Debug.Console(0, this, $"Error in GetSetpointFilePath: {ex.Message}");
+                // Fallback - though this should not happen if Global.FilePathPrefix is working
+                throw new InvalidOperationException($"Unable to determine setpoint file path: {ex.Message}");
             }
         }
 
@@ -454,130 +449,43 @@ namespace musicStudioUnit.Devices
         {
             try
             {
-                // Log GetApplicationRootDirectory value
-                var appRoot = Crestron.SimplSharp.CrestronIO.Directory.GetApplicationRootDirectory();
-                core_tools.Debug.Console($"[{Key}] GetApplicationRootDirectory: '{appRoot}'");
+                // Use Global.FilePathPrefix which is already working correctly
+                string basePath = Global.FilePathPrefix;
+                string filePath = System.IO.Path.Combine(basePath, $"hvac_setpoints_{Key}.dat");
 
-                // Try using appRoot as prefix if available
-                string appRootPath = null;
-                if (!string.IsNullOrEmpty(appRoot))
-                {
-                    appRootPath = Crestron.SimplSharp.CrestronIO.Path.Combine(appRoot, $"hvac_setpoints_{Key}.dat");
-                    try
-                    {
-                        if (Crestron.SimplSharp.CrestronIO.File.Exists(appRootPath))
-                        {
-                            core_tools.Debug.Console($"[{Key}] Found setpoint file using appRoot: {appRootPath}");
-                            var fileStream = Crestron.SimplSharp.CrestronIO.File.OpenText(appRootPath);
-                            var lines = new List<string>();
-                            string? line;
-                            while ((line = fileStream.ReadLine()) != null)
-                            {
-                                lines.Add(line);
-                            }
-                            fileStream.Close();
-                            foreach (string lineContent in lines)
-                            {
-                                string[] parts = lineContent.Split(',');
-                                if (parts.Length == 2)
-                                {
-                                    byte zoneId = byte.Parse(parts[0]);
-                                    float temp = float.Parse(parts[1]);
-                                    _zoneSetpoints[zoneId] = temp;
-                                    _currentSetpoint = temp;
-                                }
-                            }
-                            Debug.Console(1, this, $"Loaded {lines.Count} persisted setpoints from {appRootPath}");
-                            return;
-                        }
-                        else
-                        {
-                            core_tools.Debug.Console($"[{Key}] appRoot path not found: {appRootPath}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        core_tools.Debug.Console($"[{Key}] Exception checking appRoot path {appRootPath}: {ex.Message}");
-                    }
-                }
+                Debug.Console(1, this, $"Using Global.FilePathPrefix: '{basePath}'");
+                Debug.Console(1, this, $"Looking for setpoint file at: {filePath}");
 
-                // Enumerate available directories for diagnostics
-                try
+                if (Crestron.SimplSharp.CrestronIO.File.Exists(filePath))
                 {
-                    var dirs = Crestron.SimplSharp.CrestronIO.Directory.GetDirectories("");
-                    core_tools.Debug.Console($"[{Key}] Available directories:");
-                    foreach (var dir in dirs)
+                    Debug.Console(1, this, $"Found setpoint file: {filePath}");
+                    var fileStream = Crestron.SimplSharp.CrestronIO.File.OpenText(filePath);
+                    var lines = new List<string>();
+                    string? line;
+                    while ((line = fileStream.ReadLine()) != null)
                     {
-                        core_tools.Debug.Console($"[{Key}] Dir: {dir}");
+                        lines.Add(line);
                     }
-                }
-                catch (Exception ex)
-                {
-                    core_tools.Debug.Console($"[{Key}] Exception enumerating directories: {ex.Message}");
-                }
-
-                // Try well-known Crestron system folders
-                string[] crestronFolders = new[] {
-                    $@"\\NVRAM\\hvac_setpoints_{Key}.dat",
-                    $@"\\USER\\hvac_setpoints_{Key}.dat"
-                };
-                string pathToLoad = string.Empty;
-                foreach (var path in crestronFolders)
-                {
-                    try
+                    fileStream.Close();
+                    
+                    foreach (string lineContent in lines)
                     {
-                        if (Crestron.SimplSharp.CrestronIO.File.Exists(path))
+                        string[] parts = lineContent.Split(',');
+                        if (parts.Length == 2)
                         {
-                            pathToLoad = path;
-                            core_tools.Debug.Console($"[{Key}] Found setpoint file in system folder: {path}");
-                            break;
-                        }
-                        else
-                        {
-                            core_tools.Debug.Console($"[{Key}] System folder path not found: {path}");
+                            byte zoneId = byte.Parse(parts[0]);
+                            float temp = float.Parse(parts[1]);
+                            _zoneSetpoints[zoneId] = temp;
+                            _currentSetpoint = temp;
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        core_tools.Debug.Console($"[{Key}] Exception checking system folder path {path}: {ex.Message}");
-                    }
-                }
-                if (pathToLoad != null)
-                {
-                    try
-                    {
-                        var fileStream = Crestron.SimplSharp.CrestronIO.File.OpenText(pathToLoad);
-                        var lines = new List<string>();
-                        string? line;
-                        while ((line = fileStream.ReadLine()) != null)
-                        {
-                            lines.Add(line);
-                        }
-                        fileStream.Close();
-                        foreach (string lineContent in lines)
-                        {
-                            string[] parts = lineContent.Split(',');
-                            if (parts.Length == 2)
-                            {
-                                byte zoneId = byte.Parse(parts[0]);
-                                float temp = float.Parse(parts[1]);
-                                _zoneSetpoints[zoneId] = temp;
-                                _currentSetpoint = temp; // Use last loaded as current
-                            }
-                        }
-                        Debug.Console(1, this, $"Loaded {lines.Count} persisted setpoints from {pathToLoad}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.Console(0, this, $"Error reading setpoints from {pathToLoad}: {ex.Message}");
-                        _currentSetpoint = _config.IdleSetpoint;
-                    }
+                    Debug.Console(1, this, $"Loaded {lines.Count} persisted setpoints from {filePath}");
                 }
                 else
                 {
                     // Use idle setpoint from configuration
                     _currentSetpoint = _config.IdleSetpoint;
-                    Debug.Console(1, this, $"No persisted setpoints found in system folders, using idle setpoint: {_currentSetpoint:F1}°C");
+                    Debug.Console(1, this, $"Setpoint file not found, using idle setpoint: {_currentSetpoint:F1}°C");
                 }
             }
             catch (Exception ex)
@@ -594,34 +502,19 @@ namespace musicStudioUnit.Devices
         {
             try
             {
-                string[] formats = new[] {
-                    $@"USER\hvac_setpoints_{Key}.dat",
-                    $@"NVRAM\hvac_setpoints_{Key}.dat",
-                    $@"\\USER\\hvac_setpoints_{Key}.dat",
-                    $@"\\NVRAM\\hvac_setpoints_{Key}.dat",
-                    $@"user\\hvac_setpoints_{Key}.dat",
-                    $@"nvram\\hvac_setpoints_{Key}.dat",
-                    $@"C:\\USER\\hvac_setpoints_{Key}.dat",
-                    $@"C:\\NVRAM\\hvac_setpoints_{Key}.dat"
-                };
-                foreach (var path in formats)
+                // Use Global.FilePathPrefix which is already working correctly
+                string basePath = Global.FilePathPrefix;
+                string filePath = System.IO.Path.Combine(basePath, $"hvac_setpoints_{Key}.dat");
+
+                Debug.Console(1, this, $"Saving setpoints to: {filePath}");
+
+                var fileStream = Crestron.SimplSharp.CrestronIO.File.CreateText(filePath);
+                foreach (var kvp in _zoneSetpoints)
                 {
-                    try
-                    {
-                        var fileStream = Crestron.SimplSharp.CrestronIO.File.CreateText(path);
-                        foreach (var kvp in _zoneSetpoints)
-                        {
-                            fileStream.WriteLine($"{kvp.Key},{kvp.Value}");
-                        }
-                        fileStream.Close();
-                        Debug.Console(1, this, $"Persisted {_zoneSetpoints.Count} setpoints to {path}");
-                        break; // Only write to the first format that works
-                    }
-                    catch (Exception ex2)
-                    {
-                        Debug.Console(0, this, $"Error saving setpoints to {path}: {ex2.Message}");
-                    }
+                    fileStream.WriteLine($"{kvp.Key},{kvp.Value}");
                 }
+                fileStream.Close();
+                Debug.Console(1, this, $"Persisted {_zoneSetpoints.Count} setpoints to {filePath}");
             }
             catch (Exception ex)
             {

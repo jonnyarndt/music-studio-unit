@@ -154,6 +154,10 @@ namespace musicStudioUnit
                 // Initialize comprehensive MSU system using new initialization service
                 Debug.Console(0, "INIT: MSU System Initialization Starting...");
                 _initializationService = new SystemInitializationService("SystemInit");
+                _initializationService.InitializationComplete -= OnSystemInitializationComplete;
+                _initializationService.InitializationError -= OnSystemInitializationError;
+                _initializationService.PhaseChanged -= OnInitializationPhaseChanged;
+
                 _initializationService.InitializationComplete += OnSystemInitializationComplete;
                 _initializationService.InitializationError += OnSystemInitializationError;
                 _initializationService.PhaseChanged += OnInitializationPhaseChanged;
@@ -780,8 +784,11 @@ namespace musicStudioUnit
                 Debug.Console(0, "INIT: Creating MSU TouchPanel instance");
                 if(_msuController != null)
                 {
-                    _msuTouchPanel = new MSUTouchPanel("msuTouchPanel", "MSU TouchPanel", panel,
+                    if(_initializationService != null)
+                    {
+                        _msuTouchPanel = new MSUTouchPanel("msuTouchPanel", "MSU TouchPanel", panel,
                         _msuController, _initializationService, _hvacController, _musicController, combinationManager);
+                    }
                     
                     Debug.Console(0, "INIT: MSU TouchPanel created successfully! Navigation should now work.");
                 }

@@ -77,6 +77,9 @@ namespace musicStudioUnit.UserInterface
 
             // Setup menu bar events
             SetupMenuBarEvents();
+            
+            // Setup page feedback events
+            SetupPageFeedbackEvents();
 
             _settingsScreen = new SettingsScreenUI(Panel, _msuController, _initService);
             _userLoginScreen = new UserLoginScreenUI(Panel);
@@ -114,6 +117,13 @@ namespace musicStudioUnit.UserInterface
                 Debug.Console(1, this, "[DEBUG] SigChange event: Join={0}, Value={1}", args.Sig.Number, args.Sig.BoolValue);
                 if (!args.Sig.BoolValue) return; // Only handle button press
 
+                // Filter out page visibility feedback joins (401-405) - these are handled separately
+                if (args.Sig.Number >= 401 && args.Sig.Number <= 405)
+                {
+                    Debug.Console(1, this, "[DEBUG] Page feedback received for join {0} - ignoring in MenuBar handler", args.Sig.Number);
+                    return;
+                }
+
                 switch (args.Sig.Number)
                 {
                     case (uint)MSUTouchPanelJoins.MenuBar.SettingsButton:
@@ -143,6 +153,28 @@ namespace musicStudioUnit.UserInterface
             };
 
             Debug.Console(2, this, "Menu bar events configured");
+        }
+
+        private void SetupPageFeedbackEvents()
+        {
+            Panel.SigChange += (device, args) =>
+            {
+                // Only handle page visibility feedback joins (401-405)
+                if (args.Sig.Number >= 401 && args.Sig.Number <= 405)
+                {
+                    if (args.Sig.BoolValue) // Page became active
+                    {
+                        Debug.Console(1, this, "[DEBUG] Page feedback: Page {0} became active", args.Sig.Number);
+                        OnPageChanged((MSUTouchPanelJoins.Pages)args.Sig.Number);
+                    }
+                    else // Page became inactive  
+                    {
+                        Debug.Console(1, this, "[DEBUG] Page feedback: Page {0} became inactive", args.Sig.Number);
+                    }
+                }
+            };
+
+            Debug.Console(2, this, "Page feedback events configured");
         }
 
         private void InitializeScreenEventHandlers()

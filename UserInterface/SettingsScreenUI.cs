@@ -101,7 +101,7 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         private void OnReloadConfigurationPressed()
         {
-            Debug.Console(1, "SettingsScreenUI", "Configuration reload requested by user");
+            Debug.Console(1, "SettingsScreenUI: Configuration reload requested by user");
             
             try
             {
@@ -119,7 +119,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "SettingsScreenUI", "Error requesting configuration reload: {0}", ex.Message);
+                Debug.Console(0, "SettingsScreenUI: Error requesting configuration reload: {0}", ex.Message);
                 UpdateConfigurationStatus($"Reload failed: {ex.Message}");
             }
         }
@@ -143,7 +143,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "SettingsScreenUI", "Error updating time display: {0}", ex.Message);
+                Debug.Console(0, "SettingsScreenUI: Error updating time display: {0}", ex.Message);
             }
         }
 
@@ -171,7 +171,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "SettingsScreenUI", "Error updating settings display: {0}", ex.Message);
+                Debug.Console(0, "SettingsScreenUI: Error updating settings display: {0}", ex.Message);
             }
         }
 
@@ -202,7 +202,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "SettingsScreenUI", "Error updating MSU information: {0}", ex.Message);
+                Debug.Console(0, "SettingsScreenUI: Error updating MSU information: {0}", ex.Message);
             }
         }
 
@@ -231,7 +231,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "SettingsScreenUI", "Error updating processor information: {0}", ex.Message);
+                Debug.Console(0, "SettingsScreenUI: Error updating processor information: {0}", ex.Message);
             }
         }
 
@@ -254,7 +254,7 @@ namespace musicStudioUnit.UserInterface
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "SettingsScreenUI", "Error updating building information: {0}", ex.Message);
+                Debug.Console(0, "SettingsScreenUI: Error updating building information: {0}", ex.Message);
             }
         }
 
@@ -271,7 +271,7 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         private void OnConfigurationLoaded(object sender, ConfigurationLoadedEventArgs args)
         {
-            Debug.Console(1, "SettingsScreenUI", "Configuration loaded - updating display");
+            Debug.Console(1, "SettingsScreenUI: Configuration loaded - updating display");
             UpdateSettingsDisplay();
         }
 
@@ -280,7 +280,7 @@ namespace musicStudioUnit.UserInterface
         /// </summary>
         private void OnConfigurationError(object sender, ConfigurationErrorEventArgs args)
         {
-            Debug.Console(0, "SettingsScreenUI", "Configuration error: {0}", args.ErrorMessage);
+            Debug.Console(0, "SettingsScreenUI: Configuration error: {0}", args.ErrorMessage);
             UpdateConfigurationStatus($"Configuration error: {args.ErrorMessage}");
         }
 
@@ -306,11 +306,11 @@ namespace musicStudioUnit.UserInterface
                     // _initService.ConfigurationError -= OnConfigurationError;
                 }
 
-                Debug.Console(1, "SettingsScreenUI", "Settings screen UI disposed");
+                Debug.Console(1, "SettingsScreenUI: Settings screen UI disposed");
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "SettingsScreenUI", "Error disposing: {0}", ex.Message);
+                Debug.Console(0, "SettingsScreenUI: Error disposing: {0}", ex.Message);
             }
             finally
             {
