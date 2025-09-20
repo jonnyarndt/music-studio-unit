@@ -88,7 +88,7 @@ namespace musicStudioUnit.Devices
         {
             try
             {
-                Debug.Console(1, "EnhancedMusicSystemController", "Initializing Enhanced Music System Controller");
+                Debug.Console(1, "EnhancedMusicSystemController: Initializing Enhanced Music System Controller");
 
                 // Create command client for DMS commands
                 _commandClient = new TcpCoreClient(
@@ -309,13 +309,13 @@ namespace musicStudioUnit.Devices
                         return _artistTracks[artistId];
                     }
 
-                    Debug.Console(1, "EnhancedMusicSystemController", "Loading tracks for artist {0}", artistId);
+                    Debug.Console(1, "EnhancedMusicSystemController: Loading tracks for artist {0}", artistId);
 
                     // Get track count for artist
                     string countCommand = string.Format("QDMS ARTIST {0} TRACK COUNT?", artistId);
                     if (!SendCommandAndWaitForResponse(countCommand, out string countResponse))
                     {
-                        Debug.Console(0, "EnhancedMusicSystemController", "Failed to get track count for artist {0}", artistId);
+                        Debug.Console(0, "EnhancedMusicSystemController: Failed to get track count for artist {0}", artistId);
                         return new List<MusicTrack>();
                     }
 
@@ -323,12 +323,12 @@ namespace musicStudioUnit.Devices
                     var countMatch = Regex.Match(countResponse, string.Format(@"QDMS ARTIST {0} TRACK COUNT (\d+)", artistId));
                     if (!countMatch.Success || !int.TryParse(countMatch.Groups[1].Value, out int trackCount))
                     {
-                        Debug.Console(0, "EnhancedMusicSystemController", "Invalid track count response for artist {0}: {1}", artistId, countResponse);
+                        Debug.Console(0, "EnhancedMusicSystemController: Invalid track count response for artist {0}: {1}", artistId, countResponse);
                         return new List<MusicTrack>();
                     }
 
                     _artistTrackCounts[artistId] = trackCount;
-                    Debug.Console(1, "EnhancedMusicSystemController", "Artist {0} has {1} tracks", artistId, trackCount);
+                    Debug.Console(1, "EnhancedMusicSystemController: Artist {0} has {1} tracks", artistId, trackCount);
 
                     // Load all tracks in chunks of 10
                     var allTracks = new List<MusicTrack>();
@@ -342,12 +342,12 @@ namespace musicStudioUnit.Devices
                     // Cache the tracks
                     _artistTracks[artistId] = allTracks;
                     
-                    Debug.Console(1, "EnhancedMusicSystemController", "Loaded {0} tracks for artist {1}", allTracks.Count, artistId);
+                    Debug.Console(1, "EnhancedMusicSystemController: Loaded {0} tracks for artist {1}", allTracks.Count, artistId);
                     return allTracks;
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "EnhancedMusicSystemController", "Error getting tracks for artist {0}: {1}", artistId, ex.Message);
+                    Debug.Console(0, "EnhancedMusicSystemController: Error getting tracks for artist {0}: {1}", artistId, ex.Message);
                     MusicSystemError?.Invoke(this, new MusicSystemErrorEventArgs { ErrorMessage = ex.Message });
                     return new List<MusicTrack>();
                 }
@@ -368,7 +368,7 @@ namespace musicStudioUnit.Devices
                 
                 if (!SendCommandAndWaitForResponse(command, out string initialResponse))
                 {
-                    Debug.Console(0, "EnhancedMusicSystemController", "Failed to get response for track range");
+                    Debug.Console(0, "EnhancedMusicSystemController: Failed to get response for track range");
                     return tracks;
                 }
 
@@ -385,12 +385,12 @@ namespace musicStudioUnit.Devices
                     }
                 }
 
-                Debug.Console(2, "EnhancedMusicSystemController", "Retrieved {0} tracks from range {1}-{2} for artist {3}", 
+                Debug.Console(2, "EnhancedMusicSystemController: Retrieved {0} tracks from range {1}-{2} for artist {3}", 
                     tracks.Count, startIndex, endIndex, artistId);
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "EnhancedMusicSystemController", "Error getting track range: {0}", ex.Message);
+                Debug.Console(0, "EnhancedMusicSystemController: Error getting track range: {0}", ex.Message);
             }
 
             return tracks;
@@ -418,16 +418,16 @@ namespace musicStudioUnit.Devices
                         Name = trackName
                     });
 
-                    Debug.Console(2, "EnhancedMusicSystemController", "Parsed track: {0} - {1}", trackId, trackName);
+                    Debug.Console(2, "EnhancedMusicSystemController: Parsed track: {0} - {1}", trackId, trackName);
                 }
                 else
                 {
-                    Debug.Console(2, "EnhancedMusicSystemController", "Empty or invalid track response: {0}", response);
+                    Debug.Console(2, "EnhancedMusicSystemController: Empty or invalid track response: {0}", response);
                 }
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "EnhancedMusicSystemController", "Error processing track response: {0}", ex.Message);
+                Debug.Console(0, "EnhancedMusicSystemController: Error processing track response: {0}", ex.Message);
             }
 
             return tracks;
@@ -444,11 +444,11 @@ namespace musicStudioUnit.Devices
                 {
                     if (_isPlaying)
                     {
-                        Debug.Console(0, "EnhancedMusicSystemController", "Cannot play track - another track is already playing. Stop current track first.");
+                        Debug.Console(0, "EnhancedMusicSystemController: Cannot play track - another track is already playing. Stop current track first.");
                         return false;
                     }
 
-                    Debug.Console(1, "EnhancedMusicSystemController", "Starting playback: Track {0} ({1}) by {2}", trackId, trackName, artistName);
+                    Debug.Console(1, "EnhancedMusicSystemController: Starting playback: Track {0} ({1}) by {2}", trackId, trackName, artistName);
 
                     // Get current IP address for feedback
                     var sysInfo = new SystemInformationMethods();
@@ -461,7 +461,7 @@ namespace musicStudioUnit.Devices
 
                     if (!SendCommandAndWaitForResponse(command, out string response))
                     {
-                        Debug.Console(0, "EnhancedMusicSystemController", "Failed to get response for play command");
+                        Debug.Console(0, "EnhancedMusicSystemController: Failed to get response for play command");
                         return false;
                     }
 
@@ -475,7 +475,7 @@ namespace musicStudioUnit.Devices
                         _currentArtistName = artistName;
                         _remainingTimeSeconds = 0; // Will be updated by feedback
 
-                        Debug.Console(1, "EnhancedMusicSystemController", "Track playback started successfully");
+                        Debug.Console(1, "EnhancedMusicSystemController: Track playback started successfully");
 
                         // Fire playback status changed event
                         PlaybackStatusChanged?.Invoke(this, new PlaybackStatusChangedEventArgs
@@ -490,13 +490,13 @@ namespace musicStudioUnit.Devices
                     }
                     else
                     {
-                        Debug.Console(0, "EnhancedMusicSystemController", "DMS returned error for play command: {0}", response);
+                        Debug.Console(0, "EnhancedMusicSystemController: DMS returned error for play command: {0}", response);
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "EnhancedMusicSystemController", "Error playing track: {0}", ex.Message);
+                    Debug.Console(0, "EnhancedMusicSystemController: Error playing track: {0}", ex.Message);
                     MusicSystemError?.Invoke(this, new MusicSystemErrorEventArgs { ErrorMessage = ex.Message });
                     return false;
                 }
@@ -514,18 +514,18 @@ namespace musicStudioUnit.Devices
                 {
                     if (!_isPlaying)
                     {
-                        Debug.Console(1, "EnhancedMusicSystemController", "No track currently playing");
+                        Debug.Console(1, "EnhancedMusicSystemController: No track currently playing");
                         return true;
                     }
 
-                    Debug.Console(1, "EnhancedMusicSystemController", "Stopping playback of track {0}", _currentTrackId);
+                    Debug.Console(1, "EnhancedMusicSystemController: Stopping playback of track {0}", _currentTrackId);
 
                     // Build STOP command per Client-Scope.md
                     string command = string.Format("QDMS STOP {0} FOR {1}", _currentTrackId, _msuUID);
 
                     if (!SendCommandAndWaitForResponse(command, out string response))
                     {
-                        Debug.Console(0, "EnhancedMusicSystemController", "Failed to get response for stop command");
+                        Debug.Console(0, "EnhancedMusicSystemController: Failed to get response for stop command");
                         return false;
                     }
 
@@ -543,7 +543,7 @@ namespace musicStudioUnit.Devices
                         _currentArtistName = "";
                         _remainingTimeSeconds = 0;
 
-                        Debug.Console(1, "EnhancedMusicSystemController", "Track playback stopped successfully");
+                        Debug.Console(1, "EnhancedMusicSystemController: Track playback stopped successfully");
 
                         // Fire playback status changed event
                         PlaybackStatusChanged?.Invoke(this, new PlaybackStatusChangedEventArgs
@@ -558,13 +558,13 @@ namespace musicStudioUnit.Devices
                     }
                     else
                     {
-                        Debug.Console(0, "EnhancedMusicSystemController", "DMS returned error for stop command: {0}", response);
+                        Debug.Console(0, "EnhancedMusicSystemController: DMS returned error for stop command: {0}", response);
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Debug.Console(0, "EnhancedMusicSystemController", "Error stopping track: {0}", ex.Message);
+                    Debug.Console(0, "EnhancedMusicSystemController: Error stopping track: {0}", ex.Message);
                     MusicSystemError?.Invoke(this, new MusicSystemErrorEventArgs { ErrorMessage = ex.Message });
                     return false;
                 }
@@ -582,17 +582,17 @@ namespace musicStudioUnit.Devices
             {
                 if (_commandClient == null || !_commandClient.IsConnected)
                 {
-                    Debug.Console(0, "EnhancedMusicSystemController", "Cannot send command - not connected to DMS");
+                    Debug.Console(0, "EnhancedMusicSystemController: Cannot send command - not connected to DMS");
                     return false;
                 }
 
                 if (_waitingForResponse)
                 {
-                    Debug.Console(0, "EnhancedMusicSystemController", "Cannot send command - already waiting for response");
+                    Debug.Console(0, "EnhancedMusicSystemController: Cannot send command - already waiting for response");
                     return false;
                 }
 
-                Debug.Console(2, "EnhancedMusicSystemController", "Sending DMS command: {0}", command);
+                Debug.Console(2, "EnhancedMusicSystemController: Sending DMS command: {0}", command);
 
                 // Clear any old responses
                 while (_responseQueue.Count > 0)
@@ -615,20 +615,20 @@ namespace musicStudioUnit.Devices
                 {
                     _waitingForResponse = false;
                     _responseTimeoutTimer.Stop();
-                    Debug.Console(2, "EnhancedMusicSystemController", "Received DMS response: {0}", response);
+                    Debug.Console(2, "EnhancedMusicSystemController: Received DMS response: {0}", response);
                     return true;
                 }
                 else
                 {
                     _waitingForResponse = false;
-                    Debug.Console(0, "EnhancedMusicSystemController", "Timeout waiting for DMS response to: {0}", command);
+                    Debug.Console(0, "EnhancedMusicSystemController: Timeout waiting for DMS response to: {0}", command);
                     return false;
                 }
             }
             catch (Exception ex)
             {
                 _waitingForResponse = false;
-                Debug.Console(0, "EnhancedMusicSystemController", "Error sending command: {0}", ex.Message);
+                Debug.Console(0, "EnhancedMusicSystemController: Error sending command: {0}", ex.Message);
                 return false;
             }
         }
@@ -661,7 +661,7 @@ namespace musicStudioUnit.Devices
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "EnhancedMusicSystemController", "Error waiting for response: {0}", ex.Message);
+                Debug.Console(0, "EnhancedMusicSystemController: Error waiting for response: {0}", ex.Message);
                 return false;
             }
         }
@@ -674,7 +674,7 @@ namespace musicStudioUnit.Devices
             try
             {
                 string receivedData = Encoding.ASCII.GetString(args.Data).Trim();
-                Debug.Console(2, "EnhancedMusicSystemController", "DMS command response received: {0}", receivedData);
+                Debug.Console(2, "EnhancedMusicSystemController: DMS command response received: {0}", receivedData);
 
                 // Queue the response for processing
                 try
@@ -683,12 +683,12 @@ namespace musicStudioUnit.Devices
                 }
                 catch (InvalidOperationException)
                 {
-                    Debug.Console(0, "EnhancedMusicSystemController", "Response queue full, dropping response");
+                    Debug.Console(0, "EnhancedMusicSystemController: Response queue full, dropping response");
                 }
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "EnhancedMusicSystemController", "Error processing command data: {0}", ex.Message);
+                Debug.Console(0, "EnhancedMusicSystemController: Error processing command data: {0}", ex.Message);
             }
         }
 
@@ -699,7 +699,7 @@ namespace musicStudioUnit.Devices
         {
             try
             {
-                Debug.Console(2, "EnhancedMusicSystemController", "DMS feedback received: {0} bytes", data.Length);
+                Debug.Console(2, "EnhancedMusicSystemController: DMS feedback received: {0} bytes", data.Length);
 
                 // Parse time counter per Client-Scope.md: [51][51][51]<lsb><msb>[03]
                 if (data.Length == 6 && 
@@ -708,7 +708,7 @@ namespace musicStudioUnit.Devices
                     // Combine LSB and MSB to get remaining seconds
                     int remainingSeconds = (data[4] << 8) | data[3];
                     
-                    Debug.Console(2, "EnhancedMusicSystemController", "Track time remaining: {0} seconds", remainingSeconds);
+                    Debug.Console(2, "EnhancedMusicSystemController: Track time remaining: {0} seconds", remainingSeconds);
 
                     _remainingTimeSeconds = remainingSeconds;
 
@@ -723,7 +723,7 @@ namespace musicStudioUnit.Devices
                     // If time reaches zero, track has finished
                     if (remainingSeconds == 0 && _isPlaying)
                     {
-                        Debug.Console(1, "EnhancedMusicSystemController", "Track playback completed");
+                        Debug.Console(1, "EnhancedMusicSystemController: Track playback completed");
                         
                         _isPlaying = false;
                         int finishedTrackId = _currentTrackId;
@@ -746,12 +746,12 @@ namespace musicStudioUnit.Devices
                 }
                 else
                 {
-                    Debug.Console(1, "EnhancedMusicSystemController", "Received non-time-counter feedback data");
+                    Debug.Console(1, "EnhancedMusicSystemController: Received non-time-counter feedback data");
                 }
             }
             catch (Exception ex)
             {
-                Debug.Console(0, "EnhancedMusicSystemController", "Error processing feedback data: {0}", ex.Message);
+                Debug.Console(0, "EnhancedMusicSystemController: Error processing feedback data: {0}", ex.Message);
             }
         }
 
@@ -760,7 +760,7 @@ namespace musicStudioUnit.Devices
         /// </summary>
         private void OnCommandClientConnected(object? sender, EventArgs args)
         {
-            Debug.Console(1, "EnhancedMusicSystemController", "DMS command client connected");
+            Debug.Console(1, "EnhancedMusicSystemController: DMS command client connected");
             Connected?.Invoke(this, new MusicSystemConnectedEventArgs());
         }
 
@@ -769,7 +769,7 @@ namespace musicStudioUnit.Devices
         /// </summary>
         private void OnCommandClientDisconnected(object? sender, EventArgs args)
         {
-            Debug.Console(1, "EnhancedMusicSystemController", "DMS command client disconnected");
+            Debug.Console(1, "EnhancedMusicSystemController: DMS command client disconnected");
             _waitingForResponse = false;
             Disconnected?.Invoke(this, new MusicSystemDisconnectedEventArgs());
         }
@@ -782,7 +782,7 @@ namespace musicStudioUnit.Devices
             if (_waitingForResponse)
             {
                 _waitingForResponse = false;
-                Debug.Console(0, "EnhancedMusicSystemController", "DMS response timeout");
+                Debug.Console(0, "EnhancedMusicSystemController: DMS response timeout");
                 MusicSystemError?.Invoke(this, new MusicSystemErrorEventArgs 
                 { 
                     ErrorMessage = "DMS response timeout" 
