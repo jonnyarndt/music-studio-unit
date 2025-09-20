@@ -2,7 +2,6 @@ using core_tools;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronDataStore;
 using Crestron.SimplSharpPro;
-using System.Globalization;
 
 namespace musicStudioUnit
 {
@@ -50,7 +49,6 @@ namespace musicStudioUnit
             }
         }
         public static char DirectorySeparator { get { return Path.DirectorySeparatorChar; } } // Returns the directory separator character based on the running OS
-        public static string ApplicationDirectoryPathPrefix { get { return Crestron.SimplSharp.CrestronIO.Directory.GetApplicationDirectory(); } } // The file path prefix to the applciation directory
 
         static string _AssemblyVersion = string.Empty;
 
@@ -89,7 +87,6 @@ namespace musicStudioUnit
         public static void SetFilePathPrefix(string prefix)
         {
             FilePathPrefix = prefix;
-            Debug.Console(1, "File Path Prefix set to '{0}'", FilePathPrefix);
         }
 
         static Global()

@@ -252,7 +252,7 @@ namespace musicStudioUnit
                     Debug.Console(0, ts);
 
                     // Check if User/ProgramX exists
-                    if (Directory.Exists(Global.ApplicationDirectoryPathPrefix + dirSeparator + userFolder
+                    if (Directory.Exists(Debug.ApplicationDirectoryPath + dirSeparator + userFolder
                         + dirSeparator + string.Format("program{0}", InitialParametersClass.ApplicationNumber)))
                     {
                         var tempString = string.Format("{0}/program{1} directory found", userFolder, InitialParametersClass.ApplicationNumber);

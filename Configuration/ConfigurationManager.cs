@@ -15,14 +15,14 @@ namespace musicStudioUnit.Services
     /// </summary>
     public class ConfigurationManager : IKeyName, IDisposable
     {
-        private readonly string _key;
+        private readonly string? _key;
         private LocalConfiguration? _localConfig;
         private RemoteConfiguration? _remoteConfig;
         private XmlConfigParser _xmlParser;
         private HttpConfigClient _httpClient;
 
-        public string Key => _key;
-        public string Name => "Configuration Manager";
+        public string? Key => _key;
+        public string? Name => "Configuration Manager";
 
         public LocalConfiguration? LocalConfig => _localConfig;
         public RemoteConfiguration? RemoteConfig => _remoteConfig;

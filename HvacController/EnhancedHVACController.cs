@@ -81,23 +81,23 @@ namespace musicStudioUnit.Devices
         }
 
         /// <summary>
-        /// Get the file path for HVAC setpoint persistence using Global.FilePathPrefix
+        /// Get the file path for HVAC setpoint persistence using Global.ConfigDirectory
         /// </summary>
         private string GetSetpointFilePath(string key)
         {
             try
             {
-                // Use Global.FilePathPrefix which is already working correctly
-                string basePath = Global.FilePathPrefix;
+                // Use Global.ConfigDirectory for configuration-related files
+                string basePath = Debug.ConfigurationDirectoryPath;
                 string filePath = System.IO.Path.Combine(basePath, $"hvac_setpoints_{key}.dat");
                 
-                Debug.Console(1, this, $"Using Global.FilePathPrefix for setpoint file: {filePath}");
+                Debug.Console(1, this, $"Using Global.ConfigDirectory for setpoint file: {filePath}");
                 return filePath;
             }
             catch (Exception ex)
             {
                 Debug.Console(0, this, $"Error in GetSetpointFilePath: {ex.Message}");
-                // Fallback - though this should not happen if Global.FilePathPrefix is working
+                // Fallback - though this should not happen if Global.ConfigDirectory is working
                 throw new InvalidOperationException($"Unable to determine setpoint file path: {ex.Message}");
             }
         }
@@ -450,10 +450,9 @@ namespace musicStudioUnit.Devices
             try
             {
                 // Use Global.FilePathPrefix which is already working correctly
-                string basePath = Global.FilePathPrefix;
+                string basePath = Debug.ConfigurationDirectoryPath;
                 string filePath = System.IO.Path.Combine(basePath, $"hvac_setpoints_{Key}.dat");
 
-                Debug.Console(1, this, $"Using Global.FilePathPrefix: '{basePath}'");
                 Debug.Console(1, this, $"Looking for setpoint file at: {filePath}");
 
                 if (Crestron.SimplSharp.CrestronIO.File.Exists(filePath))
@@ -502,8 +501,7 @@ namespace musicStudioUnit.Devices
         {
             try
             {
-                // Use Global.FilePathPrefix which is already working correctly
-                string basePath = Global.FilePathPrefix;
+                string basePath = Debug.ConfigurationDirectoryPath;
                 string filePath = System.IO.Path.Combine(basePath, $"hvac_setpoints_{Key}.dat");
 
                 Debug.Console(1, this, $"Saving setpoints to: {filePath}");

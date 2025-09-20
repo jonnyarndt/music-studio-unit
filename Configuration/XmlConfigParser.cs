@@ -15,32 +15,56 @@ namespace musicStudioUnit.Configuration
     /// </summary>
     public class XmlConfigParser : IKeyName, IDisposable
     {
-        private readonly string _key;
-        private readonly string _configFileName;
-        private readonly string _configDirectory;
+        private readonly string? _key;
+        private readonly string? _configFileName;
+        private readonly string? _configDirectory;
 
-        public string Key => _key;
-        public string Name => "XML Configuration Parser";
+        public string? Key => _key;
+        public string? Name => "XML Configuration Parser";
 
         // Events
-        public event EventHandler<XmlConfigurationLoadedEventArgs> ConfigurationLoaded;
-        public event EventHandler<XmlConfigurationErrorEventArgs> ConfigurationError;
+        public event EventHandler<XmlConfigurationLoadedEventArgs>? ConfigurationLoaded;
+        public event EventHandler<XmlConfigurationErrorEventArgs>? ConfigurationError;
 
         public XmlConfigParser(string key, string configFileName = "msu.xml")
         {
             _key = key;
             _configFileName = configFileName;
+            _configDirectory = Debug.ConfigurationDirectoryPath;
+
             // Use Global.FilePathPrefix if set, otherwise use GetConfigDirectory()
             string prefix = musicStudioUnit.Global.FilePathPrefix ?? string.Empty;
-            if (!string.IsNullOrEmpty(prefix)) {
+            if (!string.IsNullOrEmpty(prefix))
+            {
                 Debug.Console(0, this, "DEBUG: Using Global.FilePathPrefix for config directory: {0}", prefix);
                 _configDirectory = prefix;
-            } else {
+            }
+            else
+            {
                 _configDirectory = GetConfigDirectory();
             }
+
             DeviceManager.AddDevice(key, this);
             Debug.Console(1, this, "XML Configuration Parser initialized for file: {0}", configFileName);
-            Debug.Console(0, this, "DEBUG: Final config directory: {0}", _configDirectory);
+            Debug.Console(1, this, "DEBUG: Final config directory: {0}", _configDirectory);
+        }
+
+        private string GetConfigDirectory()
+        {
+            // Handle different file system structures between 4-series processor and VC-4
+            string currentDir = Crestron.SimplSharp.CrestronIO.Directory.GetApplicationDirectory();
+
+            // Try user subdirectory first (standard for RMC4)
+            string userDir = Crestron.SimplSharp.CrestronIO.Path.Combine(currentDir, "user");
+            if (Crestron.SimplSharp.CrestronIO.Directory.Exists(userDir))
+            {
+                Debug.Console(1, this, "Using user directory: {0}", userDir);
+                return userDir;
+            }
+
+            // Fall back to current directory (VC-4 and other scenarios)
+            Debug.Console(1, this, "Using current directory: {0}", currentDir);
+            return currentDir;
         }
 
         /// <summary>
@@ -51,10 +75,10 @@ namespace musicStudioUnit.Configuration
         {
             try
             {
-                string configPath = GetConfigFilePath();
-                Debug.Console(1, this, "Loading XML configuration from: {0}", configPath);
-                Debug.Console(0, this, "DEBUG: Current working directory: {0}", Crestron.SimplSharp.CrestronIO.Directory.GetApplicationDirectory());
-                Debug.Console(0, this, "DEBUG: Global.FilePathPrefix: {0}", musicStudioUnit.Global.FilePathPrefix);
+                
+                string configPath = Crestron.SimplSharp.CrestronIO.Path.Combine(_configDirectory, _configFileName);
+
+                Debug.Console(1, this, "DEBUG: Loading XML configuration from: {0}", configPath);
 
                 // Check if file exists
                 if (!Crestron.SimplSharp.CrestronIO.File.Exists(configPath))
@@ -355,29 +379,6 @@ namespace musicStudioUnit.Configuration
                     node.ReplaceChild(newElement, child);
                 }
             }
-        }
-
-        private string GetConfigDirectory()
-        {
-            // Handle different file system structures between 4-series processor and VC-4
-            string currentDir = Crestron.SimplSharp.CrestronIO.Directory.GetApplicationDirectory();
-            
-            // Try user subdirectory first (standard for RMC4)
-            string userDir = Crestron.SimplSharp.CrestronIO.Path.Combine(currentDir, "user");
-            if (Crestron.SimplSharp.CrestronIO.Directory.Exists(userDir))
-            {
-                Debug.Console(1, this, "Using user directory: {0}", userDir);
-                return userDir;
-            }
-
-            // Fall back to current directory (VC-4 and other scenarios)
-            Debug.Console(1, this, "Using current directory: {0}", currentDir);
-            return currentDir;
-        }
-
-        private string GetConfigFilePath()
-        {
-            return Crestron.SimplSharp.CrestronIO.Path.Combine(_configDirectory, _configFileName);
         }
 
         private void LogConfigurationSummary(LocalConfiguration config)
